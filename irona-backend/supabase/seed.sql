@@ -6,6 +6,10 @@
 -- per produk secara eksplisit -- perlu di-assign ulang manual lewat UI.
 -- ============================================================
 
+-- Seed memuat data bertanggal lampau (mis. aset 2025): lewati kunci tutup buku
+-- untuk sesi seed ini saja (lihat migrasi finance_period_close).
+set irona.bypass_period_lock = 'on';
+
 -- Seed akun Admin/Owner pertama (owner1 / TestPass123!) — biar nggak perlu bikin manual tiap db reset
 do $$
 declare
