@@ -1,0 +1,1 @@
+select name, start_time, end_time from public.shift_patterns;

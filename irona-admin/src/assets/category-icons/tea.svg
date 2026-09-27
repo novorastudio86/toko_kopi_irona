@@ -1,0 +1,14 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="SVG">
+<g id="Vector">
+<path d="M4 9H20C20 15 16.4 19 12 19C7.6 19 4 15 4 9V9" fill="#F1F5F9"/>
+<path d="M4 9H20C20 15 16.4 19 12 19C7.6 19 4 15 4 9V9" stroke="#475569" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<path id="Vector_2" d="M8 19H16" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M12 4V9M9 5L11 9M15 5L13 9" stroke="#475569" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="Vector_4">
+<path d="M6 9C6 9.82787 8.68851 10.5 12 10.5C15.3115 10.5 18 9.82787 18 9C18 8.17213 15.3115 7.5 12 7.5C8.68851 7.5 6 8.17213 6 9H6" fill="#E2E8F0"/>
+<path d="M6 9C6 9.82787 8.68851 10.5 12 10.5C15.3115 10.5 18 9.82787 18 9C18 8.17213 15.3115 7.5 12 7.5C8.68851 7.5 6 8.17213 6 9H6" stroke="#475569" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+</svg>

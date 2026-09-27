@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="SVG">
+<path id="Vector" d="M17 9H18C19.9317 9 21.5 10.5683 21.5 12.5C21.5 14.4317 19.9317 16 18 16H17" stroke="#475569" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="Vector_2">
+<path d="M3 9H17V16C17 18.2077 15.2077 20 13 20H7C4.79234 20 3 18.2077 3 16V9V9" fill="#F1F5F9"/>
+<path d="M3 9H17V16C17 18.2077 15.2077 20 13 20H7C4.79234 20 3 18.2077 3 16V9V9" stroke="#475569" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g id="Vector_3">
+<path d="M13 2C16.5 2 19 4.5 19 8C15.5 8 13 5.5 13 2V2" fill="#E2E8F0"/>
+<path d="M13 2C16.5 2 19 4.5 19 8C15.5 8 13 5.5 13 2V2" stroke="#475569" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<path id="Vector_4" d="M13 8C14.5 6 16 4.5 18 3.5" stroke="#475569" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_5" d="M2 21H18" stroke="#475569" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

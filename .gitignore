@@ -1,0 +1,19 @@
+# Dependensi & hasil build
+node_modules/
+dist/
+dist-ssr/
+
+# Env & rahasia (env dikelola lewat Doppler)
+.env
+.env.*
+*.local
+
+# Salinan data database (berisi data karyawan/pelanggan) — jangan di-upload
+irona-backend/backup_*.sql
+
+# File sementara Supabase CLI
+irona-backend/supabase/.temp/
+irona-backend/supabase/.branches/
+
+# Sistem & editor
+.DS_Store
