@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import wordmark from '@/assets/home/wordmark.webp';
 import kora from '@/assets/home/kora.webp';
 import { HERO_SLIDES } from '@/constants/heroSlides';
 import { cn } from '@/lib/utils';
+import WordmarkIntro from './WordmarkIntro';
 
 const SLIDE_INTERVAL_MS = 5000;
 
@@ -27,8 +27,8 @@ export default function HeroSection() {
     // foto ±70% kanan jadi latar, teks menumpuk di atas bagian fade-nya
     <section className="relative flex flex-col border-b border-foreground md:-mt-[61px] md:min-h-svh md:justify-center md:pt-[61px]">
       <div className="relative z-10 order-1 px-4 pt-5 pb-8 md:mx-auto md:w-full md:max-w-[1200px] md:py-8 md:pr-4 md:pl-[32.5px]">
-        <h1 className="hero-reveal max-md:sr-only">
-          <img src={wordmark} alt="Toko Kopi Irona" className="h-[93.5px] w-auto" />
+        <h1 className="max-md:sr-only">
+          <WordmarkIntro className="h-[93.5px] md:h-32" />
         </h1>
         <h2 className="hero-reveal text-lg leading-7 [--i:1] font-medium md:mt-[21px] md:text-[22px]">
           A Place to Pause,{' '}
