@@ -20,5 +20,10 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // Komponen shadcn memang mengekspor variants (mis. buttonVariants) bersama komponennya
+    files: ['src/components/ui/**'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
   prettierConfig,
 ])
