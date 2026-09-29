@@ -1,45 +1,214 @@
-import koraPhoto from '@/assets/images/Tak berjudul33_20260725035338.png';
-import { KORA_INSTAGRAM_URL, KORA_TRAITS } from '@/constants/kora';
-import { cn } from '@/lib/utils';
-import { ctaClass } from './HeroSection';
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
+import koraBerdiri from '@/assets/home/kora_berdiri_cutout.png';
+import koraMenyapa from '@/assets/home/kora_menyapa_cutout.png';
+import './kora.css';
 
-/** Mockup statis: heading ikut "Yuk Nongkrong", paragraf ikut deskripsi Hero, CTA ikut "Kunjungi kami" */
+/**
+ * Pose Kora di Home. Pose final siap: ganti `image`, set isPlaceholder: false, hapus TODO-nya.
+ */
+const KORA_CREW = [
+  {
+    id: 'menyapa',
+    image: koraMenyapa,
+    alt: 'Kora melambai sambil memegang kopi',
+    title: 'Hai, kenalin aku Kora!',
+    subtitle: 'Yang jaga Toko Kopi Irona sejak hari pertama.',
+    isPlaceholder: false,
+  },
+  {
+    id: 'kopi-susu',
+    // TODO(aset): ganti dengan Kora membawa kopi susu
+    image: koraMenyapa,
+    alt: 'Kora membawa kopi susu',
+    title: 'Ini kopi susu andalan Kora.',
+    subtitle: 'Manis, creamy, bikin melek seharian.',
+    isPlaceholder: true,
+  },
+  {
+    id: 'driver',
+    // TODO(aset): ganti dengan Kora naik vespa
+    image: koraBerdiri,
+    alt: 'Kora naik vespa mengantar pesanan',
+    title: 'Pesan dari rumah, Kora yang antar.',
+    subtitle: 'Order online, tinggal tunggu di depan pintu.',
+    isPlaceholder: true,
+  },
+  {
+    id: 'kasir',
+    // TODO(aset): ganti dengan Kora di kasir
+    image: koraBerdiri,
+    alt: 'Kora berjaga di kasir',
+    title: 'Mampir ke toko, Kora tunggu di kasir.',
+    subtitle: 'Alamatnya ada di bawah, jangan lupa mampir ya.',
+    isPlaceholder: true,
+  },
+];
+
+const LEAVE_DELAY = 180;
+
+const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/**
+ * Panggung Kora full-bleed: Kora besar saling tumpuk, bisa digeser. Diam: tanpa gerak.
+ * Hover / fokus keyboard / ketuk: latar meredup, sinar berputar di belakang Kora itu, label
+ * menyapa muncul di badannya. Style & animasi di kora.css.
+ */
 export default function KoraSection() {
+  const [active, setActive] = useState<number | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const leaveTimer = useRef<number>(undefined);
+  const pointerType = useRef('');
+
+  const activate = (i: number) => {
+    clearTimeout(leaveTimer.current);
+    setActive(i);
+  };
+  // Kursor keluar dari maskot: jeda singkat, batal bila langsung masuk Kora lain (tanpa kedip)
+  const leave = (e: ReactPointerEvent) => {
+    if (e.pointerType !== 'mouse') return;
+    clearTimeout(leaveTimer.current);
+    leaveTimer.current = window.setTimeout(() => setActive(null), LEAVE_DELAY);
+  };
+  const deactivate = () => {
+    clearTimeout(leaveTimer.current);
+    setActive(null);
+  };
+  const slide = (dir: 1 | -1) =>
+    rowRef.current?.scrollBy({
+      left: dir * rowRef.current.clientWidth * 0.6,
+      behavior: reduceMotion() ? 'auto' : 'smooth',
+    });
+
+  // Track scroll retro + status ujung (panah redup, petunjuk geser hilang bila semua muat)
+  useLayoutEffect(() => {
+    const section = sectionRef.current!;
+    const row = rowRef.current!;
+    const track = trackRef.current!;
+    const update = () => {
+      const max = row.scrollWidth - row.clientWidth;
+      track.style.setProperty('--w', String(row.clientWidth / row.scrollWidth));
+      track.style.setProperty('--p', String(max > 0 ? row.scrollLeft / max : 0));
+      section.toggleAttribute('data-scrollable', max > 24);
+      section.toggleAttribute('data-at-start', row.scrollLeft <= 1);
+      section.toggleAttribute('data-at-end', row.scrollLeft >= max - 1);
+    };
+    update();
+    row.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      row.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  // Ketuk di luar barisan = kembali diam
+  useEffect(() => {
+    if (active === null) return;
+    const onDown = (e: PointerEvent) => {
+      if (!rowRef.current?.contains(e.target as Node)) setActive(null);
+    };
+    document.addEventListener('pointerdown', onDown);
+    return () => document.removeEventListener('pointerdown', onDown);
+  }, [active]);
+
+  const current = active === null ? null : KORA_CREW[active];
+
   return (
-    <section id="kora" className="scroll-mt-[60px] border-b border-dashed border-foreground">
-      <div className="mx-auto max-w-[1200px] px-4 pt-[18px] pb-7 md:px-[30px]">
-        <h2 className="pl-0.5 font-display text-2xl leading-[22px]">Kenalan sama Kora</h2>
-
-        <div className="mt-4 grid items-center gap-4 md:grid-cols-2">
-          <img
-            src={koraPhoto}
-            alt="Kora, maskot Toko Kopi Irona, melambai sambil memegang kopi"
-            className="w-full max-w-[360px]"
-          />
-
-          {/* DRAFT: copy masih draft, review ulang dengan tim kreatif */}
-          <div className="pl-0.5">
-            <p className="max-w-[453px] text-[13px] leading-6 md:text-sm">
-              Kora si koala barista yang jaga Irona sejak hari pertama. Kerjanya nyeduh kopi, nyapa
-              pelanggan, dan sesekali ketiduran di balik meja bar. Kalau mampir, jangan lupa bilang
-              halo ya!
-            </p>
-            <ul className="mt-2 list-inside list-disc text-[13px] leading-6 md:text-sm">
-              {KORA_TRAITS.map((trait) => (
-                <li key={trait}>{trait}</li>
-              ))}
-            </ul>
-            <a
-              href={KORA_INSTAGRAM_URL}
-              target="_blank"
-              rel="noreferrer"
-              className={cn(ctaClass, 'mt-3.5 inline-grid bg-background hover:bg-secondary')}
-            >
-              Ikuti Kora di Instagram
-            </a>
-          </div>
+    <section
+      ref={sectionRef}
+      id="kora"
+      aria-labelledby="kora-title"
+      data-active={active !== null || undefined}
+      className="kora scroll-mt-[60px] border-b border-dashed border-foreground"
+    >
+      <div className="kora-head">
+        <h2 id="kora-title" className="kora-title font-display">
+          Kenalan sama Kora,
+          <br />
+          si koala barista
+        </h2>
+        <div className="kora-hint font-display">
+          <button type="button" aria-label="Geser ke kiri" onClick={() => slide(-1)}>
+            &lsaquo;&lsaquo;
+          </button>
+          <span>Geser untuk lihat lainnya</span>
+          <button type="button" aria-label="Geser ke kanan" onClick={() => slide(1)}>
+            &rsaquo;&rsaquo;
+          </button>
         </div>
       </div>
+
+      <div
+        ref={rowRef}
+        className="kora-row no-scrollbar"
+        onKeyDown={(e) => e.key === 'Escape' && deactivate()}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) deactivate();
+        }}
+      >
+        <div className="kora-crew">
+          {KORA_CREW.map((k, i) => (
+            <button
+              key={k.id}
+              type="button"
+              aria-label={k.title}
+              data-active={active === i || undefined}
+              className="kora-item"
+              onPointerDown={(e) => (pointerType.current = e.pointerType)}
+              onPointerEnter={(e) => e.pointerType === 'mouse' && activate(i)}
+              onPointerLeave={leave}
+              // Fokus dari ketukan/klik diabaikan; hanya fokus keyboard yang setara hover
+              onFocus={(e) => e.currentTarget.matches(':focus-visible') && activate(i)}
+              onClick={(e) => {
+                // detail 0 = Enter/Space; mouse sudah ditangani hover
+                if (e.detail === 0 || pointerType.current === 'mouse') return;
+                if (active === i) return deactivate();
+                activate(i);
+                e.currentTarget.scrollIntoView({
+                  behavior: reduceMotion() ? 'auto' : 'smooth',
+                  block: 'nearest',
+                  inline: 'center',
+                });
+              }}
+            >
+              <span aria-hidden className="kora-rays" />
+              <img
+                src={k.image}
+                alt={k.alt}
+                width={1263}
+                height={1375}
+                loading="lazy"
+                decoding="async"
+                draggable={false}
+              />
+              <span aria-hidden className="kora-tag">
+                <span className="block font-display text-[20px] leading-[1.1] md:text-[24px]">
+                  {k.title}
+                </span>
+                <span className="mt-1 block text-[13px] leading-snug text-muted-foreground md:text-sm">
+                  {k.subtitle}
+                </span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div ref={trackRef} aria-hidden className="kora-track">
+        <span />
+      </div>
+
+      <p aria-live="polite" className="sr-only">
+        {current && `${current.title} ${current.subtitle}`}
+      </p>
     </section>
   );
 }

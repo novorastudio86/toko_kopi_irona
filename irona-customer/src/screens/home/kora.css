@@ -1,0 +1,337 @@
+/*
+ * Section Kora (Home): panggung full-bleed ala stiker. Warna khusus section ini (bukan token global):
+ * abu muda saat diam, abu agak gelap saat kursor/fokus di maskot. Diam = tanpa animasi.
+ * Hanya transform, opacity, filter, background-color, color yang dianimasikan.
+ */
+.kora {
+  --kora-ink: #2a2622;
+  --kora-paper: #faf6ef;
+  --sec-h: clamp(560px, calc(100svh - 60px), 860px);
+  --kora-h: calc(var(--sec-h) - 220px);
+  --gutter: max(16px, calc((100% - 1200px) / 2 + 30px));
+  position: relative;
+  height: var(--sec-h);
+  overflow: clip;
+  background-color: #eeedea;
+  transition: background-color 500ms ease;
+}
+
+.kora[data-active] {
+  background-color: #4a4642;
+}
+
+/* Judul + petunjuk geser melayang di atas panggung */
+.kora-head {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  padding: 36px var(--gutter) 0;
+  pointer-events: none;
+}
+
+.kora-title {
+  width: fit-content;
+  font-size: clamp(30px, 3.4vw, 44px);
+  line-height: 0.95;
+  color: var(--kora-ink);
+  text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.7);
+  transform: rotate(-2deg);
+  transform-origin: left bottom;
+  transition:
+    color 500ms ease,
+    text-shadow 500ms ease;
+}
+
+.kora[data-active] .kora-title {
+  color: var(--kora-paper);
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+.kora-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 6px;
+  font-size: 18px;
+  color: #736a62;
+  transition: color 500ms ease;
+}
+
+.kora[data-active] .kora-hint {
+  color: var(--kora-paper);
+}
+
+.kora:not([data-scrollable]) .kora-hint {
+  visibility: hidden;
+}
+
+.kora-hint button {
+  padding: 4px 8px;
+  font-size: 24px;
+  line-height: 1;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity 200ms ease;
+}
+
+.kora[data-at-start] .kora-hint button:first-child,
+.kora[data-at-end] .kora-hint button:last-child {
+  opacity: 0.35;
+}
+
+.kora-hint button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Barisan: menutupi seluruh panggung supaya Kora aktif (membesar + sinar) tidak terpotong */
+.kora-row {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+}
+
+/* max-content + margin auto: di tengah bila muat, bisa digeser bila tidak */
+.kora-crew {
+  display: flex;
+  align-items: flex-end;
+  width: max-content;
+  height: 100%;
+  margin-inline: auto;
+  padding: 0 32px 28px;
+}
+
+.kora-item {
+  --s: 1;
+  --r: 0deg;
+  position: relative;
+  flex: none;
+  height: calc(var(--kora-h) * var(--s));
+  aspect-ratio: 1263 / 1375;
+  margin-left: calc(var(--kora-h) * -0.12);
+  border-radius: 24px;
+  scroll-snap-align: center;
+  transform: rotate(var(--r));
+  transform-origin: 50% 100%;
+  transition:
+    transform 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 400ms ease;
+}
+
+.kora-item:first-child {
+  margin-left: 0;
+}
+
+/* Tinggi & kemiringan dibuat tidak seragam, ala tempelan stiker */
+.kora-item:nth-child(1) {
+  --r: -2deg;
+}
+.kora-item:nth-child(2) {
+  --s: 0.9;
+  --r: 3deg;
+}
+.kora-item:nth-child(3) {
+  --r: -1deg;
+}
+.kora-item:nth-child(4) {
+  --s: 0.86;
+  --r: 2deg;
+}
+
+.kora-item[data-active] {
+  z-index: 3;
+  transform: translateY(-14px) scale(1.06);
+}
+
+.kora[data-active] .kora-item:not([data-active]) {
+  filter: saturate(0.55) brightness(0.92);
+  transform: rotate(var(--r)) scale(0.96);
+}
+
+.kora-item:focus-visible {
+  outline: 3px dashed var(--kora-paper);
+  outline-offset: -10px;
+}
+
+.kora-item img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* Kontur putih ala stiker */
+  filter: drop-shadow(4px 0 0 #fff) drop-shadow(-4px 0 0 #fff) drop-shadow(0 4px 0 #fff)
+    drop-shadow(0 -4px 0 #fff) drop-shadow(0 8px 0 rgba(42, 38, 34, 0.18));
+}
+
+.kora-item[data-active] img {
+  animation: kora-hop 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Sinar retro berputar di belakang Kora aktif */
+.kora-rays {
+  position: absolute;
+  top: 42%;
+  left: -25%;
+  z-index: -1;
+  width: 150%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(250, 246, 239, 0.35) 0deg 7deg, transparent 7deg 18deg);
+  mask-image: radial-gradient(closest-side, #000 25%, transparent);
+  pointer-events: none;
+  opacity: 0;
+  translate: 0 -50%;
+  scale: 0.5;
+  transition:
+    opacity 400ms ease,
+    scale 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.kora-item[data-active] .kora-rays {
+  opacity: 1;
+  scale: 1;
+  animation: kora-spin 40s linear infinite;
+}
+
+/* Label menyapa: menempel di badan Kora, muncul dengan pantulan kecil */
+.kora-tag {
+  --tag-r: -3deg;
+  position: absolute;
+  bottom: 16%;
+  left: 50%;
+  z-index: 1;
+  width: max-content;
+  max-width: min(320px, 92%);
+  padding: 10px 16px;
+  background-color: var(--kora-paper);
+  border: 2px solid var(--kora-ink);
+  box-shadow: 4px 4px 0 var(--kora-ink);
+  color: var(--kora-ink);
+  text-align: left;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 16px) rotate(var(--tag-r)) scale(0.85);
+  transition:
+    opacity 200ms ease,
+    transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.kora-item:nth-child(even) .kora-tag {
+  --tag-r: 2deg;
+}
+
+.kora-item[data-active] .kora-tag {
+  opacity: 1;
+  transform: translate(-50%, 0) rotate(var(--tag-r));
+}
+
+/* Track scroll retro: garis tipis + thumb gelap (thumb digerakkan via --w / --p) */
+.kora-track {
+  position: absolute;
+  right: var(--gutter);
+  bottom: 10px;
+  left: var(--gutter);
+  z-index: 2;
+  height: 6px;
+  pointer-events: none;
+}
+
+.kora:not([data-scrollable]) .kora-track {
+  display: none;
+}
+
+.kora-track::before {
+  content: '';
+  position: absolute;
+  inset: 2px 0;
+  background-color: rgba(42, 38, 34, 0.3);
+}
+
+.kora-track span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--w, 1) * 100%);
+  border-radius: 3px;
+  background-color: var(--kora-ink);
+  transform: translateX(calc(var(--p, 0) * (100% / var(--w, 1) - 100%)));
+}
+
+.kora[data-active] .kora-track::before {
+  background-color: rgba(250, 246, 239, 0.3);
+}
+
+.kora[data-active] .kora-track span {
+  background-color: var(--kora-paper);
+}
+
+@keyframes kora-hop {
+  35% {
+    transform: translateY(-22px) rotate(-3deg);
+  }
+  65% {
+    transform: translateY(0) rotate(2deg);
+  }
+}
+
+@keyframes kora-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@media (max-width: 767px) {
+  .kora {
+    --sec-h: clamp(540px, calc(100vw + 210px), 720px);
+    --kora-h: min(calc(var(--sec-h) - 190px), 100vw);
+  }
+
+  .kora-head {
+    padding-top: 24px;
+  }
+
+  .kora-hint {
+    justify-content: flex-start;
+    font-size: 15px;
+  }
+
+  .kora-row {
+    scroll-snap-type: x mandatory;
+  }
+
+  .kora-crew {
+    padding-inline: 16px;
+  }
+
+  .kora-item {
+    margin-left: calc(var(--kora-h) * -0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kora,
+  .kora-title,
+  .kora-hint,
+  .kora-item,
+  .kora-rays,
+  .kora-tag {
+    transition: none;
+  }
+
+  .kora-item[data-active] img,
+  .kora-item[data-active] .kora-rays {
+    animation: none;
+  }
+
+  .kora-item[data-active] {
+    transform: rotate(var(--r));
+  }
+
+  .kora[data-active] .kora-item:not([data-active]) {
+    transform: rotate(var(--r));
+  }
+}
