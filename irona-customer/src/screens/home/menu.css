@@ -1,0 +1,124 @@
+/*
+ * Efek interaksi section List Menu (Home). Hanya token warna yang sudah ada.
+ * Garis "tebal" = border 1px + inset ring 1px, jadi ukuran card tidak berubah.
+ */
+.menu-card {
+  background-color: var(--card);
+  cursor: pointer;
+  transition:
+    box-shadow 200ms ease,
+    background-color 200ms ease,
+    transform 100ms ease-out;
+}
+
+.menu-card:active {
+  transform: scale(0.985);
+}
+
+/* qty > 0: ring tetap + latar satu tingkat lebih gelap (secondary) */
+.menu-card[data-added] {
+  background-color: var(--secondary);
+  box-shadow: inset 0 0 0 1px var(--foreground);
+}
+
+/*
+ * Foto asli: frame ikut warna card (normal / hover / ditambahkan, termasuk saat transisi) dan
+ * latar putih foto dilebur dengan multiply. isolation membatasi blend hanya ke latar frame.
+ * Placeholder Kora menutup frame dengan pola garisnya sendiri.
+ */
+.menu-card-frame {
+  background-color: inherit;
+  isolation: isolate;
+}
+
+.menu-card-media {
+  mix-blend-mode: multiply;
+}
+
+.menu-card-media,
+.menu-card-kora {
+  transition: transform 400ms ease-out;
+}
+
+/* Tab kategori: warna label = durasi & easing indikator (CategoryTabs), supaya berganti bersamaan */
+.menu-tab {
+  transition:
+    background-color 150ms ease,
+    scale 150ms ease,
+    color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-add {
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .menu-card:hover {
+    box-shadow: inset 0 0 0 1px var(--foreground);
+    transition-duration: 150ms, 150ms, 100ms;
+  }
+
+  .menu-add:hover:not(:disabled) {
+    background-color: var(--card);
+    color: var(--foreground);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .menu-card:hover .menu-card-media {
+    transform: scale(1.04);
+  }
+
+  .menu-card:hover .menu-card-kora {
+    transform: scale(1.06);
+  }
+}
+
+/*
+ * Muncul di viewport (MenuSection memberi data-shown + --i lewat IntersectionObserver).
+ * `translate` (bukan transform) + fill backwards supaya tidak menimpa scale saat ditekan.
+ * "switch" = batch pertama setelah grid diisi (ganti kategori / muat awal), "scroll" = batch berikutnya.
+ */
+.menu-reveal .menu-card:not([data-shown]) {
+  opacity: 0;
+}
+
+.menu-card[data-shown='switch'] {
+  --rise: 8px;
+  animation: menu-rise 260ms ease-out calc(min(var(--i, 0), 8) * 40ms) backwards;
+}
+
+.menu-card[data-shown='scroll'] {
+  --rise: 10px;
+  animation: menu-rise 300ms ease-out calc(min(var(--i, 0), 6) * 40ms) backwards;
+}
+
+@keyframes menu-rise {
+  from {
+    opacity: 0;
+    translate: 0 var(--rise);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Indikator pindah instan (MotionConfig reducedMotion="user"), warna label ikut instan */
+  .menu-tab {
+    transition: none;
+  }
+
+  .menu-card {
+    transition-property: box-shadow, background-color;
+  }
+
+  .menu-card[data-shown] {
+    animation: menu-fade 150ms ease-out backwards;
+  }
+}
+
+@keyframes menu-fade {
+  from {
+    opacity: 0;
+  }
+}

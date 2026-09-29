@@ -1,31 +1,43 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { MotionConfig } from 'motion/react';
 import { fetchOnlineCategories } from '@/services/categories';
 import { fetchOnlineProducts } from '@/services/products';
 import { useCart } from '@/hooks/useCart';
-import { useStoreHours } from '@/hooks/useStoreHours';
+import { cn } from '@/lib/utils';
 import type { Category } from '@/types/category';
 import type { Product } from '@/types/product';
-import { getOpeningSummary, isStoreOpen } from '@/utils/storeHours';
 import CategoryTabs from './CategoryTabs';
+import ClosedNotice from './ClosedNotice';
+import { useMenuStatus } from './menuStatus';
 import ProductCard from './ProductCard';
+import { useQuickCart } from './useQuickCart';
+import './menu.css';
 
-/** Hasil fetch per kategori; products null = gagal dimuat */
-interface ProductsResult {
-  categoryId: string;
-  products: Product[] | null;
-}
+const PANEL_ID = 'menu-tabpanel';
+/** Tanpa IntersectionObserver card langsung tampil (tidak disembunyikan menunggu reveal) */
+const CAN_REVEAL = typeof IntersectionObserver !== 'undefined';
+/** Batch masuk terlama: delay maks 320ms + durasi 260ms (lihat menu.css) */
+const ENTER_MS = 600;
 
 export default function MenuSection() {
   const { addItem } = useCart();
-  const hours = useStoreHours();
+  const { quantityOf, setQuantity } = useQuickCart();
+  const status = useMenuStatus();
+  const [noticeAt, setNoticeAt] = useState<number | null>(null);
   const [categories, setCategories] = useState<Category[] | null>(null);
   const [categoriesFailed, setCategoriesFailed] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [result, setResult] = useState<ProductsResult | null>(null);
+  /** Produk per kategori yang sudah dimuat; null = gagal dimuat */
+  const [cache, setCache] = useState<Record<string, Product[] | null>>({});
+  const requested = useRef(new Set<string>());
+  /** Kategori yang card-nya sedang tampil; tertinggal dari activeId selama kategori baru dimuat */
+  const [shownId, setShownId] = useState<string | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  /** Tinggi grid sebelum ganti kategori; ditahan sampai animasi masuk selesai supaya halaman tidak loncat */
+  const [holdHeight, setHoldHeight] = useState<number>();
 
   const activeId = selectedId ?? categories?.[0]?.id ?? null;
-  const ordering = hours && getOpeningSummary(hours, 'online');
-  const orderingOpen = hours ? isStoreOpen(hours, 'online') : true;
+  if (activeId && activeId in cache && shownId !== activeId) setShownId(activeId);
 
   useEffect(() => {
     fetchOnlineCategories()
@@ -36,61 +48,131 @@ export default function MenuSection() {
       });
   }, []);
 
+  // Tiap kategori di-fetch sekali; hasil yang datang telat tetap masuk cache tapi hanya
+  // ditampilkan kalau masih kategori aktif, jadi klik cepat tidak menumpuk konten.
   useEffect(() => {
-    if (!activeId) return;
-    let cancelled = false;
+    if (!activeId || requested.current.has(activeId)) return;
+    requested.current.add(activeId);
     fetchOnlineProducts(activeId)
-      .then((products) => !cancelled && setResult({ categoryId: activeId, products }))
+      .then((products) => setCache((c) => ({ ...c, [activeId]: products })))
       .catch((err) => {
         console.error('Gagal memuat produk', err);
-        if (!cancelled) setResult({ categoryId: activeId, products: null });
+        setCache((c) => ({ ...c, [activeId]: null }));
       });
-    return () => {
-      cancelled = true;
-    };
   }, [activeId]);
 
-  const loading = !categoriesFailed && (!result || result.categoryId !== activeId);
-  const failed = categoriesFailed || (!loading && result?.products === null);
+  useEffect(() => {
+    const timer = setTimeout(() => setHoldHeight(undefined), ENTER_MS);
+    return () => clearTimeout(timer);
+  }, [shownId]);
+
+  const selectCategory = (id: string) => {
+    if (id === activeId) return;
+    setHoldHeight(gridRef.current?.offsetHeight);
+    setSelectedId(id);
+  };
+
+  const changeQuantity = (productId: string, qty: number) => {
+    // ponytail: counter navbar masih dummy (hanya bisa naik), jadi cuma diberi tahu saat qty bertambah
+    if (qty > quantityOf(productId)) addItem();
+    setQuantity(productId, qty);
+  };
+
+  // Skeleton hanya saat belum ada data sama sekali (muat pertama)
+  const loading = !categoriesFailed && shownId === null;
+  const shownProducts = shownId ? cache[shownId] : null;
+  const failed = categoriesFailed || (!loading && shownProducts === null);
+
+  // Card muncul sekali saat pertama terlihat. Batch pertama setelah grid terisi = "switch"
+  // (ganti kategori / muat awal), berikutnya "scroll". --i = urutan dalam batch untuk stagger.
+  // Ganti kategori = daftar card baru (key produk berbeda), jadi animasi mulai dari awal, tidak menumpuk.
+  useEffect(() => {
+    const cards = gridRef.current?.querySelectorAll<HTMLElement>('.menu-card');
+    if (!CAN_REVEAL || !cards?.length) return;
+    let firstBatch = true;
+    const observer = new IntersectionObserver((entries) => {
+      entries
+        .filter((entry) => entry.isIntersecting)
+        .forEach((entry, i) => {
+          const card = entry.target as HTMLElement;
+          card.style.setProperty('--i', String(i));
+          card.dataset.shown = firstBatch ? 'switch' : 'scroll';
+          observer.unobserve(card);
+        });
+      firstBatch = false;
+    });
+    cards.forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, [shownProducts]);
 
   return (
-    <section id="menu" className="scroll-mt-[60px] border-b border-dashed border-foreground">
-      <div className="mx-auto max-w-[1200px] px-4 pt-[18px] pb-7 md:px-[30px]">
-        <h2 className="pl-0.5 font-display text-2xl leading-[22px]">Yuk Nongkrong</h2>
-        <p className="mt-[5px] min-h-[19px] pl-0.5 text-sm leading-[19px] font-medium text-foreground">
-          {ordering && (
-            <>
-              Pemesanan {ordering.openTime} - {ordering.closeTime}
-              {!orderingOpen && <span className="text-muted-foreground"> · Sedang tutup</span>}
-            </>
-          )}
-        </p>
+    <MotionConfig reducedMotion="user">
+      <section id="menu" className="scroll-mt-[60px] border-b border-dashed border-foreground">
+        <div className="mx-auto max-w-[1200px] px-4 pt-[18px] pb-7 md:px-[30px]">
+          <h2 className="pl-0.5 font-display text-[26px] leading-tight md:text-[32px]">
+            {status.title}
+          </h2>
+          <p className="mt-[5px] flex min-h-[19px] items-center gap-1.5 pl-0.5 text-sm leading-[19px] font-medium text-foreground">
+            <span
+              aria-hidden
+              className={cn(
+                'size-2 shrink-0 rounded-full border',
+                status.isOpen ? 'border-foreground bg-foreground' : 'border-muted-foreground'
+              )}
+            />
+            {status.subtitle}
+          </p>
 
-        <CategoryTabs categories={categories} activeId={activeId} onSelect={setSelectedId} />
+          <CategoryTabs
+            categories={categories}
+            activeId={activeId}
+            onSelect={selectCategory}
+            panelId={PANEL_ID}
+          />
 
-        <div className="mt-[19px] grid grid-cols-2 gap-x-3 gap-y-[18px] md:grid-cols-3 lg:grid-cols-4">
-          {failed ? (
-            <p className="col-span-full py-10 text-center text-sm text-muted-foreground">
-              Menu gagal dimuat. Coba muat ulang halaman.
-            </p>
-          ) : loading ? (
-            Array.from({ length: 4 }, (_, i) => (
-              <div
-                key={i}
-                className="h-[214px] animate-pulse border border-foreground/20 bg-secondary"
-              />
-            ))
-          ) : result?.products?.length ? (
-            result.products.map((product) => (
-              <ProductCard key={product.id} product={product} onBuy={addItem} />
-            ))
-          ) : (
-            <p className="col-span-full py-10 text-center text-sm text-muted-foreground">
-              Belum ada menu di kategori ini.
-            </p>
-          )}
+          <div
+            ref={gridRef}
+            id={PANEL_ID}
+            role="tabpanel"
+            aria-labelledby={activeId ? `tab-${activeId}` : undefined}
+            aria-busy={shownId !== activeId}
+            style={{ minHeight: holdHeight }}
+            className={cn(
+              'mt-3 grid grid-cols-2 content-start gap-x-3 gap-y-[18px] md:grid-cols-3 lg:grid-cols-4',
+              CAN_REVEAL && 'menu-reveal'
+            )}
+          >
+            {failed ? (
+              <p className="col-span-full py-10 text-center text-sm text-muted-foreground">
+                Menu gagal dimuat. Coba muat ulang halaman.
+              </p>
+            ) : loading ? (
+              Array.from({ length: 4 }, (_, i) => (
+                <div
+                  key={i}
+                  className="h-[197px] animate-pulse border border-foreground/20 bg-secondary"
+                />
+              ))
+            ) : shownProducts?.length ? (
+              shownProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  quantity={quantityOf(product.id)}
+                  orderingOpen={status.isOpen}
+                  onQuantityChange={(qty) => changeQuantity(product.id, qty)}
+                  onClosedAttempt={() => setNoticeAt(Date.now())}
+                />
+              ))
+            ) : (
+              <p className="col-span-full py-10 text-center text-sm text-muted-foreground">
+                Belum ada menu di kategori ini.
+              </p>
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+        <ClosedNotice message={status.closedNotice} shownAt={noticeAt} />
+      </section>
+    </MotionConfig>
   );
 }
