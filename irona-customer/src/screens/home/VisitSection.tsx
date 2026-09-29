@@ -1,21 +1,27 @@
-import { Coffee } from 'lucide-react';
+import footerLogo from '@/assets/home/footer-logo.webp';
+import logoKoala from '@/assets/home/logo-koala.webp';
 import SocialLinks from '@/components/SocialLinks';
 import { useStoreHours } from '@/hooks/useStoreHours';
 import { useStoreProfile } from '@/hooks/useStoreProfile';
+import type { HoursChannel } from '@/types/storeHours';
 import { formatClock, getOpeningSummary } from '@/utils/storeHours';
+
+const HOURS_CHANNELS: { channel: HoursChannel; label: string }[] = [
+  { channel: 'offline', label: 'Store' },
+  { channel: 'online', label: 'Online' },
+];
 
 export default function VisitSection() {
   const profile = useStoreProfile();
   const hours = useStoreHours();
-  const opening = hours && getOpeningSummary(hours, 'offline');
 
   return (
     <section id="lokasi" className="scroll-mt-[60px] border-b border-dashed border-border">
       <div className="mx-auto max-w-[1200px] px-4 pt-6 pb-10 md:px-[30px] md:pb-[77px]">
         <h2 className="pl-0.5 font-display text-2xl leading-[22px]">Kunjungi Kami</h2>
 
-        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-[791fr_333fr] md:gap-4">
-          <div className="min-h-[230px] border border-foreground">
+        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-[3fr_2fr] md:gap-4 lg:grid-cols-[1fr_auto] lg:gap-6">
+          <div className="min-h-[230px] border border-foreground md:min-h-[320px]">
             {profile?.mapsEmbedUrl ? (
               // Peta dibuat statis (pointer-events-none) supaya pin custom selalu tepat di titik toko;
               // klik peta membuka Google Maps.
@@ -32,24 +38,25 @@ export default function VisitSection() {
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   tabIndex={-1}
-                  className="pointer-events-none absolute inset-0 size-full scale-105 grayscale sepia-[.35] transition-[filter,scale] duration-700 group-hover:scale-100 group-hover:grayscale-0 group-hover:sepia-0"
+                  className="pointer-events-none absolute inset-0 size-full scale-105 grayscale contrast-[1.15] transition-[filter,scale] duration-700 group-hover:scale-100 group-hover:grayscale-0 group-hover:contrast-100"
                 />
-                {/* Vinyet hangat di tepi peta */}
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgb(43_39_36/0.35))] transition-opacity duration-700 group-hover:opacity-0" />
+                {/* Vinyet abu-abu di tepi peta */}
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,rgb(0_0_0/0.3))] transition-opacity duration-700 group-hover:opacity-0" />
 
-                {/* Titik lokasi + denyut, tepat di tengah peta (menutupi ujung marker bawaan Google) */}
-                <span className="pointer-events-none absolute top-1/2 left-1/2 size-10 -translate-1/2 animate-ping rounded-full bg-accent-brown/40" />
-                <span className="pointer-events-none absolute top-1/2 left-1/2 size-4 -translate-1/2 rounded-full bg-accent-brown ring-3 ring-background shadow-md" />
-
-                {/* Pin toko melayang di atas titik lokasi */}
-                <div className="map-pin pointer-events-none absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-[calc(100%+14px)] flex-col items-center">
-                  <span className="mb-1.5 rounded-full bg-foreground px-2.5 py-1 font-display text-[10px] whitespace-nowrap text-background shadow-md">
-                    Toko Kopi Irona
+                {/* Pin Kora diam; ujung ekornya tepat di titik toko (menutupi marker bawaan Google) */}
+                <span className="pointer-events-none absolute top-1/2 left-1/2 h-1.5 w-6 -translate-1/2 rounded-full bg-black/35 blur-[2px]" />
+                <div className="pointer-events-none absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-full flex-col items-center drop-shadow-[0_4px_6px_rgb(0_0_0/0.3)]">
+                  <span className="grid size-12 place-items-center rounded-full border-2 border-foreground bg-white">
+                    <img src={logoKoala} alt="" className="w-8" />
                   </span>
-                  <span className="relative grid size-11 place-items-center rounded-full rounded-br-none bg-accent-brown text-accent-brown-foreground shadow-lg ring-2 ring-background rotate-45">
-                    <Coffee className="size-5 -rotate-45" strokeWidth={2.25} />
-                  </span>
+                  <span className="-mt-px size-0 border-x-[7px] border-t-[10px] border-x-transparent border-t-foreground" />
                 </div>
+                {/* Logo nama toko di kanan lingkaran pin; logo putih dibuat hitam + halo putih agar terbaca di atas peta */}
+                <img
+                  src={footerLogo}
+                  alt=""
+                  className="pointer-events-none absolute top-[calc(50%-34px)] left-[calc(50%+32px)] h-7 w-auto -translate-y-1/2 [filter:brightness(0)_drop-shadow(0_0_1.5px_#fff)_drop-shadow(0_0_1.5px_#fff)]"
+                />
               </a>
             ) : (
               <div className="grid size-full place-items-center bg-stripes px-2 text-center text-[10px] font-semibold tracking-[0.4px] text-muted-foreground">
@@ -60,17 +67,25 @@ export default function VisitSection() {
 
           <div className="pt-[13px] text-[10px] leading-[18px]">
             <h3 className="font-display text-[13px] leading-[18px]">Alamat</h3>
-            <p>{profile?.address}</p>
+            <p className="lg:whitespace-nowrap">{profile?.address}</p>
 
             <h3 className="mt-2 font-display text-[13px] leading-[18px]">Jam Buka</h3>
-            {opening && (
-              <p className="flex flex-wrap justify-between gap-x-2 md:pr-3">
-                <span>{opening.days}</span>
-                <span>
-                  {formatClock(opening.openTime)} - {formatClock(opening.closeTime)}
-                </span>
-              </p>
-            )}
+            {HOURS_CHANNELS.map(({ channel, label }) => {
+              const opening = hours && getOpeningSummary(hours, channel);
+              return (
+                opening && (
+                  <div key={channel} className="mt-0.5">
+                    <p className="font-semibold">{label}</p>
+                    <p className="flex flex-wrap justify-between gap-x-2 md:pr-3">
+                      <span>{opening.days}</span>
+                      <span>
+                        {formatClock(opening.openTime)} - {formatClock(opening.closeTime)}
+                      </span>
+                    </p>
+                  </div>
+                )
+              );
+            })}
 
             {profile && (
               <>
