@@ -1,12 +1,10 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { CartContext } from '@/hooks/useCart';
+import { useQuickCart } from '@/screens/home/useQuickCart';
 
-// ponytail: counter dummy; ganti dengan daftar item + qty saat fitur keranjang dibangun
+// ponytail: jumlah item diambil dari qty tombol tambah cepat; ganti dengan daftar item asli saat fitur keranjang dibangun
 export default function CartProvider({ children }: { children: ReactNode }) {
-  const [itemCount, setItemCount] = useState(0);
-  const value = useMemo(
-    () => ({ itemCount, addItem: () => setItemCount((n) => n + 1) }),
-    [itemCount]
-  );
+  const { itemCount } = useQuickCart();
+  const value = useMemo(() => ({ itemCount }), [itemCount]);
   return <CartContext value={value}>{children}</CartContext>;
 }

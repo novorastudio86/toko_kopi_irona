@@ -78,9 +78,11 @@ export default function Footer() {
               opening && (
                 <div key={channel} className="mt-0.5 flex flex-col">
                   <span className="font-semibold">{label}</span>
-                  <span>{opening.days}</span>
-                  <span>
-                    {formatClock(opening.openTime)} - {formatClock(opening.closeTime)}
+                  <span className="flex gap-4">
+                    <span>{opening.days}</span>
+                    <span>
+                      {formatClock(opening.openTime)} - {formatClock(opening.closeTime)}
+                    </span>
                   </span>
                 </div>
               )

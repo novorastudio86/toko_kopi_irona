@@ -1,7 +1,7 @@
-import { useCallback, useSyncExternalStore } from 'react';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
-// TODO(cart): keranjang asli (CartProvider) baru counter dummy tanpa qty per produk.
-// Setelah CartProvider menyimpan item + qty, ganti isi hook ini dengan useCart() — antarmukanya tetap.
+// TODO(cart): ini sumber qty sementara; CartProvider (badge navbar) membaca total dari sini.
+// Setelah keranjang asli menyimpan item + qty, ganti isi hook ini dengan useCart() — antarmukanya tetap.
 const STORAGE_KEY = 'irona:quick-cart';
 const CHANGE_EVENT = 'irona:quick-cart-change';
 
@@ -67,6 +67,12 @@ export function useQuickCart() {
     [quantities]
   );
 
+  /** Total qty semua produk, untuk badge keranjang di navbar */
+  const itemCount = useMemo(
+    () => Object.keys(quantities).reduce((sum, id) => sum + quantityOf(id), 0),
+    [quantities, quantityOf]
+  );
+
   /** qty 0 = hapus dari keranjang */
   const setQuantity = useCallback((productId: string, qty: number) => {
     const next = { ...read() };
@@ -75,5 +81,5 @@ export function useQuickCart() {
     write(next);
   }, []);
 
-  return { quantityOf, setQuantity };
+  return { quantityOf, setQuantity, itemCount };
 }

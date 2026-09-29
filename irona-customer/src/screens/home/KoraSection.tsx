@@ -127,7 +127,7 @@ export default function KoraSection() {
       id="kora"
       aria-labelledby="kora-title"
       data-active={active !== null || undefined}
-      className="kora scroll-mt-[60px] border-b border-dashed border-foreground"
+      className="kora scroll-mt-[60px] border-b border-foreground"
     >
       <div className="kora-head">
         <h2 id="kora-title" className="kora-title font-display">

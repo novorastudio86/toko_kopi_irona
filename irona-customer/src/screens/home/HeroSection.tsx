@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils';
 import WordmarkIntro from './WordmarkIntro';
 
 const SLIDE_INTERVAL_MS = 5000;
+// Foto pertama (dengan Kora) tampil lebih lama
+const FIRST_SLIDE_MS = 8000;
 
 /** Dipakai ulang oleh tombol CTA di section lain supaya style tombol tetap satu */
 export const ctaClass =
@@ -17,7 +19,7 @@ export default function HeroSection() {
   useEffect(() => {
     const timer = setTimeout(
       () => setActive((i) => (i + 1) % HERO_SLIDES.length),
-      SLIDE_INTERVAL_MS
+      active === 0 ? FIRST_SLIDE_MS : SLIDE_INTERVAL_MS
     );
     return () => clearTimeout(timer);
   }, [active]);

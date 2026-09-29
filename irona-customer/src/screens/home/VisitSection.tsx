@@ -10,7 +10,7 @@ export default function VisitSection() {
   const hours = useStoreHours();
 
   return (
-    <section id="lokasi" className="scroll-mt-[60px] border-b border-dashed border-border">
+    <section id="lokasi" className="scroll-mt-[60px] border-b border-border">
       <div className="mx-auto max-w-[1200px] px-4 pt-6 pb-10 md:px-[30px] md:pb-[77px]">
         <h2 className="pl-0.5 font-display text-2xl leading-[22px]">Kunjungi Kami</h2>
 

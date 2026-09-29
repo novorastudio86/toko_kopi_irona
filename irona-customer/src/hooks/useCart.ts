@@ -2,7 +2,6 @@ import { createContext, useContext } from 'react';
 
 export interface CartState {
   itemCount: number;
-  addItem: () => void;
 }
 
 export const CartContext = createContext<CartState | null>(null);

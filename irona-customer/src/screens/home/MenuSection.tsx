@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { MotionConfig } from 'motion/react';
 import { fetchOnlineCategories } from '@/services/categories';
 import { fetchOnlineProducts } from '@/services/products';
-import { useCart } from '@/hooks/useCart';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types/category';
 import type { Product } from '@/types/product';
@@ -20,7 +19,6 @@ const CAN_REVEAL = typeof IntersectionObserver !== 'undefined';
 const ENTER_MS = 600;
 
 export default function MenuSection() {
-  const { addItem } = useCart();
   const { quantityOf, setQuantity } = useQuickCart();
   const status = useMenuStatus();
   const [noticeAt, setNoticeAt] = useState<number | null>(null);
@@ -72,12 +70,6 @@ export default function MenuSection() {
     setSelectedId(id);
   };
 
-  const changeQuantity = (productId: string, qty: number) => {
-    // ponytail: counter navbar masih dummy (hanya bisa naik), jadi cuma diberi tahu saat qty bertambah
-    if (qty > quantityOf(productId)) addItem();
-    setQuantity(productId, qty);
-  };
-
   // Skeleton hanya saat belum ada data sama sekali (muat pertama)
   const loading = !categoriesFailed && shownId === null;
   const shownProducts = shownId ? cache[shownId] : null;
@@ -107,7 +99,7 @@ export default function MenuSection() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <section id="menu" className="scroll-mt-[60px] border-b border-dashed border-foreground">
+      <section id="menu" className="scroll-mt-[60px] border-b border-foreground">
         <div className="mx-auto max-w-[1200px] px-4 pt-[18px] pb-7 md:px-[30px]">
           <h2 className="pl-0.5 font-display text-[26px] leading-tight md:text-[32px]">
             {status.title}
@@ -160,7 +152,7 @@ export default function MenuSection() {
                   product={product}
                   quantity={quantityOf(product.id)}
                   orderingOpen={status.isOpen}
-                  onQuantityChange={(qty) => changeQuantity(product.id, qty)}
+                  onQuantityChange={(qty) => setQuantity(product.id, qty)}
                   onClosedAttempt={() => setNoticeAt(Date.now())}
                 />
               ))
