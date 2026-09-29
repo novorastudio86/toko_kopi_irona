@@ -40,6 +40,20 @@
   transition: transform 400ms ease-out;
 }
 
+/* Menu habis: tetap tampil tapi tidak bisa diklik; foto diredupkan (bukan grayscale, foto produk tetap berwarna) */
+.menu-card[data-sold-out] {
+  cursor: default;
+}
+
+.menu-card[data-sold-out]:active {
+  transform: none;
+}
+
+.menu-card[data-sold-out] .menu-card-media,
+.menu-card[data-sold-out] .menu-card-kora {
+  opacity: 0.45;
+}
+
 /* Tab kategori: warna label = durasi & easing indikator (CategoryTabs), supaya berganti bersamaan */
 .menu-tab {
   transition:
@@ -74,6 +88,16 @@
   .menu-card:hover .menu-card-kora {
     transform: scale(1.06);
   }
+}
+
+/* Menu habis tanpa efek hover (setelah aturan hover di atas supaya menimpanya) */
+.menu-card[data-sold-out]:hover {
+  box-shadow: none;
+}
+
+.menu-card[data-sold-out]:hover .menu-card-media,
+.menu-card[data-sold-out]:hover .menu-card-kora {
+  transform: none;
 }
 
 /*

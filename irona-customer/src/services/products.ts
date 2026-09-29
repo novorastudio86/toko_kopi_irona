@@ -55,6 +55,9 @@ const MOCK_MENU: Record<string, [string, number, boolean][]> = {
   ],
 };
 
+/** Contoh menu habis; sengaja bukan di kategori pertama supaya tampilan awal Home tetap sama */
+const MOCK_SOLD_OUT = new Set(['cat-americano-4', 'cat-main-course-2']);
+
 // TODO(backend): ganti dengan query tabel products, map snake_case → camelCase di sini.
 const MOCK_PRODUCTS: Product[] = Object.entries(MOCK_MENU).flatMap(([categoryId, items]) =>
   items.map(([name, sellingPrice, isRecommended], index) => ({
@@ -67,13 +70,18 @@ const MOCK_PRODUCTS: Product[] = Object.entries(MOCK_MENU).flatMap(([categoryId,
     isRecommended,
     availableOnline: true,
     isActive: true,
+    isSoldOut: MOCK_SOLD_OUT.has(`${categoryId}-${index + 1}`),
   }))
 );
 
+const isOnline = (p: Product) => p.isActive && p.availableOnline;
+
 /** Produk aktif yang dijual online untuk satu kategori */
 export async function fetchOnlineProducts(categoryId: string): Promise<Product[]> {
-  const rows = MOCK_PRODUCTS.filter(
-    (p) => p.categoryId === categoryId && p.isActive && p.availableOnline
-  );
-  return mockDelay(rows);
+  return mockDelay(MOCK_PRODUCTS.filter((p) => p.categoryId === categoryId && isOnline(p)));
+}
+
+/** Semua produk aktif yang dijual online (katalog /menu: search & filter di client) */
+export async function fetchAllOnlineProducts(): Promise<Product[]> {
+  return mockDelay(MOCK_PRODUCTS.filter(isOnline));
 }

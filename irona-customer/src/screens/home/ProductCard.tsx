@@ -40,7 +40,7 @@ export default function ProductCard({
   /** Klik tombol order saat toko tutup */
   onClosedAttempt: () => void;
 }) {
-  const { name, sellingPrice: price } = product;
+  const { name, sellingPrice: price, isSoldOut: soldOut } = product;
   const [announcement, setAnnouncement] = useState('');
   const cardRef = useRef<HTMLElement>(null);
   const qtyRef = useRef<HTMLSpanElement>(null);
@@ -84,10 +84,19 @@ export default function ProductCard({
   return (
     <article
       ref={cardRef}
-      data-added={quantity > 0 || undefined}
-      className="menu-card relative flex flex-col border border-foreground p-2 pb-[9px] has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-foreground"
+      data-added={(!soldOut && quantity > 0) || undefined}
+      data-sold-out={soldOut || undefined}
+      className={cn(
+        'menu-card relative flex flex-col border p-2 pb-[9px] has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-foreground',
+        soldOut ? 'border-border' : 'border-foreground'
+      )}
     >
-      <div className="menu-card-frame relative h-[118px] overflow-hidden border border-foreground">
+      <div
+        className={cn(
+          'menu-card-frame relative h-[118px] overflow-hidden border',
+          soldOut ? 'border-border' : 'border-foreground'
+        )}
+      >
         <MenuImage src={product.photoUrl} alt={name} />
         {product.isRecommended && (
           <span className="pointer-events-none absolute top-1.5 left-1.5 inline-flex items-center gap-1 rounded-full bg-primary py-0.5 pr-2 pl-1.5 text-[11px] leading-4 text-primary-foreground">
@@ -102,27 +111,53 @@ export default function ProductCard({
         )}
       </div>
 
-      <h3 className="mt-[7px] truncate text-[13px] leading-[15.6px] font-medium text-foreground">
-        {/* Stretched link: ::after menutup seluruh card (termasuk foto) tanpa elemen interaktif bersarang */}
-        {/* TODO(route): halaman detail /menu/:id belum ada; sementara jatuh ke redirect "*" di App.tsx */}
-        <Link
-          to={`/menu/${product.id}`}
-          title={name}
-          className="outline-none after:absolute after:inset-0"
-        >
-          {name}
-        </Link>
+      <h3
+        title={soldOut ? name : undefined}
+        className={cn(
+          'mt-[7px] truncate text-[13px] leading-[15.6px] font-medium',
+          soldOut ? 'text-muted-foreground' : 'text-foreground'
+        )}
+      >
+        {/* Stretched link: ::after menutup seluruh card (termasuk foto) tanpa elemen interaktif bersarang.
+            Menu habis tidak bisa diklik, jadi tanpa link. */}
+        {/* TODO(route): halaman detail /menu/:id belum ada; sementara tampil "Segera hadir" */}
+        {soldOut ? (
+          name
+        ) : (
+          <Link
+            to={`/menu/${product.id}`}
+            title={name}
+            className="outline-none after:absolute after:inset-0"
+          >
+            {name}
+          </Link>
+        )}
       </h3>
 
       {/* flex-wrap: di card sangat sempit tombol turun ke baris kedua, bukan meluber.
           min-h = tinggi kontrol, jaga baris tidak menyusut saat tombol ↔ stepper bergantian */}
       <div className="mt-2 flex min-h-[27px] flex-wrap items-center justify-between gap-x-1.5 gap-y-1 pointer-coarse:min-h-10">
-        <span className="text-xs leading-[14.4px] font-medium tracking-[1.08px] text-foreground tabular-nums">
+        <span
+          className={cn(
+            'text-xs leading-[14.4px] font-medium tracking-[1.08px] tabular-nums',
+            soldOut ? 'text-muted-foreground' : 'text-foreground'
+          )}
+        >
           {price === null ? '-' : formatRupiah(price)}
         </span>
 
         <AnimatePresence mode="wait" initial={false}>
-          {quantity > 0 ? (
+          {soldOut ? (
+            <span
+              key="sold-out"
+              className={cn(
+                controlClass,
+                'justify-center border border-border text-muted-foreground'
+              )}
+            >
+              Habis
+            </span>
+          ) : quantity > 0 ? (
             <motion.div
               key="stepper"
               initial={{ opacity: 0, scale: 0.9, x: 6 }}

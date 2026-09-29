@@ -93,7 +93,7 @@ export default function CategoryTabs({
         onKeyDown={onKeyDown}
         className="no-scrollbar relative flex overflow-x-auto px-4 md:px-[30px]"
       >
-        {categories?.map((category) => {
+        {categories?.map((category, i) => {
           const selected = category.id === activeId;
           return (
             <button
@@ -103,7 +103,8 @@ export default function CategoryTabs({
               role="tab"
               aria-selected={selected}
               aria-controls={panelId}
-              tabIndex={selected ? 0 : -1}
+              // Tanpa tab aktif (mis. saat search di /menu) tab pertama tetap bisa difokus
+              tabIndex={selected || (!activeId && i === 0) ? 0 : -1}
               onClick={() => onSelect(category.id)}
               className={cn(
                 'relative -ml-px h-9 min-w-[84px] shrink-0 border px-3 font-display text-[13px] menu-tab pointer-coarse:h-10 whitespace-nowrap first:ml-0 focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-current active:scale-[0.97]',

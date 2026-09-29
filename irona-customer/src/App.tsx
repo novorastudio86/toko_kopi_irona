@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router';
 import { COMING_SOON_PATHS } from './constants/navigation';
 import ComingSoonScreen from './screens/ComingSoonScreen';
 import HomeScreen from './screens/HomeScreen';
+import MenuScreen from './screens/MenuScreen';
 import SiteLayout from './screens/SiteLayout';
 
 export default function App() {
@@ -9,6 +10,7 @@ export default function App() {
     <Routes>
       <Route element={<SiteLayout />}>
         <Route index element={<HomeScreen />} />
+        <Route path="/menu" element={<MenuScreen />} />
         {COMING_SOON_PATHS.map((path) => (
           <Route key={path} path={path} element={<ComingSoonScreen />} />
         ))}

@@ -8,5 +8,8 @@ export interface Product {
   // TODO(backend): kolom is_recommended belum ada di tabel products — perlu migration baru.
   isRecommended: boolean;
   availableOnline: boolean;
+  // TODO(backend): belum ada kolom stok habis di tabel products; tentukan sumbernya (stok bahan / toggle admin).
+  /** Tetap tampil di katalog tapi tidak bisa dipesan */
+  isSoldOut: boolean;
   isActive: boolean;
 }

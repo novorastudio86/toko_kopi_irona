@@ -1,6 +1,16 @@
 import type { Category } from '@/types/category';
 import { mockDelay } from './mockDelay';
 
+export type MenuKind = 'minuman' | 'makanan';
+
+// TODO(backend): tabel categories belum punya kolom jenis (minuman/makanan); sementara dipetakan dari id mock.
+const FOOD_CATEGORY_IDS = new Set(['cat-appetizer', 'cat-main-course']);
+
+/** Jenis menu untuk filter Minuman / Makanan di halaman /menu */
+export function categoryKind(categoryId: string): MenuKind {
+  return FOOD_CATEGORY_IDS.has(categoryId) ? 'makanan' : 'minuman';
+}
+
 // TODO(backend): ganti dengan query tabel categories, map snake_case → camelCase di sini.
 const MOCK_CATEGORIES: Category[] = [
   { id: 'cat-add-on', name: 'ADD ON', onlineName: null, displayOrder: 1, showOnline: false },

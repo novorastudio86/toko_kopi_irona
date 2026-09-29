@@ -9,12 +9,15 @@ import CategoryTabs from './CategoryTabs';
 import ClosedNotice from './ClosedNotice';
 import { useMenuStatus } from './menuStatus';
 import ProductCard from './ProductCard';
+import { CAN_REVEAL, useCardReveal } from './useCardReveal';
 import { useQuickCart } from './useQuickCart';
 import './menu.css';
 
 const PANEL_ID = 'menu-tabpanel';
-/** Tanpa IntersectionObserver card langsung tampil (tidak disembunyikan menunggu reveal) */
-const CAN_REVEAL = typeof IntersectionObserver !== 'undefined';
+/** Dipakai ulang halaman /menu supaya grid & skeleton card sama persis dengan Home */
+export const menuGridClass =
+  'grid grid-cols-2 content-start gap-x-3 gap-y-[18px] md:grid-cols-3 lg:grid-cols-4';
+export const menuSkeletonClass = 'h-[197px] animate-pulse border border-foreground/20 bg-secondary';
 /** Batch masuk terlama: delay maks 320ms + durasi 260ms (lihat menu.css) */
 const ENTER_MS = 600;
 
@@ -75,27 +78,8 @@ export default function MenuSection() {
   const shownProducts = shownId ? cache[shownId] : null;
   const failed = categoriesFailed || (!loading && shownProducts === null);
 
-  // Card muncul sekali saat pertama terlihat. Batch pertama setelah grid terisi = "switch"
-  // (ganti kategori / muat awal), berikutnya "scroll". --i = urutan dalam batch untuk stagger.
   // Ganti kategori = daftar card baru (key produk berbeda), jadi animasi mulai dari awal, tidak menumpuk.
-  useEffect(() => {
-    const cards = gridRef.current?.querySelectorAll<HTMLElement>('.menu-card');
-    if (!CAN_REVEAL || !cards?.length) return;
-    let firstBatch = true;
-    const observer = new IntersectionObserver((entries) => {
-      entries
-        .filter((entry) => entry.isIntersecting)
-        .forEach((entry, i) => {
-          const card = entry.target as HTMLElement;
-          card.style.setProperty('--i', String(i));
-          card.dataset.shown = firstBatch ? 'switch' : 'scroll';
-          observer.unobserve(card);
-        });
-      firstBatch = false;
-    });
-    cards.forEach((card) => observer.observe(card));
-    return () => observer.disconnect();
-  }, [shownProducts]);
+  useCardReveal(gridRef, shownProducts);
 
   return (
     <MotionConfig reducedMotion="user">
@@ -129,22 +113,14 @@ export default function MenuSection() {
             aria-labelledby={activeId ? `tab-${activeId}` : undefined}
             aria-busy={shownId !== activeId}
             style={{ minHeight: holdHeight }}
-            className={cn(
-              'mt-3 grid grid-cols-2 content-start gap-x-3 gap-y-[18px] md:grid-cols-3 lg:grid-cols-4',
-              CAN_REVEAL && 'menu-reveal'
-            )}
+            className={cn('mt-3', menuGridClass, CAN_REVEAL && 'menu-reveal')}
           >
             {failed ? (
               <p className="col-span-full py-10 text-center text-sm text-muted-foreground">
                 Menu gagal dimuat. Coba muat ulang halaman.
               </p>
             ) : loading ? (
-              Array.from({ length: 4 }, (_, i) => (
-                <div
-                  key={i}
-                  className="h-[197px] animate-pulse border border-foreground/20 bg-secondary"
-                />
-              ))
+              Array.from({ length: 4 }, (_, i) => <div key={i} className={menuSkeletonClass} />)
             ) : shownProducts?.length ? (
               shownProducts.map((product) => (
                 <ProductCard
