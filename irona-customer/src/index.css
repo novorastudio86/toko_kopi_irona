@@ -234,3 +234,30 @@
     animation: none;
   }
 }
+
+/* Pin lokasi di peta Kunjungi Kami: jatuh sekali lalu mengambang pelan */
+.map-pin {
+  transform-origin: bottom;
+  animation:
+    map-pin-drop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    map-pin-bob 2.4s ease-in-out 0.7s infinite alternate;
+}
+
+@keyframes map-pin-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+}
+
+@keyframes map-pin-bob {
+  to {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-pin {
+    animation: none;
+  }
+}

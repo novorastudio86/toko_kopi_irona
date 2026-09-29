@@ -7,8 +7,9 @@ const ADDRESS =
 // TODO(backend): belum ada tabelnya. Handle IG/TikTok & nomor WA masih tebakan/dummy — verifikasi.
 const MOCK_STORE_PROFILE: StoreProfile = {
   address: ADDRESS,
-  mapsEmbedUrl: null,
-  mapsLink: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS)}`,
+  // Titik toko dari https://maps.app.goo.gl/nwKvo3XnjkZ3fCeE6 (-8.2692841, 113.5402096)
+  mapsEmbedUrl: 'https://maps.google.com/maps?q=-8.2692841,113.5402096&z=17&output=embed',
+  mapsLink: 'https://maps.app.goo.gl/nwKvo3XnjkZ3fCeE6',
   instagramUrl: 'https://www.instagram.com/tokokopiirona',
   tiktokUrl: 'https://www.tiktok.com/@tokokopiirona',
   whatsappNumber: '6280000000000',
