@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router';
-import { Menu, X } from 'lucide-react';
+import { Menu, ShoppingCart, X } from 'lucide-react';
 import logoKoala from '@/assets/home/logo-koala.webp';
 import wordmark from '@/assets/home/wordmark.webp';
-import cartIcon from '@/assets/home/cart-icon.webp';
 import { NAV_LINKS } from '@/constants/navigation';
 import { useCart } from '@/hooks/useCart';
 import { cn } from '@/lib/utils';
@@ -76,10 +75,14 @@ export default function Navbar() {
           <Link
             to="/keranjang"
             aria-label={`Keranjang, ${itemCount} item`}
-            className="relative flex h-[29px] w-11 items-center rounded-[6px] border border-foreground bg-background hover:bg-secondary md:w-[113px] md:pl-2"
+            className="relative flex h-[29px] w-11 items-center rounded-[6px] border border-foreground bg-background hover:bg-secondary md:w-auto md:gap-1.5 md:px-2.5"
           >
             <span className="hidden text-[11px] md:inline">Keranjang</span>
-            <img src={cartIcon} alt="" className="mx-auto h-[17px] w-auto md:mr-3 md:ml-auto" />
+            <ShoppingCart
+              aria-hidden
+              className="mx-auto size-[17px] md:mx-0"
+              strokeWidth={1.75}
+            />
             {itemCount > 0 && (
               <span className="absolute -top-[3px] right-1 grid size-[14px] place-items-center rounded-full bg-border font-mono text-[8px] leading-none">
                 {itemCount}
