@@ -5,12 +5,14 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
-import koraBerdiri from '@/assets/home/kora_berdiri_cutout.png';
+import koraBarista from '@/assets/home/kora-barista.svg';
+import koraDriver from '@/assets/home/kora-driver.svg';
+import koraKasir from '@/assets/home/kora-kasir.svg';
 import koraMenyapa from '@/assets/home/kora_menyapa_cutout.png';
 import './kora.css';
 
 /**
- * Pose Kora di Home. Pose final siap: ganti `image`, set isPlaceholder: false, hapus TODO-nya.
+ * Pose Kora di Home.
  */
 const KORA_CREW = [
   {
@@ -23,30 +25,27 @@ const KORA_CREW = [
   },
   {
     id: 'kopi-susu',
-    // TODO(aset): ganti dengan Kora membawa kopi susu
-    image: koraMenyapa,
+    image: koraBarista,
     alt: 'Kora membawa kopi susu',
     title: 'Ini kopi susu andalan Kora.',
     subtitle: 'Manis, creamy, bikin melek seharian.',
-    isPlaceholder: true,
-  },
-  {
-    id: 'driver',
-    // TODO(aset): ganti dengan Kora naik vespa
-    image: koraBerdiri,
-    alt: 'Kora naik vespa mengantar pesanan',
-    title: 'Pesan dari rumah, Kora yang antar.',
-    subtitle: 'Order online, tinggal tunggu di depan pintu.',
-    isPlaceholder: true,
+    isPlaceholder: false,
   },
   {
     id: 'kasir',
-    // TODO(aset): ganti dengan Kora di kasir
-    image: koraBerdiri,
+    image: koraKasir,
     alt: 'Kora berjaga di kasir',
     title: 'Mampir ke toko, Kora tunggu di kasir.',
     subtitle: 'Alamatnya ada di bawah, jangan lupa mampir ya.',
-    isPlaceholder: true,
+    isPlaceholder: false,
+  },
+  {
+    id: 'driver',
+    image: koraDriver,
+    alt: 'Kora naik vespa mengantar pesanan',
+    title: 'Pesan dari rumah, Kora yang antar.',
+    subtitle: 'Order online, tinggal tunggu di depan pintu.',
+    isPlaceholder: false,
   },
 ];
 

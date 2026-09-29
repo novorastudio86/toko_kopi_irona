@@ -139,9 +139,15 @@
 .kora-item:nth-child(3) {
   --r: -1deg;
 }
+/* Driver: kanvas lebih lebar (ada motor), tinggi Kora sama; motornya menimpa kasir */
 .kora-item:nth-child(4) {
-  --s: 0.86;
   --r: 2deg;
+  aspect-ratio: 528 / 473;
+  margin-left: calc(var(--kora-h) * -0.26);
+}
+
+.kora-item:nth-child(4) .kora-tag {
+  left: 60%;
 }
 
 .kora-item[data-active] {
@@ -309,6 +315,11 @@
 
   .kora-item {
     margin-left: calc(var(--kora-h) * -0.2);
+  }
+
+  .kora-item:nth-child(4) {
+    --s: 0.88;
+    margin-left: calc(var(--kora-h) * -0.3);
   }
 }
 
