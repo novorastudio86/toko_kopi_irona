@@ -3,13 +3,7 @@ import logoKoala from '@/assets/home/logo-koala.webp';
 import SocialLinks from '@/components/SocialLinks';
 import { useStoreHours } from '@/hooks/useStoreHours';
 import { useStoreProfile } from '@/hooks/useStoreProfile';
-import type { HoursChannel } from '@/types/storeHours';
-import { formatClock, getOpeningSummary } from '@/utils/storeHours';
-
-const HOURS_CHANNELS: { channel: HoursChannel; label: string }[] = [
-  { channel: 'offline', label: 'Store' },
-  { channel: 'online', label: 'Online' },
-];
+import { formatClock, getOpeningSummary, HOURS_CHANNELS } from '@/utils/storeHours';
 
 export default function VisitSection() {
   const profile = useStoreProfile();

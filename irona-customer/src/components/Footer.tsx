@@ -3,7 +3,7 @@ import footerLogo from '@/assets/home/footer-logo.webp';
 import { NAV_LINKS } from '@/constants/navigation';
 import { useStoreHours } from '@/hooks/useStoreHours';
 import { useStoreProfile } from '@/hooks/useStoreProfile';
-import { formatClock, getOpeningSummary } from '@/utils/storeHours';
+import { formatClock, getOpeningSummary, HOURS_CHANNELS } from '@/utils/storeHours';
 import NavItem from './NavItem';
 import SocialLinks from './SocialLinks';
 
@@ -27,7 +27,6 @@ function FooterColumn({
 export default function Footer() {
   const profile = useStoreProfile();
   const hours = useStoreHours();
-  const opening = hours && getOpeningSummary(hours, 'offline');
 
   return (
     <footer className="bg-primary text-primary-foreground">
@@ -40,6 +39,7 @@ export default function Footer() {
           <p className="mt-[7px] w-[189px] text-[11px] leading-[14px]">
             Coffeshop ter <em>update, timeless, humanity, nomor satu</em> di Jember
           </p>
+          <p className="mt-2 font-display text-base leading-[18px]">#COFFEHUMANITY</p>
         </div>
 
         <FooterColumn title="Navigasi" className="md:w-[188px] md:pt-[3px]">
@@ -72,14 +72,20 @@ export default function Footer() {
         </FooterColumn>
 
         <FooterColumn title="Jam Buka" className="md:flex-1 md:pt-[3px]">
-          {opening && (
-            <>
-              <span>{opening.days}</span>
-              <span>
-                {formatClock(opening.openTime)} - {formatClock(opening.closeTime)}
-              </span>
-            </>
-          )}
+          {HOURS_CHANNELS.map(({ channel, label }) => {
+            const opening = hours && getOpeningSummary(hours, channel);
+            return (
+              opening && (
+                <div key={channel} className="mt-0.5 flex flex-col">
+                  <span className="font-semibold">{label}</span>
+                  <span>{opening.days}</span>
+                  <span>
+                    {formatClock(opening.openTime)} - {formatClock(opening.closeTime)}
+                  </span>
+                </div>
+              )
+            );
+          })}
         </FooterColumn>
 
         <a

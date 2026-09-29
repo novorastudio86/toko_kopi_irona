@@ -1,5 +1,10 @@
 import type { HoursChannel, StoreHours } from '../types/storeHours';
 
+export const HOURS_CHANNELS: { channel: HoursChannel; label: string }[] = [
+  { channel: 'offline', label: 'Store' },
+  { channel: 'online', label: 'Online' },
+];
+
 const DAY_NAMES = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 /** Minggu toko dimulai Senin */
 const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
