@@ -120,7 +120,6 @@ export default function ProductCard({
       >
         {/* Stretched link: ::after menutup seluruh card (termasuk foto) tanpa elemen interaktif bersarang.
             Menu habis tidak bisa diklik, jadi tanpa link. */}
-        {/* TODO(route): halaman detail /menu/:id belum ada; sementara tampil "Segera hadir" */}
         {soldOut ? (
           name
         ) : (
