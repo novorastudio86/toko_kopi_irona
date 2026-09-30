@@ -110,7 +110,9 @@ function MenuDetail({ id }: { id: string | undefined }) {
   }, []);
 
   // Router tidak memulihkan scroll: buka detail (dari /menu atau Recommended) mulai dari atas
-  useEffect(() => window.scrollTo(0, 0), []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const product = catalog?.products.find((p) => p.id === id);
   const category = catalog?.categories.find((c) => c.id === product?.categoryId);

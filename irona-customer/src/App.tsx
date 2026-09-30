@@ -1,11 +1,13 @@
 import { Navigate, Route, Routes } from 'react-router';
 import { COMING_SOON_PATHS } from './constants/navigation';
 import CheckoutScreen from './screens/CheckoutScreen';
+import EventDetailScreen from './screens/EventDetailScreen';
 import ComingSoonScreen from './screens/ComingSoonScreen';
 import HomeScreen from './screens/HomeScreen';
 import MenuDetailScreen from './screens/MenuDetailScreen';
 import MenuScreen from './screens/MenuScreen';
 import SiteLayout from './screens/SiteLayout';
+import TentangScreen from './screens/TentangScreen';
 
 export default function App() {
   return (
@@ -15,6 +17,8 @@ export default function App() {
         <Route path="/menu" element={<MenuScreen />} />
         <Route path="/menu/:id" element={<MenuDetailScreen />} />
         <Route path="/keranjang" element={<CheckoutScreen />} />
+        <Route path="/tentang" element={<TentangScreen />} />
+        <Route path="/tentang/:id" element={<EventDetailScreen />} />
         {COMING_SOON_PATHS.map((path) => (
           <Route key={path} path={path} element={<ComingSoonScreen />} />
         ))}
