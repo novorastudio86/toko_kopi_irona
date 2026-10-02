@@ -6,6 +6,7 @@ import ComingSoonScreen from './screens/ComingSoonScreen';
 import HomeScreen from './screens/HomeScreen';
 import MenuDetailScreen from './screens/MenuDetailScreen';
 import MenuScreen from './screens/MenuScreen';
+import MembershipScreen from './screens/MembershipScreen';
 import SiteLayout from './screens/SiteLayout';
 import TentangScreen from './screens/TentangScreen';
 
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/keranjang" element={<CheckoutScreen />} />
         <Route path="/tentang" element={<TentangScreen />} />
         <Route path="/tentang/:id" element={<EventDetailScreen />} />
+        <Route path="/membership" element={<MembershipScreen />} />
         {COMING_SOON_PATHS.map((path) => (
           <Route key={path} path={path} element={<ComingSoonScreen />} />
         ))}

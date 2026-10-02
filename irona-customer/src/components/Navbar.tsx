@@ -1,18 +1,27 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { Menu, ShoppingCart, X } from 'lucide-react';
 import logoKoala from '@/assets/home/logo-koala.webp';
 import wordmark from '@/assets/home/wordmark.webp';
 import { NAV_LINKS } from '@/constants/navigation';
 import { useCart } from '@/hooks/useCart';
+import { useMember } from '@/hooks/useMember';
 import { cn } from '@/lib/utils';
 import NavItem from './NavItem';
 
 export default function Navbar() {
   const { itemCount } = useCart();
+  const { member, login } = useMember();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const closeMenu = () => setMenuOpen(false);
+  // Sementara tanpa halaman login: CTA langsung masuk sebagai member dummy
+  const handleLogin = async () => {
+    closeMenu();
+    await login();
+    navigate('/membership');
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -78,23 +87,36 @@ export default function Navbar() {
             className="relative flex h-[29px] w-11 items-center rounded-[6px] border border-foreground bg-background hover:bg-secondary md:w-auto md:gap-1.5 md:px-2.5"
           >
             <span className="hidden text-[11px] md:inline">Keranjang</span>
-            <ShoppingCart
-              aria-hidden
-              className="mx-auto size-[17px] md:mx-0"
-              strokeWidth={1.75}
-            />
+            <ShoppingCart aria-hidden className="mx-auto size-[17px] md:mx-0" strokeWidth={1.75} />
             {itemCount > 0 && (
               <span className="absolute -top-[3px] right-1 grid size-[14px] place-items-center rounded-full bg-border font-mono text-[8px] leading-none">
                 {itemCount}
               </span>
             )}
           </Link>
-          <Link
-            to="/login"
-            className="hidden h-[33px] w-[67px] place-items-center rounded-[6px] bg-primary text-[11px] font-medium text-primary-foreground hover:bg-primary/85 md:grid"
-          >
-            Login
-          </Link>
+          {member ? (
+            <Link
+              to="/membership"
+              aria-label={`Membership, ${member.pointsBalance} poin`}
+              className="hidden h-[29px] items-center gap-2 rounded-[6px] border border-foreground bg-background pr-1 pl-2 hover:bg-secondary md:flex"
+            >
+              <span className="text-[11px]">Poin: {member.pointsBalance}</span>
+              <span
+                aria-hidden
+                className="grid size-[21px] place-items-center rounded-full bg-border text-[10px] font-semibold"
+              >
+                {member.name.charAt(0)}
+              </span>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={handleLogin}
+              className="hidden h-[33px] w-[67px] place-items-center rounded-[6px] bg-primary text-[11px] font-medium text-primary-foreground hover:bg-primary/85 md:grid"
+            >
+              Login
+            </button>
+          )}
         </div>
       </div>
 
@@ -112,13 +134,23 @@ export default function Navbar() {
               onClick={closeMenu}
             />
           ))}
-          <Link
-            to="/login"
-            onClick={closeMenu}
-            className="mt-1 grid h-[33px] place-items-center rounded-[6px] bg-primary text-xs font-medium text-primary-foreground"
-          >
-            Login
-          </Link>
+          {member ? (
+            <Link
+              to="/membership"
+              onClick={closeMenu}
+              className="mt-1 grid h-[33px] place-items-center rounded-[6px] border border-foreground text-xs font-medium"
+            >
+              Poin: {member.pointsBalance}
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={handleLogin}
+              className="mt-1 grid h-[33px] place-items-center rounded-[6px] bg-primary text-xs font-medium text-primary-foreground"
+            >
+              Login
+            </button>
+          )}
         </nav>
       )}
     </header>

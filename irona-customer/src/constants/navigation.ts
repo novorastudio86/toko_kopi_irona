@@ -12,4 +12,4 @@ export const NAV_LINKS: NavLink[] = [
 ];
 
 /** Route yang halamannya belum dibangun → tampil "Segera hadir" */
-export const COMING_SOON_PATHS = ['/membership', '/login'];
+export const COMING_SOON_PATHS = ['/login', '/membership/reward'];
