@@ -178,7 +178,6 @@ export default function MembershipScreen() {
   const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     let cancelled = false;
     Promise.all([fetchActiveRewards(), fetchPointTiers()])
       .then(([r, t]) => {

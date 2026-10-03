@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
 import { cn } from '@/lib/utils';
 import { formatRupiah } from '@/utils/format';
@@ -27,10 +27,6 @@ function Info({ label, children }: { label: string; children: ReactNode }) {
 export default function EventDetailScreen() {
   const { id } = useParams();
   const [copied, setCopied] = useState(false);
-  // Pindah dari kartu lain (di bawah halaman) → mulai dari atas
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [id]);
   const item = EVENTS.find((e) => e.id === id);
   if (!item) return <Navigate to="/tentang" replace />;
 

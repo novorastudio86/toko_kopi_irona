@@ -10,7 +10,12 @@ export default function SplashScreen() {
     <div
       aria-hidden
       className="splash fixed inset-0 z-[100] grid place-items-center bg-background"
-      onAnimationEnd={(e) => e.animationName === 'splash-out' && setDone(true)}
+      onAnimationEnd={(e) => {
+        if (e.animationName !== 'splash-out') return;
+        // Hero yang dibuka lagi lewat pindah halaman tidak perlu menunggu splash
+        document.documentElement.style.setProperty('--splash-time', '0s');
+        setDone(true);
+      }}
     >
       <div className="flex flex-col items-center gap-5">
         <img src={logoKoala} alt="" className="splash-kora h-16 w-auto" />

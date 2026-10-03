@@ -83,7 +83,8 @@ export default function CategoryTabs({
 
   return (
     <div className="sticky top-[61px] z-20 -mx-4 mt-3 bg-background py-2 md:-mx-[30px]">
-      {/* layoutScroll: posisi indikator dihitung ikut scrollLeft list */}
+      {/* layoutScroll: posisi indikator dihitung ikut scrollLeft list.
+          min-h = tinggi tab, jadi selagi kategori dimuat baris ini tidak kosong lalu mendorong halaman */}
       <motion.div
         layoutScroll
         ref={listRef}
@@ -91,7 +92,7 @@ export default function CategoryTabs({
         aria-label="Kategori menu"
         onScroll={updateFade}
         onKeyDown={onKeyDown}
-        className="no-scrollbar relative flex overflow-x-auto px-4 md:px-[30px]"
+        className="no-scrollbar relative flex min-h-9 overflow-x-auto px-4 md:px-[30px] pointer-coarse:min-h-10"
       >
         {categories?.map((category, i) => {
           const selected = category.id === activeId;

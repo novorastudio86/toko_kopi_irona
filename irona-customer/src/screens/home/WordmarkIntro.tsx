@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import t from '@/assets/home/wordmark/t.webp';
 import o1 from '@/assets/home/wordmark/o1.webp';
@@ -12,9 +13,13 @@ import ironaR from '@/assets/home/wordmark/irona-r.webp';
 import ironaO from '@/assets/home/wordmark/irona-o.webp';
 import ironaN from '@/assets/home/wordmark/irona-n.webp';
 import ironaA from '@/assets/home/wordmark/irona-a.webp';
+import { PAGE_CONTENT_DELAY } from '@/constants/motion';
 import { cn } from '@/lib/utils';
 
-const START_DELAY = 1.2;
+/** Buka pertama: setelah splash (--splash-time); balik ke Home: setelah tirai pindah halaman terbuka */
+const startDelay = () =>
+  (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--splash-time')) ||
+    PAGE_CONTENT_DELAY) + 0.1;
 const STAGGER = 0.05;
 const LETTER_DURATION = 0.7;
 const SETTLE_EASE = [0.16, 1, 0.3, 1] as const;
@@ -48,7 +53,7 @@ const seeded = (n: number, salt: number) => {
 };
 const between = (min: number, max: number, t: number) => min + (max - min) * t;
 
-const scatterProps = (n: number) => ({
+const scatterProps = (n: number, delay: number) => ({
   initial: {
     x: between(-70, 70, seeded(n, 1)),
     y: between(-90, 90, seeded(n, 2)),
@@ -56,12 +61,13 @@ const scatterProps = (n: number) => ({
     opacity: 0,
   },
   animate: { x: 0, y: 0, rotate: 0, opacity: 1 },
-  transition: { duration: LETTER_DURATION, delay: START_DELAY + n * STAGGER, ease: SETTLE_EASE },
+  transition: { duration: LETTER_DURATION, delay: delay + n * STAGGER, ease: SETTLE_EASE },
 });
 
 /** Wordmark Hero: tiap huruf berhamburan lalu settle tepat di posisi logo asli (permanen) */
 export default function WordmarkIntro({ className }: { className?: string }) {
   const reduceMotion = useReducedMotion();
+  const [delay] = useState(startDelay);
 
   return (
     <div
@@ -84,7 +90,7 @@ export default function WordmarkIntro({ className }: { className?: string }) {
             width: `${l.width}%`,
             height: `${l.height}%`,
           }}
-          {...(reduceMotion ? {} : scatterProps(n))}
+          {...(reduceMotion ? {} : scatterProps(n, delay))}
         />
       ))}
     </div>

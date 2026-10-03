@@ -17,9 +17,28 @@ const PANEL_ID = 'menu-tabpanel';
 /** Dipakai ulang halaman /menu supaya grid & skeleton card sama persis dengan Home */
 export const menuGridClass =
   'grid grid-cols-2 content-start gap-x-3 gap-y-[18px] md:grid-cols-3 lg:grid-cols-4';
-export const menuSkeletonClass = 'h-[197px] animate-pulse border border-foreground/20 bg-secondary';
-/** Batch masuk terlama: delay maks 320ms + durasi 260ms (lihat menu.css) */
-const ENTER_MS = 600;
+
+/**
+ * Placeholder card: kotak-kotaknya meniru ProductCard (padding, frame foto, judul, baris harga)
+ * supaya tingginya sama persis di semua ukuran layar — saat diganti card asli halaman tidak bergeser.
+ */
+export function MenuSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      aria-hidden
+      className={cn(
+        'flex animate-pulse flex-col border border-foreground/20 bg-secondary p-2 pb-[9px]',
+        className
+      )}
+    >
+      <div className="h-[118px]" />
+      <div className="mt-[7px] h-[15.6px]" />
+      <div className="mt-2 min-h-[27px] pointer-coarse:min-h-10" />
+    </div>
+  );
+}
+/** Batch masuk terlama: delay maks 360ms + durasi 420ms (lihat menu.css) */
+const ENTER_MS = 800;
 
 export default function MenuSection() {
   const { quantityOf, setQuantity } = useQuickCart();
@@ -123,7 +142,7 @@ export default function MenuSection() {
                 Menu gagal dimuat. Coba muat ulang halaman.
               </p>
             ) : loading ? (
-              Array.from({ length: 4 }, (_, i) => <div key={i} className={menuSkeletonClass} />)
+              Array.from({ length: 4 }, (_, i) => <MenuSkeleton key={i} />)
             ) : shownProducts?.length ? (
               shownProducts.map((product) => (
                 <ProductCard

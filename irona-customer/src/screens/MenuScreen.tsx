@@ -4,12 +4,13 @@ import kora from '@/assets/home/kora.webp';
 import koraHead from '@/assets/home/logo-koala.webp';
 import { ALL_CATEGORY, categoryKind, fetchOnlineCategories } from '@/services/categories';
 import { fetchAllOnlineProducts } from '@/services/products';
+import { usePageSettled } from '@/hooks/usePageSettled';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types/category';
 import type { Product } from '@/types/product';
 import CategoryTabs from './home/CategoryTabs';
 import ClosedNotice from './home/ClosedNotice';
-import { menuGridClass, menuSkeletonClass } from './home/MenuSection';
+import { menuGridClass, MenuSkeleton } from './home/MenuSection';
 import { useMenuStatus } from './home/menuStatus';
 import ProductCard from './home/ProductCard';
 import { CAN_REVEAL, useCardReveal } from './home/useCardReveal';
@@ -64,6 +65,7 @@ function MenuState({
 export default function MenuScreen() {
   const { quantityOf, setQuantity } = useQuickCart();
   const status = useMenuStatus();
+  const settled = usePageSettled();
   const [noticeAt, setNoticeAt] = useState<number | null>(null);
 
   const [catalog, setCatalog] = useState<Catalog | null>(null);
@@ -131,7 +133,8 @@ export default function MenuScreen() {
   const limit = page.viewKey === viewKey ? page.limit : PAGE_SIZE;
   const visible = useMemo(() => results.slice(0, limit), [results, limit]);
 
-  useCardReveal(gridRef, visible);
+  // Grid baru dipasang setelah tirai selesai (skeleton ditahan), jadi reveal ikut jalan ulang saat itu
+  useCardReveal(gridRef, settled && visible);
 
   useEffect(() => {
     const from = focusFrom.current;
@@ -167,7 +170,8 @@ export default function MenuScreen() {
     setAttempt((n) => n + 1);
   };
 
-  const loading = !catalog && !failed;
+  // Skeleton bertahan sampai tirai pindah halaman selesai, lalu card bergulir masuk di tempat yang sama
+  const loading = (!catalog || !settled) && !failed;
   const filtersActive = JSON.stringify(filters) !== JSON.stringify(EMPTY_FILTERS);
 
   let content: ReactNode;
@@ -187,11 +191,15 @@ export default function MenuScreen() {
     );
   } else if (loading) {
     content = (
-      <div aria-hidden className={cn('mt-3', menuGridClass)}>
-        {Array.from({ length: PAGE_SIZE }, (_, i) => (
-          <div key={i} className={cn(menuSkeletonClass, 'motion-reduce:animate-none')} />
-        ))}
-      </div>
+      <>
+        <div aria-hidden className={cn('mt-3', menuGridClass)}>
+          {Array.from({ length: PAGE_SIZE }, (_, i) => (
+            <MenuSkeleton key={i} className="motion-reduce:animate-none" />
+          ))}
+        </div>
+        {/* Tempat tombol "Muat Lebih Banyak" dicadangkan: footer tidak loncat saat card masuk */}
+        <div aria-hidden className="mt-[21px] h-[33px]" />
+      </>
     );
   } else if (!results.length && (query || filtersActive)) {
     content = (
@@ -245,7 +253,10 @@ export default function MenuScreen() {
           <button
             type="button"
             onClick={loadMore}
-            className={cn(outlineButtonClass, 'mx-auto mt-[21px] w-40')}
+            className={cn(
+              outlineButtonClass,
+              'mx-auto mt-[21px] w-40 motion-safe:animate-in motion-safe:duration-500 motion-safe:fade-in'
+            )}
           >
             Muat Lebih Banyak
           </button>

@@ -110,13 +110,15 @@
 }
 
 .menu-card[data-shown='switch'] {
-  --rise: 8px;
-  animation: menu-rise 260ms ease-out calc(min(var(--i, 0), 8) * 40ms) backwards;
+  --rise: 14px;
+  animation: menu-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) calc(min(var(--i, 0), 8) * 45ms)
+    backwards;
 }
 
 .menu-card[data-shown='scroll'] {
-  --rise: 10px;
-  animation: menu-rise 300ms ease-out calc(min(var(--i, 0), 6) * 40ms) backwards;
+  --rise: 16px;
+  animation: menu-rise 480ms cubic-bezier(0.22, 1, 0.36, 1) calc(min(var(--i, 0), 6) * 45ms)
+    backwards;
 }
 
 @keyframes menu-rise {

@@ -230,6 +230,11 @@
   }
 }
 
+/* Pindah halaman: animasi konten baru (card menu, hero, ...) menunggu tirai terbuka (SiteLayout) */
+[data-page-entering] * {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .splash {
     display: none;
