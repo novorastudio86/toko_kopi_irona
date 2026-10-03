@@ -6,9 +6,10 @@
 .kora {
   --kora-ink: #2a2622;
   --kora-paper: #faf6ef;
-  --sec-h: clamp(560px, calc(100svh - 60px), 860px);
-  --kora-h: calc(var(--sec-h) - 220px);
-  --gutter: max(16px, calc((100% - 1200px) / 2 + 30px));
+  --sec-h: clamp(520px, calc(100svh - 160px), 700px);
+  /* Lebar ikut viewport supaya keempat Kora muat (≈3.3× tinggi); di bawah 360px baru bisa digeser */
+  --kora-h: max(360px, min(calc(var(--sec-h) - 230px), calc((100vw - 120px) / 3.3)));
+  --gutter: max(16px, calc((100% - 90rem) / 2 + 30px));
   position: relative;
   height: var(--sec-h);
   overflow: clip;
@@ -25,26 +26,26 @@
   position: absolute;
   inset: 0 0 auto;
   z-index: 2;
-  padding: 36px var(--gutter) 0;
+  padding: 18px var(--gutter) 0;
   pointer-events: none;
 }
 
 .kora-title {
-  width: fit-content;
-  font-size: clamp(30px, 3.4vw, 44px);
-  line-height: 0.95;
+  padding-left: 2px;
+  font-size: 26px;
+  line-height: 1.25;
   color: var(--kora-ink);
-  text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.7);
-  transform: rotate(-2deg);
-  transform-origin: left bottom;
-  transition:
-    color 500ms ease,
-    text-shadow 500ms ease;
+  transition: color 500ms ease;
+}
+
+@media (min-width: 768px) {
+  .kora-title {
+    font-size: 32px;
+  }
 }
 
 .kora[data-active] .kora-title {
   color: var(--kora-paper);
-  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
 }
 
 .kora-hint {
@@ -294,10 +295,6 @@
   .kora {
     --sec-h: clamp(540px, calc(100vw + 210px), 720px);
     --kora-h: min(calc(var(--sec-h) - 190px), 100vw);
-  }
-
-  .kora-head {
-    padding-top: 24px;
   }
 
   .kora-hint {

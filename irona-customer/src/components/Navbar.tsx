@@ -55,7 +55,7 @@ export default function Navbar() {
           overHero ? 'opacity-100' : 'opacity-0'
         )}
       />
-      <div className="mx-auto grid h-[60px] max-w-[1200px] grid-cols-[1fr_auto_1fr] items-center px-4 md:pr-8 md:pl-[23px]">
+      <div className="mx-auto grid h-[60px] max-w-page grid-cols-[1fr_auto_1fr] items-center px-4 md:pr-8 md:pl-[23px]">
         <button
           type="button"
           className="grid size-9 place-items-center justify-self-start rounded-[6px] border border-foreground md:hidden"

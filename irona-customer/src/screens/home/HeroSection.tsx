@@ -28,7 +28,7 @@ export default function HeroSection() {
     // Desktop: setinggi layar dan naik ke belakang navbar 61px (navbar transparan di atas Hero);
     // foto ±70% kanan jadi latar, teks menumpuk di atas bagian fade-nya
     <section className="relative flex flex-col border-b border-foreground md:-mt-[61px] md:min-h-svh md:justify-center md:pt-[61px]">
-      <div className="relative z-10 order-1 px-4 pt-5 pb-8 md:mx-auto md:w-full md:max-w-[1200px] md:py-8 md:pr-4 md:pl-[32.5px]">
+      <div className="relative z-10 order-1 px-4 pt-5 pb-8 md:mx-auto md:w-full md:max-w-page md:py-8 md:px-[30px]">
         <h1 className="max-md:sr-only">
           <WordmarkIntro className="h-[93.5px] md:h-32" />
         </h1>

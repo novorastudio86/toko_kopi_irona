@@ -53,7 +53,7 @@ export default function EventDetailScreen() {
       <title>{`${item.title} | Toko Kopi Irona`}</title>
 
       <nav aria-label="Breadcrumb" className="border-b border-foreground">
-        <ol className="mx-auto flex max-w-[1200px] flex-wrap gap-1 px-4 py-2.5 text-[11px] text-muted-foreground md:px-[30px]">
+        <ol className="mx-auto flex max-w-page flex-wrap gap-1 px-4 py-2.5 text-[11px] text-muted-foreground md:px-[30px]">
           <li>
             <Link to="/tentang" className="hover:underline">
               Tentang
@@ -80,7 +80,7 @@ export default function EventDetailScreen() {
       />
 
       <section className="border-b border-foreground">
-        <div className="mx-auto grid max-w-[1200px] items-start gap-6 px-4 pt-7 pb-8 md:grid-cols-[1fr_330px] md:gap-7 md:px-[30px]">
+        <div className="mx-auto grid max-w-page items-start gap-6 px-4 pt-7 pb-8 md:grid-cols-[1fr_330px] md:gap-7 md:px-[30px]">
           <div>
             <div className="flex flex-wrap gap-2">
               <span className="rounded-full bg-primary px-2.5 py-1 text-[11px] font-medium text-primary-foreground">

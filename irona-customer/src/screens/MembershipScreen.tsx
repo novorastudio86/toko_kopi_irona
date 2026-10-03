@@ -236,11 +236,11 @@ export default function MembershipScreen() {
       <section className="border-b border-foreground">
         <div
           className={cn(
-            'mx-auto grid max-w-[1200px] md:min-h-[298px]',
+            'mx-auto grid max-w-page md:min-h-[298px]',
             member && 'md:grid-cols-[1fr_minmax(0,530px)]'
           )}
         >
-          <div className="px-4 py-10 md:self-center md:px-9 md:py-12">
+          <div className="px-4 py-10 md:self-center md:px-[30px] md:py-12">
             <h1 className="font-display text-[26px] leading-tight md:text-[32px]">
               {member ? 'Selamat datang!! Kora Club' : 'Login Sekarang dan Kumpulkan Poin Mu'}
             </h1>
@@ -281,7 +281,7 @@ export default function MembershipScreen() {
         aria-labelledby="reward-title"
         className="scroll-mt-16 border-b border-foreground"
       >
-        <div className="mx-auto max-w-[1200px] px-4 pt-6 pb-6 md:px-[35px] md:pb-[26px]">
+        <div className="mx-auto max-w-page px-4 pt-6 pb-6 md:px-[30px] md:pb-[26px]">
           <div className="flex items-baseline justify-between gap-4">
             <h2 id="reward-title" className="font-display text-2xl">
               Reward Tersedia
@@ -300,8 +300,8 @@ export default function MembershipScreen() {
 
       {/* Cara & skema dapat poin */}
       <section className="border-b border-foreground">
-        <div className="mx-auto grid max-w-[1200px] md:grid-cols-2">
-          <div className="px-4 py-6 md:px-11">
+        <div className="mx-auto grid max-w-page md:grid-cols-2">
+          <div className="px-4 py-6 md:px-[30px]">
             <h2 className={headingClass}>Cara Dapat Poin?</h2>
             <ol className="mt-2 list-decimal pl-5 text-sm leading-6">
               <li>Daftar/Login akun</li>
@@ -309,7 +309,7 @@ export default function MembershipScreen() {
               <li>Tukar poin dengan reward yang tersedia!</li>
             </ol>
           </div>
-          <div className="border-t border-foreground px-4 py-6 md:border-t-0 md:border-l md:px-11">
+          <div className="border-t border-foreground px-4 py-6 md:border-t-0 md:border-l md:px-[30px]">
             <h2 className={headingClass}>Skema dapat poin?</h2>
             <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
               <table className="border-collapse text-sm leading-[18px]">
@@ -345,7 +345,7 @@ export default function MembershipScreen() {
 
       {/* Detail transaksi */}
       <section aria-labelledby="transaksi-title">
-        <div className="mx-auto max-w-[1200px] px-4 pt-6 pb-10 md:px-11 md:pb-12">
+        <div className="mx-auto max-w-page px-4 pt-6 pb-10 md:px-[30px] md:pb-12">
           <h2 id="transaksi-title" className={headingClass}>
             Detail Transaksi
           </h2>

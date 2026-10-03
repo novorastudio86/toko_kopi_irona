@@ -127,7 +127,7 @@ function MenuDetail({ id }: { id: string | undefined }) {
 
   if (failed || (catalog && !product)) {
     return (
-      <section className="mx-auto grid min-h-[50vh] max-w-[1200px] place-content-center gap-3 px-4 py-16 text-center">
+      <section className="mx-auto grid min-h-[50vh] max-w-page place-content-center gap-3 px-4 py-16 text-center">
         <h1 className="font-display text-3xl">
           {failed ? 'Koneksinya lagi pelan' : 'Menu tidak ditemukan'}
         </h1>
@@ -140,7 +140,7 @@ function MenuDetail({ id }: { id: string | undefined }) {
 
   if (!product) {
     return (
-      <div aria-busy className="mx-auto max-w-[1200px] px-4 py-6 md:px-[30px]">
+      <div aria-busy className="mx-auto max-w-page px-4 py-6 md:px-[30px]">
         <div className="grid gap-5 md:grid-cols-[441px_1fr]">
           <div className="aspect-[441/340] animate-pulse bg-secondary motion-reduce:animate-none" />
           <div className="h-40 animate-pulse bg-secondary motion-reduce:animate-none" />
@@ -166,7 +166,7 @@ function MenuDetail({ id }: { id: string | undefined }) {
       <title>{`${name} | Toko Kopi Irona`}</title>
 
       <nav aria-label="Breadcrumb" className="border-b border-foreground">
-        <ol className="mx-auto flex max-w-[1200px] flex-wrap gap-1 px-4 py-2.5 text-[11px] text-muted-foreground md:px-[30px]">
+        <ol className="mx-auto flex max-w-page flex-wrap gap-1 px-4 py-2.5 text-[11px] text-muted-foreground md:px-[30px]">
           <li>
             <Link to="/menu" className="hover:underline">
               Menu
@@ -186,7 +186,7 @@ function MenuDetail({ id }: { id: string | undefined }) {
             e.preventDefault();
             addToCart();
           }}
-          className="mx-auto grid max-w-[1200px] gap-x-5 gap-y-4 px-4 py-4 md:grid-cols-[441px_1fr] md:px-[30px]"
+          className="mx-auto grid max-w-page gap-x-5 gap-y-4 px-4 py-4 md:grid-cols-[441px_1fr] md:px-[30px]"
         >
           <div className="menu-card-frame aspect-[441/340] overflow-hidden border border-foreground bg-card">
             <MenuImage src={product.photoUrl} alt={name} />
@@ -301,7 +301,7 @@ function MenuDetail({ id }: { id: string | undefined }) {
 
       {recommended.length > 0 && (
         <section aria-labelledby="recommended-title">
-          <div className="mx-auto flex max-w-[1200px] flex-col px-4 pt-4 pb-[26px] md:px-[30px]">
+          <div className="mx-auto flex max-w-page flex-col px-4 pt-4 pb-[26px] md:px-[30px]">
             <h2 id="recommended-title" className="text-xs font-medium">
               Recommended
             </h2>

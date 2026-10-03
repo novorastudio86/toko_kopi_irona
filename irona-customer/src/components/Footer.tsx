@@ -30,7 +30,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-primary text-primary-foreground">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-2 gap-x-4 gap-y-6 px-4 py-8 md:flex md:items-start md:gap-0 md:py-[29px] md:pr-[51px] md:pl-8">
+      <div className="mx-auto grid max-w-page grid-cols-2 gap-x-4 gap-y-6 px-4 py-8 md:flex md:items-start md:gap-0 md:py-[29px] md:pr-[51px] md:pl-8">
         <div className="col-span-2 sm:col-span-1 md:w-[327px]">
           <div className="flex items-end gap-3.5">
             <img src={footerLogo} alt="Toko Kopi Irona" className="h-[34px] w-auto" />

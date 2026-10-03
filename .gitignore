@@ -17,3 +17,9 @@ irona-backend/supabase/.branches/
 
 # Sistem & editor
 .DS_Store
+
+# Hasil graphify
+graphify-out/
+
+# masterlink
+docs/Masterlink_IronaKopi.xlsx

@@ -5,7 +5,7 @@ import { EVENTS } from './events';
 export default function EventCards() {
   return (
     <section id="event" aria-labelledby="event-title" className="border-b border-foreground">
-      <div className="mx-auto max-w-[1200px] px-4 pt-6 pb-8 md:px-[30px] md:pb-[34px]">
+      <div className="mx-auto max-w-page px-4 pt-6 pb-8 md:px-[30px] md:pb-[34px]">
         <div className="flex items-baseline justify-between gap-4">
           <h2 id="event-title" className="font-display text-2xl leading-[22px]">
             Event &amp; Promo Terbaru

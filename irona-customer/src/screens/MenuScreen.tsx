@@ -268,7 +268,7 @@ export default function MenuScreen() {
       />
 
       <section aria-label="Daftar menu">
-        <div className="mx-auto max-w-[1200px] px-4 pb-[26px] md:px-[30px]">
+        <div className="mx-auto max-w-page px-4 pb-[26px] md:px-[30px]">
           <CategoryTabs
             categories={categories}
             activeId={activeId}

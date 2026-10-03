@@ -68,7 +68,7 @@ export default function MenuFilters({
 }) {
   return (
     <search className="bg-primary">
-      <div className="mx-auto flex max-w-[1200px] flex-wrap gap-1.5 px-4 py-3.5 md:flex-nowrap md:gap-3 md:px-[30px]">
+      <div className="mx-auto flex max-w-page flex-wrap gap-1.5 px-4 py-3.5 md:flex-nowrap md:gap-3 md:px-[30px]">
         <input
           type="search"
           value={query}

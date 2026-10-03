@@ -43,7 +43,7 @@ export default function CheckoutScreen() {
   return (
     <>
       <title>Checkout | Toko Kopi Irona</title>
-      <div className="mx-auto max-w-[1200px] px-4 pt-3 pb-6 md:px-[30px]">
+      <div className="mx-auto max-w-page px-4 pt-3 pb-6 md:px-[30px]">
         <h1 className="text-3xl font-semibold">Checkout</h1>
 
         <form

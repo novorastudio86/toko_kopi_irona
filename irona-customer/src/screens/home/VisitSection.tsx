@@ -11,7 +11,7 @@ export default function VisitSection() {
 
   return (
     <section id="lokasi" className="scroll-mt-[60px] border-b border-border">
-      <div className="mx-auto max-w-[1200px] px-4 pt-6 pb-10 md:px-[30px] md:pb-[77px]">
+      <div className="mx-auto max-w-page px-4 pt-6 pb-10 md:px-[30px] md:pb-[77px]">
         <h2 className="pl-0.5 font-display text-2xl leading-[22px]">Kunjungi Kami</h2>
 
         <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-[3fr_2fr] md:gap-4 lg:grid-cols-[1fr_auto] lg:gap-6">

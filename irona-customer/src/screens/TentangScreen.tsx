@@ -31,7 +31,7 @@ const GALLERY = [
   },
 ];
 
-const sectionClass = 'mx-auto max-w-[1200px] px-4 pt-6 pb-8 md:px-[30px] md:pb-[34px]';
+const sectionClass = 'mx-auto max-w-page px-4 pt-6 pb-8 md:px-[30px] md:pb-[34px]';
 const headingClass = 'font-display text-2xl leading-[22px]';
 
 export default function TentangScreen() {
@@ -64,7 +64,7 @@ export default function TentangScreen() {
 
       {/* Intro + barisan Kora (diam, tanpa animasi) */}
       <section className="border-b border-foreground">
-        <div className="mx-auto flex max-w-[1200px] flex-col gap-6 px-4 pt-6 md:flex-row md:items-end md:justify-between md:px-[39px]">
+        <div className="mx-auto flex max-w-page flex-col gap-6 px-4 pt-6 md:flex-row md:items-end md:justify-between md:px-[30px]">
           <div className="pb-6 md:pb-[26px]">
             <img
               src={wordmark}
@@ -95,7 +95,7 @@ export default function TentangScreen() {
 
       {/* Kenalan dengan Kora */}
       <section className="border-b border-foreground">
-        <div className="mx-auto flex max-w-[1200px] flex-col gap-4 px-4 py-7 sm:flex-row sm:items-start md:gap-6 md:px-[30px]">
+        <div className="mx-auto flex max-w-page flex-col gap-4 px-4 py-7 sm:flex-row sm:items-start md:gap-6 md:px-[30px]">
           <div className="grid size-[120px] shrink-0 place-items-center border border-foreground bg-background p-2 md:size-[150px]">
             <img
               src={koraStanding}

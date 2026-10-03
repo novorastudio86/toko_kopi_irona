@@ -84,7 +84,7 @@ export default function MenuSection() {
   return (
     <MotionConfig reducedMotion="user">
       <section id="menu" className="scroll-mt-[60px] border-b border-foreground">
-        <div className="mx-auto max-w-[1200px] px-4 pt-[18px] pb-7 md:px-[30px]">
+        <div className="mx-auto max-w-page px-4 pt-[18px] pb-7 md:px-[30px]">
           <h2 className="pl-0.5 font-display text-[26px] leading-tight md:text-[32px]">
             {status.title}
           </h2>
