@@ -50,15 +50,30 @@ export default function TentangScreen() {
         content="Kenalan dengan Toko Kopi Irona di Balung, Jember: cerita kami, Kora si koala barista, event & promo, galeri, dan lokasi toko."
       />
 
-      {/* Banner: strip 3 foto + judul di tengah */}
-      <section className="relative grid h-[160px] grid-cols-[31fr_26fr_43fr] overflow-hidden border-b border-foreground md:h-[222px]">
-        {[storePhoto, baristaPhoto, interiorPhoto].map((src) => (
-          <img key={src} src={src} alt="" className="size-full min-h-0 object-cover" />
-        ))}
-        <div className="absolute inset-0 grid place-items-center">
-          <h1 className="bg-primary/35 px-8 py-4 font-display text-3xl text-primary-foreground italic backdrop-blur-[2px] md:px-12 md:py-7 md:text-[34px]">
-            Tentang Kami?
+      {/* Banner: strip 3 foto diburamkan, judul di atas overlay gelap */}
+      <section className="relative grid h-[190px] place-items-center overflow-hidden border-b border-foreground md:h-[270px]">
+        {/* scale-110 menutup tepi transparan akibat blur */}
+        <div
+          aria-hidden
+          className="absolute inset-0 grid scale-110 grid-cols-[31fr_26fr_43fr] blur-[3px]"
+        >
+          {[storePhoto, baristaPhoto, interiorPhoto].map((src) => (
+            <img key={src} src={src} alt="" className="size-full min-h-0 object-cover" />
+          ))}
+        </div>
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-linear-to-t from-primary/85 via-primary/50 to-primary/30"
+        />
+        <div className="relative px-4 text-center text-primary-foreground motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-700">
+          <h1 className="font-display text-4xl drop-shadow-lg md:text-[56px] md:leading-none">
+            Tentang Kami
           </h1>
+          <p className="mt-3 flex items-center justify-center gap-3 text-[13px] italic opacity-90 md:text-sm">
+            <span aria-hidden className="h-px w-8 bg-primary-foreground/60 md:w-12" />
+            Cerita di balik secangkir kopi
+            <span aria-hidden className="h-px w-8 bg-primary-foreground/60 md:w-12" />
+          </p>
         </div>
       </section>
 
