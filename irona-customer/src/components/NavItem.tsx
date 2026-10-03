@@ -1,5 +1,6 @@
-import { Link } from 'react-router';
+import { NavLink as RouterNavLink } from 'react-router';
 import type { NavLink } from '@/constants/navigation';
+import { cn } from '@/lib/utils';
 
 export default function NavItem({
   link,
@@ -10,9 +11,17 @@ export default function NavItem({
   className?: string;
   onClick?: () => void;
 }) {
+  // NavLink otomatis kasih aria-current="page" saat route aktif (termasuk sub-route)
   return (
-    <Link to={link.href} className={className} onClick={onClick}>
+    <RouterNavLink
+      to={link.href}
+      className={cn(
+        className,
+        'underline-offset-4 aria-[current=page]:font-bold aria-[current=page]:underline'
+      )}
+      onClick={onClick}
+    >
       {link.label}
-    </Link>
+    </RouterNavLink>
   );
 }
