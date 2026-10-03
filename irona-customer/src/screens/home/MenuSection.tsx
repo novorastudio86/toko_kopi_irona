@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { MotionConfig } from 'motion/react';
-import { fetchOnlineCategories } from '@/services/categories';
-import { fetchOnlineProducts } from '@/services/products';
+import { fetchOnlineCategories, RECOMMENDED_CATEGORY } from '@/services/categories';
+import { fetchAllOnlineProducts, fetchOnlineProducts } from '@/services/products';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types/category';
 import type { Product } from '@/types/product';
@@ -42,7 +42,7 @@ export default function MenuSection() {
 
   useEffect(() => {
     fetchOnlineCategories()
-      .then(setCategories)
+      .then((rows) => setCategories([RECOMMENDED_CATEGORY, ...rows]))
       .catch((err) => {
         console.error('Gagal memuat kategori', err);
         setCategoriesFailed(true);
@@ -54,7 +54,10 @@ export default function MenuSection() {
   useEffect(() => {
     if (!activeId || requested.current.has(activeId)) return;
     requested.current.add(activeId);
-    fetchOnlineProducts(activeId)
+    (activeId === RECOMMENDED_CATEGORY.id
+      ? fetchAllOnlineProducts().then((rows) => rows.filter((p) => p.isRecommended))
+      : fetchOnlineProducts(activeId)
+    )
       .then((products) => setCache((c) => ({ ...c, [activeId]: products })))
       .catch((err) => {
         console.error('Gagal memuat produk', err);

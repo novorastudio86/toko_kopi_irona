@@ -43,7 +43,7 @@ export default function Footer() {
         </div>
 
         <FooterColumn title="Navigasi" className="md:w-[188px] md:pt-[3px]">
-          {NAV_LINKS.filter((link) => link.label !== 'Lokasi').map((link) => (
+          {NAV_LINKS.map((link) => (
             <NavItem key={link.href} link={link} className="w-fit hover:underline" />
           ))}
         </FooterColumn>

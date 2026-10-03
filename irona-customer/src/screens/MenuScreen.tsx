@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { MotionConfig } from 'motion/react';
 import kora from '@/assets/home/kora.webp';
 import koraHead from '@/assets/home/logo-koala.webp';
-import { categoryKind, fetchOnlineCategories } from '@/services/categories';
+import { ALL_CATEGORY, categoryKind, fetchOnlineCategories } from '@/services/categories';
 import { fetchAllOnlineProducts } from '@/services/products';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types/category';
@@ -101,11 +101,13 @@ export default function MenuScreen() {
     return () => clearTimeout(timer);
   }, [input]);
 
-  // Filter Minuman / Makanan juga menyaring tab; kategori terpilih yang tersaring → tab pertama
+  // Filter Minuman / Makanan juga menyaring tab; kategori terpilih yang tersaring → tab pertama (All Product)
   const categories = useMemo(
     () =>
-      catalog?.categories.filter((c) => !filters.kind || categoryKind(c.id) === filters.kind) ??
-      null,
+      catalog && [
+        ALL_CATEGORY,
+        ...catalog.categories.filter((c) => !filters.kind || categoryKind(c.id) === filters.kind),
+      ],
     [catalog, filters.kind]
   );
   const categoryId =
@@ -115,9 +117,10 @@ export default function MenuScreen() {
 
   const results = useMemo(() => {
     if (!catalog) return [];
-    const base = query
-      ? catalog.products
-      : catalog.products.filter((p) => p.categoryId === categoryId);
+    const base =
+      query || categoryId === ALL_CATEGORY.id
+        ? catalog.products
+        : catalog.products.filter((p) => p.categoryId === categoryId);
     return applyMenuFilters(base, filters, categoryKind, query);
   }, [catalog, query, categoryId, filters]);
 

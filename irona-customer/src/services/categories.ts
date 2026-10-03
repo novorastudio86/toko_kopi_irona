@@ -73,6 +73,24 @@ const MOCK_CATEGORIES: Category[] = [
   },
 ];
 
+// Tab buatan client (bukan baris tabel categories), selalu di depan & jadi default.
+// Home pakai "Pilihan Kora", /menu pakai "All Product" (rekomendasi di /menu lewat Urutkan → Rekomendasi).
+export const RECOMMENDED_CATEGORY: Category = {
+  id: 'recommended',
+  name: 'Pilihan Kora',
+  onlineName: null,
+  displayOrder: 0,
+  showOnline: true,
+};
+
+export const ALL_CATEGORY: Category = {
+  id: 'all',
+  name: 'All Product',
+  onlineName: null,
+  displayOrder: 0,
+  showOnline: true,
+};
+
 /** Kategori yang tampil di Web Customer, urut display_order */
 export async function fetchOnlineCategories(): Promise<Category[]> {
   const rows = MOCK_CATEGORIES.filter((c) => c.showOnline).sort(
