@@ -3,6 +3,7 @@ import { AnimatePresence, motion, MotionConfig, type Variants } from 'motion/rea
 import { useLocation, useOutlet } from 'react-router';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import PromoPopup from '@/components/PromoPopup';
 import SplashScreen from '@/components/SplashScreen';
 import {
   COVER_EASE,
@@ -65,6 +66,7 @@ export default function SiteLayout() {
         </MotionConfig>
       </main>
       <Footer />
+      <PromoPopup />
     </div>
   );
 }

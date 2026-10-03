@@ -1,4 +1,3 @@
-import PromoPopup from '@/components/PromoPopup';
 import HeroSection from './home/HeroSection';
 import KoraSection from './home/KoraSection';
 import MenuSection from './home/MenuSection';
@@ -11,7 +10,6 @@ export default function HomeScreen() {
       <MenuSection />
       <KoraSection />
       <VisitSection />
-      <PromoPopup />
     </>
   );
 }
