@@ -3,15 +3,14 @@ import { useLocation } from 'react-router';
 import baristaPhoto from '@/assets/home/hero-barista.webp';
 import interiorPhoto from '@/assets/home/hero-interior.webp';
 import storePhoto from '@/assets/home/hero-store.webp';
-import koraSitting from '@/assets/home/kora.webp';
 import koraStanding from '@/assets/home/kora_berdiri_cutout.png';
-import koraWaving from '@/assets/home/kora_menyapa_cutout.png';
 import wordmark from '@/assets/home/wordmark.webp';
 import latteImage from '@/assets/images/730cf7c3-5ce8-4323-9d49-1d3694e6ead0.jpg';
 import menuBanner from '@/assets/menu/menu-banner.webp';
 import { cn } from '@/lib/utils';
-import VisitSection from './home/VisitSection';
-import EventCards from './tentang/EventCards';
+import VisitSection from '../home/VisitSection';
+import EventCards from './EventCards';
+import KoraParade from './KoraParade';
 
 // Figma 690:122: 2 foto besar di tepi, 2 foto kecil + 1 panorama di tengah (desktop 4 kolom × 2 baris).
 // TODO(aset): ganti dengan foto galeri asli.
@@ -77,7 +76,7 @@ export default function TentangScreen() {
         </div>
       </section>
 
-      {/* Intro + barisan Kora (diam, tanpa animasi) */}
+      {/* Intro + barisan Kora (muncul bergantian) */}
       <section className="border-b border-foreground">
         <div className="mx-auto flex max-w-page flex-col gap-6 px-4 pt-6 md:flex-row md:items-end md:justify-between md:px-[30px]">
           <div className="pb-6 md:pb-[26px]">
@@ -100,11 +99,7 @@ export default function TentangScreen() {
               #coffeehumanity
             </p>
           </div>
-          <div aria-hidden className="flex shrink-0 items-end justify-center gap-2 md:gap-4">
-            <img src={koraSitting} alt="" className="h-24 w-auto md:h-[118px]" />
-            <img src={koraWaving} alt="" className="-mb-1 h-36 w-auto md:h-[196px]" />
-            <img src={koraStanding} alt="" className="h-24 w-auto md:h-[120px]" />
-          </div>
+          <KoraParade />
         </div>
       </section>
 

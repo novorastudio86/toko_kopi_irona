@@ -1,14 +1,14 @@
 import { Navigate, Route, Routes } from 'react-router';
 import { COMING_SOON_PATHS } from './constants/navigation';
 import CheckoutScreen from './screens/CheckoutScreen';
-import EventDetailScreen from './screens/EventDetailScreen';
+import EventDetailScreen from './screens/tentang/EventDetailScreen';
 import ComingSoonScreen from './screens/ComingSoonScreen';
 import HomeScreen from './screens/HomeScreen';
 import MenuDetailScreen from './screens/MenuDetailScreen';
 import MenuScreen from './screens/MenuScreen';
-import MembershipScreen from './screens/MembershipScreen';
+import MembershipScreen from './screens/membership/MembershipScreen';
 import SiteLayout from './screens/SiteLayout';
-import TentangScreen from './screens/TentangScreen';
+import TentangScreen from './screens/tentang/TentangScreen';
 
 export default function App() {
   return (

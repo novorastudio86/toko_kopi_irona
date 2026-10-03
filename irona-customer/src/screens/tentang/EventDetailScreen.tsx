@@ -2,8 +2,8 @@ import { useState, type ReactNode } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
 import { cn } from '@/lib/utils';
 import { formatRupiah } from '@/utils/format';
-import EventCards from './tentang/EventCards';
-import { EVENTS } from './tentang/events';
+import EventCards from './EventCards';
+import { EVENTS } from './events';
 
 const buttonClass =
   'grid h-10 w-full place-items-center rounded-[6px] border border-foreground text-[13px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground';
