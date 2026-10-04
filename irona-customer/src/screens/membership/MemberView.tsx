@@ -99,7 +99,13 @@ function usePaged<T>(
     }
   };
 
-  return { items, hasMore, loading, loadMore };
+  // Kembali ke 3 baris pertama; sisanya dimuat ulang saat "Lihat semua" lagi
+  const collapse = () => {
+    setItems((prev) => prev.slice(0, FIRST_PAGE));
+    setHasMore(true);
+  };
+
+  return { items, hasMore, loading, loadMore, collapse };
 }
 
 function PointCard({ member, rewards }: { member: Member; rewards: Reward[] }) {
@@ -327,15 +333,28 @@ function HistoryList<T>({
   return (
     <>
       <ul className="divide-y divide-border">{paged.items.map(render)}</ul>
-      {paged.hasMore && (
-        <button
-          type="button"
-          onClick={paged.loadMore}
-          disabled={paged.loading}
-          className={cn(btnOutline, 'mt-3 h-9 w-full')}
-        >
-          {paged.loading ? 'Memuat…' : 'Lihat semua'}
-        </button>
+      {(paged.hasMore || paged.items.length > FIRST_PAGE) && (
+        <div className="mt-3 flex gap-2">
+          {paged.items.length > FIRST_PAGE && (
+            <button
+              type="button"
+              onClick={paged.collapse}
+              className={cn(btnOutline, 'h-9 flex-1')}
+            >
+              Lihat lebih sedikit
+            </button>
+          )}
+          {paged.hasMore && (
+            <button
+              type="button"
+              onClick={paged.loadMore}
+              disabled={paged.loading}
+              className={cn(btnOutline, 'h-9 flex-1')}
+            >
+              {paged.loading ? 'Memuat…' : 'Lihat semua'}
+            </button>
+          )}
+        </div>
       )}
     </>
   );
