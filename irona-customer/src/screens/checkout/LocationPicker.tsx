@@ -1,0 +1,131 @@
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { LocateFixed, MapPin } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { LatLng } from '@/types/onlineOrder';
+
+/**
+ * Pin tetap di tengah, peta yang digeser (seperti Shopee/Gojek). Titik = tengah peta setelah berhenti digeser.
+ * Saat pertama dibuka tanpa titik tersimpan, langsung minta lokasi perangkat.
+ */
+export default function LocationPicker({
+  value,
+  fallback,
+  onChange,
+}: {
+  /** null = belum ada titik (peta mulai dari fallback) */
+  value: LatLng | null;
+  /** Posisi awal kalau lokasi perangkat tidak didapat (titik toko) */
+  fallback: LatLng;
+  onChange: (point: LatLng) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const [moving, setMoving] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
+
+  function locate(map: L.Map) {
+    if (!navigator.geolocation) {
+      setGeoError('Browser tidak mendukung lokasi. Geser peta ke titik antar.');
+      return;
+    }
+    setLocating(true);
+    setGeoError(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocating(false);
+        if (mapRef.current === map) map.setView([pos.coords.latitude, pos.coords.longitude], 17);
+      },
+      () => {
+        setLocating(false);
+        setGeoError(
+          'Lokasi tidak bisa diambil. Izinkan akses lokasi, atau geser peta ke titik antar.'
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+
+  const emit = useEffectEvent(() => {
+    const c = mapRef.current?.getCenter();
+    if (c) onChange({ lat: c.lat, lng: c.lng });
+  });
+
+  const setup = useEffectEvent((map: L.Map) => {
+    map.setView(value ?? fallback, 17);
+    // Dipasang setelah setView: posisi awal (toko) tidak boleh terkirim sebagai titik antar
+    map.on('movestart', () => setMoving(true));
+    map.on('moveend', () => {
+      setMoving(false);
+      emit();
+    });
+    if (!value) locate(map);
+  });
+
+  useEffect(() => {
+    const map = L.map(containerRef.current!, {
+      zoomControl: false,
+      // Zoom tetap di tengah supaya pin tidak bergeser dari titik yang dipilih
+      scrollWheelZoom: 'center',
+      doubleClickZoom: 'center',
+      touchZoom: 'center',
+    });
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap',
+    }).addTo(map);
+    mapRef.current = map;
+    setup(map);
+    return () => {
+      mapRef.current = null;
+      map.remove();
+    };
+  }, []);
+
+  return (
+    <div>
+      {/* isolate: z-index pane Leaflet (400–1000) tidak menimpa navbar */}
+      <div className="relative isolate h-[260px] overflow-hidden rounded-[6px] border border-foreground md:h-[300px]">
+        <div
+          ref={containerRef}
+          role="application"
+          aria-label="Peta titik antar. Geser peta sampai pin tepat di lokasimu."
+          className="size-full"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 left-1/2 z-[1000] -translate-x-1/2 -translate-y-full"
+        >
+          <MapPin
+            className={cn(
+              'size-9 fill-primary text-primary-foreground transition-transform duration-150',
+              moving && '-translate-y-2'
+            )}
+            strokeWidth={1.5}
+          />
+        </div>
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 left-1/2 z-[1000] size-1.5 -translate-1/2 rounded-full bg-primary/50"
+        />
+        <button
+          type="button"
+          onClick={() => mapRef.current && locate(mapRef.current)}
+          disabled={locating}
+          className="absolute top-2.5 right-2.5 z-[1000] flex h-8 items-center gap-1.5 rounded-[6px] border border-foreground bg-background px-2.5 text-[11px] font-medium shadow-sm transition-colors hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60"
+        >
+          <LocateFixed className={cn('size-3.5', locating && 'animate-pulse')} />
+          {locating ? 'Mencari lokasi…' : 'Lokasi saya'}
+        </button>
+      </div>
+      {geoError && (
+        <p role="status" className="mt-2 text-[11px] text-destructive">
+          {geoError}
+        </p>
+      )}
+    </div>
+  );
+}
