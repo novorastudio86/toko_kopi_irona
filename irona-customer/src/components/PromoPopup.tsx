@@ -15,7 +15,7 @@ type View = 'open' | 'tab' | 'gone';
  * (klik = buka lagi). Hilang total kalau sudah jadi member (= voucher sudah diklaim).
  * TODO(backend): status member/klaim masih di memori, jadi tiap refresh popup muncul lagi.
  */
-export default function PromoPopup() {
+export default function PromoPopup({ hidden = false }: { hidden?: boolean }) {
   const { member } = useMember();
   const [promo, setPromo] = useState<Promo | null>(null);
   const [view, setView] = useState<View>('open');
@@ -34,7 +34,8 @@ export default function PromoPopup() {
     };
   }, []);
 
-  const visible = !!promo && !member;
+  // hidden (mis. di checkout): tetap terpasang supaya status tutup/tab tidak hilang saat pindah halaman
+  const visible = !!promo && !member && !hidden;
 
   useEffect(() => {
     if (visible && view === 'open') dialogRef.current?.showModal();

@@ -15,8 +15,9 @@ export interface DeliverySettings {
 /** promotions channel online — potong harga produk atau ongkir */
 export interface Voucher {
   id: string;
-  code: string;
   name: string;
+  /** otomatis = langsung terpakai saat checkout; manual = voucher yang dipilih/diklaim customer */
+  promoType: 'otomatis' | 'manual';
   target: 'produk' | 'ongkir';
   kind: 'nominal' | 'persen';
   /** Rp untuk nominal, % untuk persen */
@@ -25,6 +26,8 @@ export interface Voucher {
   memberOnly: boolean;
   /** Khusus ongkir; null = semua jarak */
   maxDistanceKm: number | null;
+  /** Tanggal selesai promo (YYYY-MM-DD) */
+  endDate: string | null;
 }
 
 export interface LatLng {

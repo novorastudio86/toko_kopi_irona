@@ -100,7 +100,7 @@ export default function LocationPicker({
   return (
     <div>
       {/* isolate: z-index pane Leaflet (400–1000) tidak menimpa navbar */}
-      <div className="relative isolate h-[200px] overflow-hidden rounded-[6px] border border-foreground md:h-[260px]">
+      <div className="relative isolate h-[200px] overflow-hidden rounded-[6px] border border-foreground md:h-[320px]">
         <div
           ref={containerRef}
           role="application"

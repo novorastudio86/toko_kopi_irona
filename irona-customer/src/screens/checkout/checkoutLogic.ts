@@ -1,7 +1,7 @@
 import type { DeliverySettings, Voucher } from '../../types/onlineOrder.ts';
 
-/** Batas catatan per menu — cukup untuk "tanpa es, gula dikit" */
-export const ITEM_NOTE_MAX = 60;
+/** Batas catatan pesanan untuk kasir */
+export const ORDER_NOTE_MAX = 100;
 
 /** Meter rute → km, dibulatkan ke atas per 100 m (sama dengan Edge Function delivery-quote) */
 export function routeKm(meters: number): number {
@@ -17,6 +17,15 @@ export function deliveryFee(km: number, s: DeliverySettings): number | null {
   const units = Math.ceil((distanceM - steps * stepM) / 100);
   return steps * s.feePerStep + units * s.feePer100m;
 }
+
+export type VoucherTarget = Voucher['target'];
+export type VoucherPicks = Record<VoucherTarget, string | null>;
+
+/** Warna pembeda sasaran: menu = hitam, ongkir = abu (dipakai juga di chip halaman checkout) */
+export const TARGET_TONE: Record<VoucherTarget, string> = {
+  produk: 'bg-primary text-primary-foreground',
+  ongkir: 'bg-muted-foreground text-background',
+};
 
 export interface VoucherContext {
   subtotal: number;
@@ -44,11 +53,19 @@ export function checkVoucher(
   return { discount: Math.min(raw, base) };
 }
 
-/** Aturan bisnis: 1 diskon per transaksi, default potongan terbesar */
-export function bestVoucher(vouchers: Voucher[], ctx: VoucherContext): Voucher | null {
+/**
+ * Aturan bisnis: maks. 1 voucher menu + 1 voucher ongkir per transaksi;
+ * default per sasaran = promo otomatis dengan potongan terbesar
+ */
+export function bestVoucher(
+  vouchers: Voucher[],
+  ctx: VoucherContext,
+  target: Voucher['target']
+): Voucher | null {
   let best: Voucher | null = null;
   let bestDiscount = 0;
   for (const v of vouchers) {
+    if (v.promoType !== 'otomatis' || v.target !== target) continue;
     const r = checkVoucher(v, ctx);
     if ('discount' in r && r.discount > bestDiscount) {
       best = v;

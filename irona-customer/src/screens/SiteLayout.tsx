@@ -66,7 +66,7 @@ export default function SiteLayout() {
         </MotionConfig>
       </main>
       <Footer />
-      <PromoPopup />
+      <PromoPopup hidden={pathname === '/keranjang'} />
     </div>
   );
 }

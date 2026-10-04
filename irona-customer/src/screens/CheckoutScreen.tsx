@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Link } from 'react-router';
-import { Check, MapPin, QrCode, TicketPercent, X } from 'lucide-react';
+import { Check, ChevronRight, MapPin, QrCode, TicketPercent, UserRound, X } from 'lucide-react';
 import { useMember } from '@/hooks/useMember';
 import { cn } from '@/lib/utils';
 import { fetchDeliverySettings, fetchOnlineVouchers, quoteDelivery } from '@/services/onlineOrder';
@@ -9,8 +9,15 @@ import type { Member } from '@/types/membership';
 import type { DeliveryQuote, DeliverySettings, LatLng, Voucher } from '@/types/onlineOrder';
 import type { Product } from '@/types/product';
 import { formatRupiah } from '@/utils/format';
-import { bestVoucher, checkVoucher, ITEM_NOTE_MAX } from './checkout/checkoutLogic';
+import {
+  bestVoucher,
+  checkVoucher,
+  ORDER_NOTE_MAX,
+  TARGET_TONE,
+  type VoucherTarget,
+} from './checkout/checkoutLogic';
 import LocationPicker from './checkout/LocationPicker';
+import VoucherDialog from './checkout/VoucherDialog';
 import MenuImage from './home/MenuImage';
 import { MAX_QTY, useQuickCart } from './home/useQuickCart';
 
@@ -140,16 +147,16 @@ function Step({
 
 /** key = member: login/logout memasang ulang form, jadi isian awal ikut berganti */
 export default function CheckoutScreen() {
-  const { member } = useMember();
+  const { member, login } = useMember();
   return (
     <>
       <title>Checkout | Toko Kopi Irona</title>
-      <Checkout key={member?.id ?? 'guest'} member={member} />
+      <Checkout key={member?.id ?? 'guest'} member={member} login={login} />
     </>
   );
 }
 
-function Checkout({ member }: { member: Member | null }) {
+function Checkout({ member, login }: { member: Member | null; login: () => Promise<void> }) {
   const { quantityOf, setQuantity } = useQuickCart();
   const [products, setProducts] = useState<Product[] | null>(null);
   const [settings, setSettings] = useState<DeliverySettings | null>(null);
@@ -165,11 +172,13 @@ function Checkout({ member }: { member: Member | null }) {
   const [phone, setPhone] = useState(saved?.phone ?? member?.phoneNumber ?? '');
   const [driverNote, setDriverNote] = useState('');
   const [saveForNext, setSaveForNext] = useState(true);
-  const [itemNotes, setItemNotes] = useState<Record<string, string>>({});
-  /** undefined = otomatis potongan terbesar, null = tanpa voucher */
-  const [voucherId, setVoucherId] = useState<string | null | undefined>(undefined);
-  const [code, setCode] = useState('');
-  const [codeError, setCodeError] = useState<string | null>(null);
+  const [orderNote, setOrderNote] = useState('');
+  /** Per sasaran: undefined = otomatis (promo otomatis potongan terbesar), null = tanpa voucher */
+  const [voucherPicks, setVoucherPicks] = useState<
+    Record<VoucherTarget, string | null | undefined>
+  >({ produk: undefined, ongkir: undefined });
+  const [joining, setJoining] = useState(false);
+  const voucherDialog = useRef<HTMLDialogElement>(null);
   const [placed, setPlaced] = useState(false);
 
   useEffect(() => {
@@ -201,6 +210,7 @@ function Checkout({ member }: { member: Member | null }) {
     (sum, i) => (i.product.isSoldOut ? sum : sum + (i.product.sellingPrice ?? 0) * i.qty),
     0
   );
+  const itemCount = items.reduce((sum, i) => (i.product.isSoldOut ? sum : sum + i.qty), 0);
   const store = settings && { lat: settings.storeLat, lng: settings.storeLng };
   const quote = useDeliveryQuote(confirmed, quoteAttempt);
   const km = quote.status === 'ok' ? quote.quote.distanceKm : null;
@@ -209,14 +219,25 @@ function Checkout({ member }: { member: Member | null }) {
   const address = useAddressLabel(location);
 
   const voucherCtx = { subtotal, shippingFee, km, isMember: member !== null };
-  const voucher =
-    voucherId === undefined
-      ? bestVoucher(vouchers, voucherCtx)
-      : (vouchers.find((v) => v.id === voucherId) ?? null);
-  const voucherResult = voucher && checkVoucher(voucher, voucherCtx);
-  const discount = voucherResult && 'discount' in voucherResult ? voucherResult.discount : 0;
-  const serviceFee = settings?.serviceFee ?? 0;
-  const total = subtotal + (shippingFee ?? 0) + serviceFee - discount;
+  /** Maks. 1 voucher menu + 1 voucher ongkir */
+  function slot(target: VoucherTarget) {
+    const id = voucherPicks[target];
+    const voucher =
+      id === undefined
+        ? bestVoucher(vouchers, voucherCtx, target)
+        : (vouchers.find((v) => v.id === id) ?? null);
+    const result = voucher && checkVoucher(voucher, voucherCtx);
+    return {
+      voucher,
+      discount: result && 'discount' in result ? result.discount : 0,
+      reason: result && 'reason' in result ? result.reason : null,
+    };
+  }
+  const menuSlot = slot('produk');
+  // Potongan ongkir tampil di baris ongkir (harga dicoret); potongan menu di baris voucher sendiri
+  const shipSlot = slot('ongkir');
+  const adminFee = settings?.serviceFee ?? 0;
+  const total = subtotal + (shippingFee ?? 0) + adminFee - menuSlot.discount - shipSlot.discount;
 
   const cleanPhone = phone.replace(/[\s-]/g, '');
   const problem = !products
@@ -239,16 +260,15 @@ function Checkout({ member }: { member: Member | null }) {
                     ? 'Nomor WhatsApp belum valid'
                     : null;
 
-  function applyCode() {
-    const found = vouchers.find((v) => v.code.toLowerCase() === code.trim().toLowerCase());
-    if (!found) {
-      setCodeError('Kode voucher tidak ditemukan');
-      return;
+  // TODO(backend): arahkan ke halaman daftar/login (OTP WhatsApp). Sementara langsung masuk dummy.
+  async function join() {
+    setJoining(true);
+    try {
+      await login(); // member berganti → form dipasang ulang dengan data tersimpan
+    } catch (err) {
+      console.error('Gagal masuk member', err);
+      setJoining(false);
     }
-    const r = checkVoucher(found, voucherCtx);
-    setCodeError('reason' in r ? `Belum bisa dipakai: ${r.reason}` : null);
-    setVoucherId(found.id);
-    setCode('');
   }
 
   function handleSubmit(e: FormEvent) {
@@ -259,8 +279,8 @@ function Checkout({ member }: { member: Member | null }) {
         member.id,
         saveForNext ? { name: name.trim(), phone: cleanPhone, location } : null
       );
-    // TODO(backend): buat order (items + catatan + koordinat + voucher), minta QRIS dinamis Midtrans,
-    // lalu arahkan ke halaman pembayaran.
+    // TODO(backend): buat order (items + catatan kasir + koordinat + voucher), minta QRIS dinamis
+    // Midtrans, lalu arahkan ke halaman pembayaran.
     setPlaced(true);
   }
 
@@ -277,13 +297,44 @@ function Checkout({ member }: { member: Member | null }) {
         </p>
       )}
 
+      {/* Mobile: member, antar & data dulu, lalu pesanan. md+: peta & data di kiri, pesanan di kanan */}
       <form
         onSubmit={handleSubmit}
-        className="mt-4 grid items-start gap-4 md:grid-cols-[1fr_360px] md:gap-6"
+        className="mt-4 grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,360px)] md:gap-6 lg:grid-cols-[minmax(0,1fr)_400px]"
       >
         <div className="grid min-w-0 gap-4">
+          {/* Paling atas: member yang lupa login tidak perlu isi titik & data dulu */}
+          {!member && (
+            <div
+              className={cn(
+                panelClass,
+                'flex flex-col gap-3 bg-secondary p-4 sm:flex-row sm:items-center'
+              )}
+            >
+              <UserRound aria-hidden className="hidden size-5 shrink-0 sm:block" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold">Member Irona?</p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  Masuk dulu biar nama, nomor &amp; titik antar terisi otomatis, plus bisa pakai
+                  voucher khusus member.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={join}
+                disabled={joining}
+                className={cn(
+                  'h-9 shrink-0 rounded-[6px] bg-primary px-4 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/85 disabled:opacity-60',
+                  focusClass
+                )}
+              >
+                {joining ? 'Memproses…' : 'Masuk / Daftar'}
+              </button>
+            </div>
+          )}
+
           <Step
-            title="1. Titik Antar"
+            title="Titik Antar"
             hint="Geser peta sampai pin tepat di lokasimu, lalu konfirmasi. Driver mengantar ke titik ini."
             aside={
               settings && (
@@ -304,7 +355,7 @@ function Checkout({ member }: { member: Member | null }) {
                 }}
               />
             ) : (
-              <div className="h-[200px] animate-pulse rounded-[6px] bg-muted md:h-[220px]" />
+              <div className="h-[200px] animate-pulse rounded-[6px] bg-muted md:h-[320px]" />
             )}
 
             <div className="mt-2.5 flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -351,7 +402,7 @@ function Checkout({ member }: { member: Member | null }) {
             )}
           </Step>
 
-          <Step title="2. Data Pemesan" hint="Nomor WhatsApp dipakai driver untuk menghubungimu.">
+          <Step title="Data Pemesan" hint="Nomor WhatsApp dipakai driver untuk menghubungimu.">
             <div className="grid gap-2.5 sm:grid-cols-2">
               <label className="grid gap-1 text-[11px] font-medium">
                 Nama
@@ -388,7 +439,7 @@ function Checkout({ member }: { member: Member | null }) {
                 />
               </label>
             </div>
-            {member ? (
+            {member && (
               <label className="mt-3 flex items-center gap-2 text-xs">
                 <input
                   type="checkbox"
@@ -398,131 +449,31 @@ function Checkout({ member }: { member: Member | null }) {
                 />
                 Simpan nama, nomor &amp; titik antar untuk pesanan berikutnya
               </label>
-            ) : (
-              <p className="mt-3 text-[11px] text-muted-foreground">
-                Member Irona? Data &amp; titik antar tersimpan otomatis.{' '}
-                <Link
-                  to="/membership"
-                  className={cn('font-medium text-foreground underline', focusClass)}
-                >
-                  Masuk member
-                </Link>
-              </p>
             )}
-          </Step>
-
-          <Step
-            title="3. Voucher & Promo"
-            hint="1 voucher per pesanan. Otomatis dipilih potongan terbesar."
-          >
-            <div className="flex gap-2">
-              <input
-                value={code}
-                onChange={(e) => {
-                  setCode(e.target.value);
-                  setCodeError(null);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if (code.trim()) applyCode();
-                  }
-                }}
-                aria-label="Kode voucher"
-                placeholder="Punya kode voucher?"
-                className={cn(fieldClass, 'uppercase placeholder:normal-case')}
-              />
-              <button
-                type="button"
-                onClick={applyCode}
-                disabled={!code.trim()}
-                className={cn(
-                  'h-[36px] shrink-0 rounded-[6px] border border-foreground px-4 text-xs font-semibold transition-colors hover:bg-secondary disabled:opacity-40',
-                  focusClass
-                )}
-              >
-                Pakai
-              </button>
-            </div>
-            {codeError && (
-              <p role="alert" className="mt-1.5 text-[11px] text-destructive">
-                {codeError}
-              </p>
-            )}
-
-            <div role="radiogroup" aria-label="Pilih voucher" className="mt-3 grid gap-2">
-              {vouchers.map((v) => {
-                const r = checkVoucher(v, voucherCtx);
-                const ok = 'discount' in r && r.discount > 0;
-                const selected = voucher?.id === v.id;
-                return (
-                  <label
-                    key={v.id}
-                    className={cn(
-                      'flex cursor-pointer items-center gap-3 rounded-[6px] border border-foreground px-3 py-2.5 transition-colors',
-                      selected ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary',
-                      !ok && !selected && 'border-dashed border-border text-muted-foreground',
-                      'has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground'
-                    )}
-                  >
-                    <input
-                      type="radio"
-                      name="voucher"
-                      checked={selected}
-                      onChange={() => {
-                        setVoucherId(v.id);
-                        setCodeError(null);
-                      }}
-                      className="sr-only"
-                    />
-                    <TicketPercent aria-hidden className="size-4 shrink-0" />
-                    <span className="grid min-w-0 flex-1 gap-0.5">
-                      <span className="text-xs font-medium">{v.name}</span>
-                      <span className="text-[10px] opacity-75">
-                        <span className="font-mono">{v.code}</span> ·{' '}
-                        {'reason' in r ? r.reason : `Min. belanja ${formatRupiah(v.minPurchase)}`}
-                      </span>
-                    </span>
-                    {ok && (
-                      <span className="shrink-0 text-[11px] font-semibold">
-                        −{formatRupiah(r.discount)}
-                      </span>
-                    )}
-                  </label>
-                );
-              })}
-            </div>
-            {voucher && (
-              <button
-                type="button"
-                onClick={() => setVoucherId(null)}
-                className={cn('mt-2 text-[11px] underline', focusClass)}
-              >
-                Jangan pakai voucher
-              </button>
-            )}
-          </Step>
-
-          <Step title="4. Pembayaran">
-            <div className="flex items-center gap-3 rounded-[6px] bg-primary px-3 py-3 text-primary-foreground">
-              <QrCode aria-hidden className="size-6 shrink-0" />
-              <div className="grid gap-0.5">
-                <p className="text-sm font-medium">QRIS</p>
-                <p className="text-[11px] opacity-75">
-                  Semua e-wallet &amp; m-banking. Kode QR muncul setelah pesanan dibuat.
-                </p>
-              </div>
-            </div>
           </Step>
         </div>
 
-        <aside aria-label="Ringkasan pesanan" className={cn(panelClass, 'p-4 md:sticky md:top-20')}>
-          <h2 className="text-[11px] font-medium tracking-[0.12em] uppercase">Ringkasan pesanan</h2>
+        <section aria-labelledby="order-title" className={cn(panelClass, 'min-w-0')}>
+          <div className="flex items-baseline justify-between gap-3 px-4 pt-4">
+            <h2 id="order-title" className="text-sm font-semibold">
+              Pesananmu
+              {itemCount > 0 && (
+                <span className="ml-1.5 text-[11px] font-normal text-muted-foreground">
+                  ({itemCount} item)
+                </span>
+              )}
+            </h2>
+            {items.length > 0 && (
+              <Link to="/menu" className={cn('text-[11px] font-medium underline', focusClass)}>
+                Tambah menu
+              </Link>
+            )}
+          </div>
 
           {!products ? (
-            <div className="mt-3 h-24 animate-pulse rounded-[4px] bg-muted" />
+            <div className="mx-4 mt-3 h-24 animate-pulse rounded-[4px] bg-muted" />
           ) : items.length === 0 ? (
-            <div className="mt-3 grid justify-items-start gap-2 text-xs">
+            <div className="grid justify-items-start gap-2 px-4 pt-3 text-xs">
               <p>Keranjang masih kosong.</p>
               <Link
                 to="/menu"
@@ -535,139 +486,218 @@ function Checkout({ member }: { member: Member | null }) {
               </Link>
             </div>
           ) : (
-            <ul className="mt-3 grid gap-4">
+            <ul className="divide-y divide-border px-4">
               {items.map(({ product, qty }) => {
-                const note = itemNotes[product.id] ?? '';
                 const price = product.sellingPrice ?? 0;
                 return (
-                  <li key={product.id} className="grid gap-2">
-                    <div className="flex gap-2.5">
-                      <div className="size-[54px] shrink-0 overflow-hidden border border-foreground">
-                        <MenuImage src={product.photoUrl} alt={product.name} />
-                      </div>
-                      <div className="grid min-w-0 flex-1 content-start gap-1">
-                        <p className="text-xs font-medium">{product.name}</p>
-                        <p className="text-[10px] text-muted-foreground">
+                  <li key={product.id} className="flex gap-3 py-3">
+                    <div className="size-[72px] shrink-0 overflow-hidden rounded-[4px] border border-foreground">
+                      <MenuImage src={product.photoUrl} alt={product.name} />
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col justify-between gap-1.5">
+                      <div>
+                        <p className="line-clamp-2 text-xs leading-snug font-medium">
+                          {product.name}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">
                           {product.isSoldOut
                             ? 'Habis — tidak ikut dipesan'
                             : `${formatRupiah(price)} / pcs`}
                         </p>
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex h-7 items-center rounded-[6px] border border-foreground text-xs">
-                            <button
-                              type="button"
-                              onClick={() => setQuantity(product.id, qty - 1)}
-                              aria-label={
-                                qty === 1
-                                  ? `Hapus ${product.name}`
-                                  : `Kurangi jumlah ${product.name}`
-                              }
-                              className={cn('h-full w-7 rounded-[6px]', focusClass)}
-                            >
-                              {qty === 1 ? <X aria-hidden className="mx-auto size-3" /> : '−'}
-                            </button>
-                            <span className="min-w-5 text-center tabular-nums">{qty}</span>
-                            <button
-                              type="button"
-                              onClick={() => setQuantity(product.id, qty + 1)}
-                              disabled={qty >= MAX_QTY || product.isSoldOut}
-                              aria-label={`Tambah jumlah ${product.name}`}
-                              className={cn(
-                                'h-full w-7 rounded-[6px] disabled:opacity-40',
-                                focusClass
-                              )}
-                            >
-                              +
-                            </button>
-                          </div>
-                          <p
+                      </div>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex h-7 items-center rounded-[6px] border border-foreground text-xs">
+                          <button
+                            type="button"
+                            onClick={() => setQuantity(product.id, qty - 1)}
+                            aria-label={
+                              qty === 1 ? `Hapus ${product.name}` : `Kurangi jumlah ${product.name}`
+                            }
+                            className={cn('h-full w-7 rounded-[6px]', focusClass)}
+                          >
+                            {qty === 1 ? <X aria-hidden className="mx-auto size-3" /> : '−'}
+                          </button>
+                          <span className="min-w-5 text-center tabular-nums">{qty}</span>
+                          <button
+                            type="button"
+                            onClick={() => setQuantity(product.id, qty + 1)}
+                            disabled={qty >= MAX_QTY || product.isSoldOut}
+                            aria-label={`Tambah jumlah ${product.name}`}
                             className={cn(
-                              'text-[11px] font-semibold',
-                              product.isSoldOut && 'line-through opacity-50'
+                              'h-full w-7 rounded-[6px] disabled:opacity-40',
+                              focusClass
                             )}
                           >
-                            {formatRupiah(price * qty)}
-                          </p>
+                            +
+                          </button>
                         </div>
+                        <p
+                          className={cn(
+                            'text-xs font-semibold tabular-nums',
+                            product.isSoldOut && 'line-through opacity-50'
+                          )}
+                        >
+                          {formatRupiah(price * qty)}
+                        </p>
                       </div>
                     </div>
-                    {!product.isSoldOut && (
-                      <div className="relative">
-                        <input
-                          value={note}
-                          onChange={(e) =>
-                            setItemNotes((prev) => ({ ...prev, [product.id]: e.target.value }))
-                          }
-                          maxLength={ITEM_NOTE_MAX}
-                          aria-label={`Catatan untuk ${product.name}`}
-                          placeholder="Catatan menu, mis. tanpa es / gula sedikit"
-                          className={cn(fieldClass, 'h-[30px] pr-12 text-[11px]')}
-                        />
-                        {note && (
-                          <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-[10px] text-muted-foreground tabular-nums">
-                            {note.length}/{ITEM_NOTE_MAX}
-                          </span>
-                        )}
-                      </div>
-                    )}
                   </li>
                 );
               })}
             </ul>
           )}
 
-          <dl className="mt-4 grid gap-2.5 border-t border-foreground pt-3 text-xs">
-            <div className="flex justify-between">
-              <dt>Subtotal</dt>
-              <dd>{formatRupiah(subtotal)}</dd>
-            </div>
-            <div className="flex justify-between gap-2">
-              <dt>Ongkir</dt>
-              <dd>
-                {quote.status === 'loading'
-                  ? 'Menghitung…'
-                  : shippingFee === null
-                    ? '—'
-                    : formatRupiah(shippingFee)}
-              </dd>
-            </div>
-            {discount > 0 && voucher && (
-              <div className="flex justify-between gap-2">
-                <dt>
-                  {voucher.target === 'ongkir' ? 'Potongan ongkir' : 'Diskon'}{' '}
-                  <span className="font-mono text-[10px]">{voucher.code}</span>
-                </dt>
-                <dd>−{formatRupiah(discount)}</dd>
-              </div>
-            )}
-            <div className="flex justify-between">
-              <dt>Biaya layanan</dt>
-              <dd>{formatRupiah(serviceFee)}</dd>
-            </div>
-            <div className="flex items-baseline justify-between pt-1">
-              <dt className="text-[11px] font-semibold tracking-[0.12em] uppercase">Total</dt>
-              <dd className="text-lg font-bold">{formatRupiah(total)}</dd>
-            </div>
-          </dl>
+          <div className="grid gap-3 border-t border-foreground p-4">
+            <label className="grid gap-1 text-[11px] font-medium">
+              Catatan untuk kasir (opsional)
+              <span className="relative">
+                <textarea
+                  value={orderNote}
+                  onChange={(e) => setOrderNote(e.target.value)}
+                  maxLength={ORDER_NOTE_MAX}
+                  rows={1}
+                  placeholder="Mis. kopi susu tanpa es, sendok plastik 2"
+                  className={cn(
+                    // field-sizing: kosong 1 baris, tumbuh otomatis saat isinya panjang
+                    'block min-h-[36px] w-full resize-none rounded-[6px] border border-foreground bg-background py-[9px] pr-14 pl-3 text-xs leading-4 font-normal [field-sizing:content] placeholder:text-muted-foreground',
+                    focusClass
+                  )}
+                />
+                {orderNote && (
+                  <span className="pointer-events-none absolute right-2.5 bottom-[11px] text-[10px] font-normal text-muted-foreground tabular-nums">
+                    {orderNote.length}/{ORDER_NOTE_MAX}
+                  </span>
+                )}
+              </span>
+            </label>
 
-          <button
-            type="submit"
-            disabled={problem !== null}
-            className={cn(
-              'mt-3 flex h-[44px] w-full items-center justify-center gap-2 rounded-[6px] bg-primary text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/85 disabled:cursor-not-allowed disabled:opacity-40',
-              focusClass
-            )}
-          >
-            <QrCode aria-hidden className="size-4" />
-            Bayar dengan QRIS
-          </button>
-          <p aria-live="polite" className="mt-2 text-center text-[11px] text-muted-foreground">
-            {placed
-              ? '(Mockup) Lanjut ke halaman pembayaran QRIS — belum terhubung Midtrans.'
-              : (problem ?? 'Pesanan dibuat setelah pembayaran QRIS berhasil.')}
-          </p>
-        </aside>
+            <div>
+              <button
+                type="button"
+                onClick={() => voucherDialog.current?.showModal()}
+                aria-haspopup="dialog"
+                className={cn(
+                  'flex h-[44px] w-full items-center gap-2.5 rounded-[6px] border border-foreground px-3 text-left transition-colors hover:bg-secondary',
+                  focusClass
+                )}
+              >
+                <TicketPercent aria-hidden className="size-4 shrink-0" />
+                <span className="flex-1 text-xs font-medium">Voucher</span>
+                {menuSlot.discount > 0 || shipSlot.discount > 0 ? (
+                  <span className="flex gap-1.5">
+                    {[
+                      { target: 'produk' as const, label: 'Diskon menu', s: menuSlot },
+                      { target: 'ongkir' as const, label: 'Diskon ongkir', s: shipSlot },
+                    ].map(
+                      ({ target, label, s }) =>
+                        s.discount > 0 && (
+                          <span
+                            key={target}
+                            title={label}
+                            className={cn(
+                              'rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap tabular-nums',
+                              TARGET_TONE[target]
+                            )}
+                          >
+                            <span className="sr-only">{label} </span>−{formatRupiah(s.discount)}
+                          </span>
+                        )
+                    )}
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-muted-foreground">Pilih voucher</span>
+                )}
+                <ChevronRight aria-hidden className="size-4 shrink-0" />
+              </button>
+              {[menuSlot, shipSlot].map(
+                ({ voucher, reason }) =>
+                  voucher &&
+                  reason && (
+                    <p
+                      key={voucher.id}
+                      role="status"
+                      className="mt-1.5 text-[11px] text-destructive"
+                    >
+                      {voucher.name} belum bisa dipakai: {reason}
+                    </p>
+                  )
+              )}
+            </div>
+          </div>
+
+          <div className="border-t border-foreground p-4">
+            <h3 className="text-[11px] font-medium tracking-[0.12em] uppercase">
+              Rincian pembayaran
+            </h3>
+            <dl className="mt-3 grid gap-2.5 text-xs">
+              <div className="flex justify-between gap-2">
+                <dt>Subtotal</dt>
+                <dd className="tabular-nums">{formatRupiah(subtotal)}</dd>
+              </div>
+              <div className="flex justify-between gap-2">
+                <dt>Ongkir</dt>
+                <dd className="text-right tabular-nums">
+                  {quote.status === 'loading' ? (
+                    'Menghitung…'
+                  ) : shippingFee === null ? (
+                    <span className="text-muted-foreground">Pilih titik antar</span>
+                  ) : shipSlot.discount > 0 ? (
+                    <>
+                      <s className="mr-1.5 text-muted-foreground">{formatRupiah(shippingFee)}</s>
+                      <span className="font-semibold">
+                        {shippingFee - shipSlot.discount === 0
+                          ? 'Gratis'
+                          : formatRupiah(shippingFee - shipSlot.discount)}
+                      </span>
+                    </>
+                  ) : (
+                    formatRupiah(shippingFee)
+                  )}
+                </dd>
+              </div>
+              {menuSlot.discount > 0 && (
+                <div className="flex justify-between gap-2">
+                  <dt>Voucher diskon</dt>
+                  <dd className="tabular-nums">−{formatRupiah(menuSlot.discount)}</dd>
+                </div>
+              )}
+              <div className="flex justify-between gap-2">
+                <dt>Biaya admin</dt>
+                <dd className="tabular-nums">{settings ? formatRupiah(adminFee) : '—'}</dd>
+              </div>
+              <div className="flex items-baseline justify-between border-t border-foreground pt-3">
+                <dt className="text-[11px] font-semibold tracking-[0.12em] uppercase">Total</dt>
+                <dd className="text-lg font-bold tabular-nums">{formatRupiah(total)}</dd>
+              </div>
+            </dl>
+
+            <button
+              type="submit"
+              disabled={problem !== null}
+              className={cn(
+                'mt-3 flex h-[44px] w-full items-center justify-center gap-2 rounded-[6px] bg-primary text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/85 disabled:cursor-not-allowed disabled:opacity-40',
+                focusClass
+              )}
+            >
+              <QrCode aria-hidden className="size-4" />
+              Bayar dengan QRIS
+            </button>
+            <p aria-live="polite" className="mt-2 text-center text-[11px] text-muted-foreground">
+              {placed
+                ? '(Mockup) Lanjut ke halaman pembayaran QRIS — belum terhubung Midtrans.'
+                : (problem ?? 'Bisa dibayar pakai semua e-wallet & m-banking.')}
+            </p>
+          </div>
+        </section>
       </form>
+
+      <VoucherDialog
+        dialogRef={voucherDialog}
+        vouchers={vouchers}
+        ctx={voucherCtx}
+        picks={{ produk: menuSlot.voucher?.id ?? null, ongkir: shipSlot.voucher?.id ?? null }}
+        onPick={(target, id) => setVoucherPicks((prev) => ({ ...prev, [target]: id }))}
+      />
     </div>
   );
 }
