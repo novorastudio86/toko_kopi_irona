@@ -6,29 +6,48 @@ import storePhoto from '@/assets/home/hero-store.webp';
 import koraStanding from '@/assets/home/kora_berdiri_cutout.png';
 import wordmark from '@/assets/home/wordmark.webp';
 import latteImage from '@/assets/images/730cf7c3-5ce8-4323-9d49-1d3694e6ead0.jpg';
+import membershipPhoto from '@/assets/membership/membership-hero.webp';
 import menuBanner from '@/assets/menu/menu-banner.webp';
+import { KORA_INSTAGRAM_URL } from '@/constants/kora';
 import { cn } from '@/lib/utils';
 import VisitSection from '../home/VisitSection';
 import EventCards from './EventCards';
 import KoraParade from './KoraParade';
 
-// Figma 690:122: 2 foto besar di tepi, 2 foto kecil + 1 panorama di tengah (desktop 4 kolom × 2 baris).
-// TODO(aset): ganti dengan foto galeri asli.
+// Bento maks 8 foto, urutan = posisi (grid-flow-dense):
+// desktop 4×3 → [besar 2×2][a][b] / [besar][c][tinggi 1×2] / [d][e][f][tinggi]; mobile 2 kolom × 6 baris.
+// TODO(aset): ganti dengan foto galeri asli (2 foto terakhir sementara pakai ulang foto lain).
+const GALLERY_MAX = 8;
 const GALLERY = [
-  { src: storePhoto, alt: 'Tampak depan Toko Kopi Irona', className: 'row-span-2' },
-  { src: baristaPhoto, alt: 'Kora di meja barista', className: '' },
-  { src: menuBanner, alt: 'Menu Toko Kopi Irona', className: '' },
   {
-    src: latteImage,
-    alt: 'Es kopi susu Irona',
-    className: 'md:col-start-4 md:row-span-2 md:row-start-1',
+    src: storePhoto,
+    alt: 'Tampak depan Toko Kopi Irona',
+    caption: 'Rumah kecil di Balung',
+    className: 'col-span-2 row-span-2',
   },
+  { src: latteImage, alt: 'Es kopi susu Irona', caption: 'Es kopi susu andalan' },
+  { src: menuBanner, alt: 'Menu Toko Kopi Irona', caption: 'Menu favorit' },
+  { src: membershipPhoto, alt: 'Kora di sudut bar', caption: 'Sudut bar' },
+  {
+    src: baristaPhoto,
+    alt: 'Kora di meja barista',
+    caption: 'Kora si barista',
+    className: 'row-span-2',
+  },
+  { src: interiorPhoto, alt: 'Interior Toko Kopi Irona', caption: 'Ruang ngobrol' },
   {
     src: interiorPhoto,
-    alt: 'Kora di dalam dan di teras Toko Kopi Irona',
-    className: 'md:col-span-2 md:col-start-2 md:row-start-2',
+    alt: 'Teras Toko Kopi Irona',
+    caption: 'Teras santai',
+    className: '[&_img]:object-right',
   },
-];
+  {
+    src: storePhoto,
+    alt: 'Suasana sore di Toko Kopi Irona',
+    caption: 'Sore di Irona',
+    className: '[&_img]:object-bottom',
+  },
+].slice(0, GALLERY_MAX);
 
 const sectionClass = 'mx-auto max-w-page px-4 pt-6 pb-8 md:px-[30px] md:pb-[34px]';
 const headingClass = 'font-display text-2xl leading-[22px]';
@@ -132,18 +151,48 @@ export default function TentangScreen() {
       {/* Galeri */}
       <section aria-labelledby="galeri-title" className="border-b border-foreground">
         <div className={sectionClass}>
-          <h2 id="galeri-title" className={headingClass}>
-            Galeri Cafe
-          </h2>
-          <div className="mt-4 grid auto-rows-[120px] grid-cols-2 gap-2.5 md:grid-cols-4 md:grid-rows-[110px_110px]">
-            {GALLERY.map((g) => (
-              <img
-                key={g.src}
-                src={g.src}
-                alt={g.alt}
-                loading="lazy"
-                className={cn('size-full border border-foreground object-cover', g.className)}
-              />
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 id="galeri-title" className={headingClass}>
+              Galeri Cafe
+            </h2>
+            <a
+              href={KORA_INSTAGRAM_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="shrink-0 text-[11px] hover:underline"
+            >
+              @tokokopiirona →
+            </a>
+          </div>
+          <p className="mt-2 text-[13px] text-muted-foreground md:text-sm">
+            Sudut favorit, kopi andalan, dan Kora yang selalu menyapa.
+          </p>
+          <div className="mt-5 grid auto-rows-[130px] grid-flow-dense grid-cols-2 gap-3 md:auto-rows-[150px] md:grid-cols-4 md:gap-4">
+            {GALLERY.map((g, i) => (
+              <figure
+                key={g.alt}
+                style={{ animationDelay: `${i * 70}ms` }}
+                className={cn(
+                  'group relative overflow-hidden border border-foreground shadow-[4px_4px_0_0_var(--color-foreground)] transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[6px_8px_0_0_var(--color-foreground)] motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:fill-mode-both motion-safe:duration-500',
+                  g.className
+                )}
+              >
+                <img
+                  src={g.src}
+                  alt={g.alt}
+                  loading="lazy"
+                  className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                />
+                {/* Caption: selalu tampil di layar sentuh, muncul saat hover di desktop */}
+                <figcaption className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/75 via-black/30 to-transparent px-3 pt-8 pb-2.5 text-xs font-medium text-white transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100">
+                  {g.caption}
+                </figcaption>
+                {i === 0 && (
+                  <span className="absolute top-3 left-3 rounded-full border border-foreground bg-primary px-2.5 py-0.5 text-[10px] font-medium text-primary-foreground">
+                    #coffeehumanity
+                  </span>
+                )}
+              </figure>
             ))}
           </div>
         </div>
