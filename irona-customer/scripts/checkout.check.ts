@@ -4,8 +4,7 @@ import {
   bestVoucher,
   checkVoucher,
   deliveryFee,
-  distanceKm,
-  formatKm,
+  routeKm,
 } from '../src/screens/checkout/checkoutLogic.ts';
 import type { DeliverySettings, Voucher } from '../src/types/onlineOrder.ts';
 
@@ -26,12 +25,10 @@ assert.equal(deliveryFee(3.4, s), 5000 + 14 * 500);
 assert.equal(deliveryFee(11, s), 25000 + 10 * 500);
 assert.equal(deliveryFee(11.1, s), null);
 
-// Jarak dibulatkan ke atas per 100 m; ±0,01° lintang ≈ 1,11 km
-const store = { lat: s.storeLat, lng: s.storeLng };
-assert.equal(distanceKm(store, store), 0);
-assert.equal(distanceKm(store, { lat: s.storeLat + 0.01, lng: s.storeLng }), 1.2);
-assert.equal(formatKm(3.4), '3,4 km');
-assert.equal(formatKm(2), '2,0 km');
+// Jarak rute dibulatkan ke atas per 100 m
+assert.equal(routeKm(0), 0);
+assert.equal(routeKm(5127.9), 5.2);
+assert.equal(routeKm(3400), 3.4);
 
 const v = (o: Partial<Voucher>): Voucher => ({
   id: 'v',

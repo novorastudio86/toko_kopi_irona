@@ -31,3 +31,12 @@ export interface LatLng {
   lat: number;
   lng: number;
 }
+
+/** Hasil Edge Function delivery-quote */
+export interface DeliveryQuote {
+  deliverable: boolean;
+  /** null = di luar jangkauan */
+  fee: number | null;
+  /** Internal (syarat voucher ongkir); tidak ditampilkan ke pelanggan */
+  distanceKm: number;
+}

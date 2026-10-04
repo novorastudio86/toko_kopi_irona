@@ -1,4 +1,5 @@
-import type { DeliverySettings, Voucher } from '@/types/onlineOrder';
+import { deliveryFee, routeKm } from '@/screens/checkout/checkoutLogic';
+import type { DeliveryQuote, DeliverySettings, LatLng, Voucher } from '@/types/onlineOrder';
 import { mockDelay } from './mockDelay';
 
 // TODO(backend): ganti dengan select online_order_settings (anon perlu policy select).
@@ -67,4 +68,25 @@ export async function fetchDeliverySettings(): Promise<DeliverySettings> {
 
 export async function fetchOnlineVouchers(): Promise<Voucher[]> {
   return mockDelay(MOCK_VOUCHERS);
+}
+
+/**
+ * Ongkir dari rute jalan toko → titik pelanggan.
+ * TODO(backend): ganti isi fungsi ini dengan supabase.functions.invoke('delivery-quote', { body: point }).
+ * Versi mock menghitung di browser (rute OSRM + skema mock) — ongkir final tetap wajib dihitung ulang
+ * di server saat order dibuat, jangan terima ongkir dari client.
+ */
+export async function quoteDelivery(point: LatLng, signal?: AbortSignal): Promise<DeliveryQuote> {
+  const s = MOCK_SETTINGS;
+  const res = await fetch(
+    `https://router.project-osrm.org/route/v1/driving/${s.storeLng},${s.storeLat};${point.lng},${point.lat}?overview=false`,
+    { signal }
+  );
+  if (!res.ok) throw new Error(`OSRM ${res.status}`);
+  const data = await res.json();
+  const meters = data?.routes?.[0]?.distance;
+  if (data?.code !== 'Ok' || typeof meters !== 'number') throw new Error(`OSRM ${data?.code}`);
+  const distanceKm = routeKm(meters);
+  const fee = deliveryFee(distanceKm, s);
+  return { deliverable: fee !== null, fee, distanceKm };
 }

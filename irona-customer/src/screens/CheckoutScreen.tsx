@@ -1,22 +1,15 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import { Link } from 'react-router';
-import { MapPin, QrCode, TicketPercent, X } from 'lucide-react';
+import { Check, MapPin, QrCode, TicketPercent, X } from 'lucide-react';
 import { useMember } from '@/hooks/useMember';
 import { cn } from '@/lib/utils';
-import { fetchDeliverySettings, fetchOnlineVouchers } from '@/services/onlineOrder';
+import { fetchDeliverySettings, fetchOnlineVouchers, quoteDelivery } from '@/services/onlineOrder';
 import { fetchAllOnlineProducts } from '@/services/products';
 import type { Member } from '@/types/membership';
-import type { DeliverySettings, LatLng, Voucher } from '@/types/onlineOrder';
+import type { DeliveryQuote, DeliverySettings, LatLng, Voucher } from '@/types/onlineOrder';
 import type { Product } from '@/types/product';
 import { formatRupiah } from '@/utils/format';
-import {
-  bestVoucher,
-  checkVoucher,
-  deliveryFee,
-  distanceKm,
-  formatKm,
-  ITEM_NOTE_MAX,
-} from './checkout/checkoutLogic';
+import { bestVoucher, checkVoucher, ITEM_NOTE_MAX } from './checkout/checkoutLogic';
 import LocationPicker from './checkout/LocationPicker';
 import MenuImage from './home/MenuImage';
 import { MAX_QTY, useQuickCart } from './home/useQuickCart';
@@ -89,13 +82,56 @@ function useAddressLabel(point: LatLng | null): string | null {
   return result?.key === key ? result.text : null;
 }
 
-function Step({ title, hint, children }: { title: string; hint?: ReactNode; children: ReactNode }) {
+type QuoteState = { status: 'idle' | 'loading' | 'error' } | { status: 'ok'; quote: DeliveryQuote };
+
+/**
+ * Ongkir untuk titik yang sudah dikonfirmasi pelanggan (bukan tiap pin digeser) supaya hemat request rute.
+ * attempt naik = hitung ulang titik yang sama (tombol "Coba lagi").
+ */
+function useDeliveryQuote(point: LatLng | null, attempt: number): QuoteState {
+  const [result, setResult] = useState<{ key: string; quote: DeliveryQuote | null } | null>(null);
+  const key = point ? `${point.lat.toFixed(6)},${point.lng.toFixed(6)},${attempt}` : '';
+
+  useEffect(() => {
+    if (!key) return;
+    const [lat, lng] = key.split(',').map(Number);
+    const ctrl = new AbortController();
+    quoteDelivery({ lat, lng }, ctrl.signal)
+      .then((quote) => setResult({ key, quote }))
+      .catch((err) => {
+        if (ctrl.signal.aborted) return;
+        console.error('Gagal menghitung ongkir', err);
+        setResult({ key, quote: null });
+      });
+    return () => ctrl.abort();
+  }, [key]);
+
+  if (!key) return { status: 'idle' };
+  if (result?.key !== key) return { status: 'loading' };
+  return result.quote ? { status: 'ok', quote: result.quote } : { status: 'error' };
+}
+
+function Step({
+  title,
+  hint,
+  aside,
+  children,
+}: {
+  title: string;
+  hint?: ReactNode;
+  /** Info singkat sejajar judul */
+  aside?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <fieldset className={cn(panelClass, 'min-w-0 p-4')}>
       <legend className="sr-only">{title}</legend>
-      <div aria-hidden className="mb-3">
-        <p className="text-sm font-semibold">{title}</p>
-        {hint && <p className="mt-0.5 text-[11px] text-muted-foreground">{hint}</p>}
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div aria-hidden>
+          <p className="text-sm font-semibold">{title}</p>
+          {hint && <p className="mt-0.5 text-[11px] text-muted-foreground">{hint}</p>}
+        </div>
+        {aside}
       </div>
       {children}
     </fieldset>
@@ -122,6 +158,9 @@ function Checkout({ member }: { member: Member | null }) {
 
   const [saved] = useState(() => (member ? loadSaved(member.id) : null));
   const [location, setLocation] = useState<LatLng | null>(saved?.location ?? null);
+  /** Titik yang sudah dikonfirmasi; titik tersimpan member dianggap sudah dikonfirmasi */
+  const [confirmed, setConfirmed] = useState<LatLng | null>(saved?.location ?? null);
+  const [quoteAttempt, setQuoteAttempt] = useState(0);
   const [name, setName] = useState(saved?.name ?? member?.name ?? '');
   const [phone, setPhone] = useState(saved?.phone ?? member?.phoneNumber ?? '');
   const [driverNote, setDriverNote] = useState('');
@@ -163,9 +202,10 @@ function Checkout({ member }: { member: Member | null }) {
     0
   );
   const store = settings && { lat: settings.storeLat, lng: settings.storeLng };
-  const km = store && location ? distanceKm(store, location) : null;
-  const shippingFee = settings && km !== null ? deliveryFee(km, settings) : null;
-  const outOfRange = km !== null && shippingFee === null;
+  const quote = useDeliveryQuote(confirmed, quoteAttempt);
+  const km = quote.status === 'ok' ? quote.quote.distanceKm : null;
+  const shippingFee = quote.status === 'ok' ? quote.quote.fee : null;
+  const outOfRange = quote.status === 'ok' && !quote.quote.deliverable;
   const address = useAddressLabel(location);
 
   const voucherCtx = { subtotal, shippingFee, km, isMember: member !== null };
@@ -185,13 +225,19 @@ function Checkout({ member }: { member: Member | null }) {
       ? 'Keranjang masih kosong'
       : !location
         ? 'Tentukan titik antar di peta'
-        : outOfRange
-          ? 'Titik antar di luar jangkauan'
-          : !name.trim()
-            ? 'Isi nama pemesan'
-            : !PHONE_PATTERN.test(cleanPhone)
-              ? 'Nomor WhatsApp belum valid'
-              : null;
+        : !confirmed
+          ? 'Konfirmasi titik antar dulu'
+          : quote.status === 'loading'
+            ? 'Menghitung ongkir…'
+            : quote.status === 'error'
+              ? 'Ongkir belum terhitung, geser pin lalu coba lagi'
+              : outOfRange
+                ? 'Titik antar di luar jangkauan'
+                : !name.trim()
+                  ? 'Isi nama pemesan'
+                  : !PHONE_PATTERN.test(cleanPhone)
+                    ? 'Nomor WhatsApp belum valid'
+                    : null;
 
   function applyCode() {
     const found = vouchers.find((v) => v.code.toLowerCase() === code.trim().toLowerCase());
@@ -238,47 +284,70 @@ function Checkout({ member }: { member: Member | null }) {
         <div className="grid min-w-0 gap-4">
           <Step
             title="1. Titik Antar"
-            hint="Geser peta sampai pin tepat di lokasimu. Driver mengantar ke titik ini."
+            hint="Geser peta sampai pin tepat di lokasimu, lalu konfirmasi. Driver mengantar ke titik ini."
+            aside={
+              settings && (
+                <span className="shrink-0 rounded-full border border-foreground px-2.5 py-0.5 text-[11px] font-medium">
+                  Maks. {settings.maxDistanceKm.toLocaleString('id-ID')} km
+                </span>
+              )
+            }
           >
             {settings && store ? (
-              <LocationPicker value={location} fallback={store} onChange={setLocation} />
+              <LocationPicker
+                value={location}
+                fallback={store}
+                onChange={(point) => {
+                  // Pin bergeser = titik lama tidak berlaku, ongkir menunggu konfirmasi ulang
+                  setLocation(point);
+                  setConfirmed(null);
+                }}
+              />
             ) : (
-              <div className="h-[260px] animate-pulse rounded-[6px] bg-muted md:h-[300px]" />
+              <div className="h-[200px] animate-pulse rounded-[6px] bg-muted md:h-[220px]" />
             )}
 
-            <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-start">
-              <p className="flex gap-1.5 text-xs">
+            <div className="mt-2.5 flex flex-col gap-2 sm:flex-row sm:items-center">
+              <p aria-live="polite" className="flex min-w-0 flex-1 items-start gap-1.5 text-xs">
                 <MapPin aria-hidden className="mt-px size-3.5 shrink-0" />
-                <span aria-live="polite">
-                  {!location ? 'Belum ada titik antar' : (address ?? 'Mencari alamat…')}
-                </span>
+                {!location ? 'Belum ada titik antar' : (address ?? 'Mencari alamat…')}
               </p>
-              {km !== null && (
-                <p
-                  aria-live="polite"
+              {confirmed ? (
+                <p className="flex shrink-0 items-center gap-1 text-[11px] font-medium">
+                  <Check aria-hidden className="size-3.5" />
+                  Titik dikonfirmasi
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmed(location)}
+                  disabled={!location}
                   className={cn(
-                    'w-fit rounded-full border px-2.5 py-0.5 text-[11px] font-medium',
-                    outOfRange
-                      ? 'border-destructive text-destructive'
-                      : 'border-foreground bg-secondary'
+                    'h-8 shrink-0 rounded-[6px] bg-primary px-3 text-[11px] font-semibold text-primary-foreground transition-colors hover:bg-primary/85 disabled:opacity-40',
+                    focusClass
                   )}
                 >
-                  {outOfRange
-                    ? `${formatKm(km)} · di luar jangkauan`
-                    : `${formatKm(km)} · Ongkir ${formatRupiah(shippingFee ?? 0)}`}
-                </p>
+                  Konfirmasi titik ini
+                </button>
               )}
             </div>
-
-            {settings && (
-              <ul className="mt-3 grid gap-1 border-t border-dashed border-border pt-3 text-[11px] text-muted-foreground sm:grid-cols-3">
-                <li>Jarak antar maks. {formatKm(settings.maxDistanceKm)}</li>
-                <li>
-                  Ongkir {formatRupiah(settings.feePerStep)}/{formatKm(settings.stepKm)}, sisa{' '}
-                  {formatRupiah(settings.feePer100m)}/100 m
-                </li>
-                <li>Biaya layanan {formatRupiah(settings.serviceFee)}</li>
-              </ul>
+            {(outOfRange || quote.status === 'error') && settings && (
+              <p role="alert" className="mt-1.5 pl-5 text-[11px] text-destructive">
+                {outOfRange ? (
+                  `Titik ini di luar jangkauan antar (maks. ${settings.maxDistanceKm.toLocaleString('id-ID')} km dari Irona).`
+                ) : (
+                  <>
+                    Gagal menghitung ongkir.{' '}
+                    <button
+                      type="button"
+                      onClick={() => setQuoteAttempt((n) => n + 1)}
+                      className={cn('font-medium underline', focusClass)}
+                    >
+                      Coba lagi
+                    </button>
+                  </>
+                )}
+              </p>
             )}
           </Step>
 
@@ -553,8 +622,14 @@ function Checkout({ member }: { member: Member | null }) {
               <dd>{formatRupiah(subtotal)}</dd>
             </div>
             <div className="flex justify-between gap-2">
-              <dt>Ongkir{km !== null && !outOfRange && ` (${formatKm(km)})`}</dt>
-              <dd>{shippingFee === null ? '—' : formatRupiah(shippingFee)}</dd>
+              <dt>Ongkir</dt>
+              <dd>
+                {quote.status === 'loading'
+                  ? 'Menghitung…'
+                  : shippingFee === null
+                    ? '—'
+                    : formatRupiah(shippingFee)}
+              </dd>
             </div>
             {discount > 0 && voucher && (
               <div className="flex justify-between gap-2">

@@ -22,6 +22,8 @@ export default function LocationPicker({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
+  /** false = belum digeser pelanggan; moveend karena resize/posisi awal (toko atau titik tersimpan) diabaikan */
+  const armedRef = useRef(false);
   const [moving, setMoving] = useState(false);
   const [locating, setLocating] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
@@ -36,7 +38,9 @@ export default function LocationPicker({
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocating(false);
-        if (mapRef.current === map) map.setView([pos.coords.latitude, pos.coords.longitude], 17);
+        if (mapRef.current !== map) return;
+        armedRef.current = true;
+        map.setView([pos.coords.latitude, pos.coords.longitude], 17);
       },
       () => {
         setLocating(false);
@@ -50,12 +54,15 @@ export default function LocationPicker({
 
   const emit = useEffectEvent(() => {
     const c = mapRef.current?.getCenter();
-    if (c) onChange({ lat: c.lat, lng: c.lng });
+    if (c && armedRef.current) onChange({ lat: c.lat, lng: c.lng });
   });
 
   const setup = useEffectEvent((map: L.Map) => {
     map.setView(value ?? fallback, 17);
-    // Dipasang setelah setView: posisi awal (toko) tidak boleh terkirim sebagai titik antar
+    // Titik toko (posisi awal) tidak boleh terkirim sebagai titik antar: tunggu digeser/keyboard/lokasi saya
+    const arm = () => (armedRef.current = true);
+    map.on('dragstart', arm);
+    map.getContainer().addEventListener('keydown', arm);
     map.on('movestart', () => setMoving(true));
     map.on('moveend', () => {
       setMoving(false);
@@ -73,9 +80,14 @@ export default function LocationPicker({
       touchZoom: 'center',
     });
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap',
+    // Tile Google Maps (tanpa API key) supaya tampilan sama dengan peta di Home/Tentang.
+    // TODO(go-live): akses tile langsung tidak resmi menurut ketentuan Google; ganti ke
+    // Maps JavaScript API (pakai API key, ada kuota gratis bulanan) sebelum rilis.
+    map.attributionControl.setPrefix(false);
+    L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&hl=id&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains: '0123',
+      attribution: 'Data peta &copy; Google',
     }).addTo(map);
     mapRef.current = map;
     setup(map);
@@ -88,12 +100,14 @@ export default function LocationPicker({
   return (
     <div>
       {/* isolate: z-index pane Leaflet (400–1000) tidak menimpa navbar */}
-      <div className="relative isolate h-[260px] overflow-hidden rounded-[6px] border border-foreground md:h-[300px]">
+      <div className="relative isolate h-[200px] overflow-hidden rounded-[6px] border border-foreground md:h-[260px]">
         <div
           ref={containerRef}
           role="application"
           aria-label="Peta titik antar. Geser peta sampai pin tepat di lokasimu."
-          className="size-full"
+          // plus-lighter: tepi tile yang anti-alias saling menjumlah, jadi tidak ada garis putih
+          // antar-tile di layar berskala non-100% (fix yang sama dipakai Leaflet 2)
+          className="size-full [&_.leaflet-tile]:mix-blend-plus-lighter"
         />
         <div
           aria-hidden
