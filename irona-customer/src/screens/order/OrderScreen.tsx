@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router';
 import { Check, CircleCheck, Clock, MapPin, QrCode } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { fetchOnlineOrder, simulatePayment } from '@/services/onlineOrder';
+import { fetchOnlineOrder } from '@/services/onlineOrder';
 import type { OnlineOrder } from '@/types/onlineOrder';
 import { formatRupiah } from '@/utils/format';
 import {
@@ -160,10 +160,11 @@ function Notice({ title, text }: { title: string; text: string }) {
   );
 }
 
-// ponytail: QR placeholder — ganti dengan gambar QRIS dari Midtrans (qr_string / actions[generate-qr-code]).
 function PaymentPanel({ order, onCheck }: { order: OnlineOrder; onCheck: () => void }) {
   const left = useCountdown(order.payExpiresAt);
-  const [simulating, setSimulating] = useState(false);
+  // QR sandbox tidak bisa dibayar pakai e-wallet sungguhan → bayar lewat Simulator QRIS Midtrans
+  const sandbox = order.qrUrl?.includes('api.sandbox.midtrans.com') ?? false;
+  const [copied, setCopied] = useState(false);
 
   // Waktu habis: minta status ke server (server yang menandai kedaluwarsa)
   const expired = left <= 0;
@@ -171,13 +172,12 @@ function PaymentPanel({ order, onCheck }: { order: OnlineOrder; onCheck: () => v
     if (expired) onCheck();
   }, [expired, onCheck]);
 
-  async function simulate() {
-    setSimulating(true);
+  async function copyQrUrl() {
     try {
-      await simulatePayment(order.id);
-      onCheck();
-    } finally {
-      setSimulating(false);
+      await navigator.clipboard.writeText(order.qrUrl ?? '');
+      setCopied(true);
+    } catch {
+      // clipboard ditolak browser: URL tetap bisa disalin dari gambar QR
     }
   }
 
@@ -207,19 +207,19 @@ function PaymentPanel({ order, onCheck }: { order: OnlineOrder; onCheck: () => v
       <div className="mt-4 grid justify-items-center gap-3 text-center">
         <p className="text-[11px] font-medium tracking-[0.12em] uppercase">Total bayar</p>
         <p className="-mt-2 text-2xl font-bold tabular-nums">{formatRupiah(order.total)}</p>
-        <div
-          role="img"
-          aria-label="Kode QRIS (contoh)"
-          className="grid size-[220px] place-items-center rounded-[6px] border border-dashed border-foreground bg-background p-4"
-        >
-          <div className="grid justify-items-center gap-2 text-muted-foreground">
+        {order.qrUrl ? (
+          <img
+            src={order.qrUrl}
+            alt={`Kode QRIS pembayaran ${formatRupiah(order.total)}`}
+            className="size-[220px] rounded-[6px] border border-foreground bg-white p-2"
+          />
+        ) : (
+          <div className="grid size-[220px] place-items-center rounded-[6px] border border-dashed border-foreground bg-background p-4 text-muted-foreground">
             <QrCode aria-hidden className="size-24" strokeWidth={1} />
-            <span className="text-[11px]">QRIS muncul di sini</span>
           </div>
-        </div>
+        )}
         <p className="text-[11px] text-muted-foreground">
-          a.n. <span className="font-medium text-foreground">Toko Kopi Irona</span> · NMID
-          ID10200000000
+          a.n. <span className="font-medium text-foreground">Toko Kopi Irona</span>
         </p>
       </div>
 
@@ -234,20 +234,25 @@ function PaymentPanel({ order, onCheck }: { order: OnlineOrder; onCheck: () => v
         {expired ? 'Waktu habis, memeriksa status…' : 'Menunggu pembayaran — dicek otomatis'}
       </p>
 
-      {/* MOCK ONLY: pengganti webhook Midtrans. Hapus saat payment gateway tersambung. */}
-      <div className="mt-4 border-t border-dashed border-foreground pt-4">
-        <button
-          type="button"
-          onClick={simulate}
-          disabled={simulating || expired}
-          className={btnOutline}
-        >
-          {simulating ? 'Memproses…' : 'Saya sudah bayar (simulasi)'}
-        </button>
-        <p className="mt-1.5 text-center text-[10px] text-muted-foreground">
-          Mockup — nanti status berubah otomatis dari payment gateway.
-        </p>
-      </div>
+      {sandbox && (
+        <div className="mt-4 border-t border-dashed border-foreground pt-4">
+          <button type="button" onClick={copyQrUrl} disabled={expired} className={btnOutline}>
+            {copied ? 'URL QR tersalin' : 'Salin URL QR'}
+          </button>
+          <p className="mt-1.5 text-center text-[10px] text-muted-foreground">
+            Mode sandbox: tempel URL di{' '}
+            <a
+              href="https://simulator.sandbox.midtrans.com/v2/qris/index"
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              Simulator QRIS Midtrans
+            </a>{' '}
+            untuk pura-pura bayar.
+          </p>
+        </div>
+      )}
     </section>
   );
 }

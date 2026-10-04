@@ -67,6 +67,8 @@ export interface OnlineOrder {
   createdAt: string;
   /** Batas bayar QRIS (ISO) */
   payExpiresAt: string;
+  /** Gambar QRIS dari Midtrans (actions generate-qr-code); null kalau pembuatan QRIS gagal */
+  qrUrl: string | null;
   customerName: string;
   phone: string;
   address: string | null;

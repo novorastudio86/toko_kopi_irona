@@ -425,6 +425,11 @@ entrypoint = "./functions/create-employee/index.ts"
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/create-employee/*.html" ]
 
+# Dipanggil Midtrans (tanpa JWT); keaslian dicek lewat signature_key
+[functions.midtrans-webhook]
+enabled = true
+verify_jwt = false
+
 [functions.update-employee]
 enabled = true
 verify_jwt = false

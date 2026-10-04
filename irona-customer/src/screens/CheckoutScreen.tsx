@@ -39,7 +39,7 @@ import { loadRecentOrders, rememberOrder } from './order/orderHistory';
 import { MAX_QTY, useQuickCart } from './home/useQuickCart';
 
 // Checkout online: hanya diantar (delivery) & bayar QRIS.
-// ponytail: mockup — ongkir/voucher/pesanan dari data mock, QRIS Midtrans belum tersambung.
+// Harga, ongkir & total final dihitung ulang Edge Function create-online-order; voucher belum aktif.
 
 const panelClass = 'rounded-[4px] border border-foreground bg-card';
 const focusClass =
@@ -246,7 +246,7 @@ function Checkout({
   >({ produk: undefined, ongkir: undefined });
   const voucherDialog = useRef<HTMLDialogElement>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const placed = useRef(false);
 
   // Keranjang dikosongkan setelah halaman ini lepas (tirai transisi sudah menutup),
@@ -346,7 +346,7 @@ function Checkout({
         saveForNext ? { name: name.trim(), phone: phoneNumber, location } : null
       );
     setSubmitting(true);
-    setSubmitError(false);
+    setSubmitError(null);
     try {
       const order = await createOnlineOrder({
         customerName: name.trim(),
@@ -376,7 +376,7 @@ function Checkout({
       navigate(`/pesanan/${order.id}`);
     } catch (err) {
       console.error('Gagal membuat pesanan', err);
-      setSubmitError(true);
+      setSubmitError(err instanceof Error ? err.message : 'Gagal membuat pesanan. Coba lagi.');
       setSubmitting(false);
     }
   }
@@ -488,7 +488,9 @@ function Checkout({
               ) : confirmed ? (
                 // Mode ubah, pin belum digeser: titik lama masih berlaku
                 <div className="flex shrink-0 items-center gap-2.5">
-                  <p className="text-[11px] text-muted-foreground">Geser peta atau ketik alamat baru</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Geser peta atau ketik alamat baru
+                  </p>
                   <button
                     type="button"
                     onClick={() => setEditingPoint(false)}
@@ -706,58 +708,60 @@ function Checkout({
               </span>
             </label>
 
-            <div>
-              <button
-                type="button"
-                onClick={() => voucherDialog.current?.showModal()}
-                aria-haspopup="dialog"
-                className={cn(
-                  'flex h-[44px] w-full items-center gap-2.5 rounded-[6px] border border-foreground px-3 text-left transition-colors hover:bg-secondary',
-                  focusClass
+            {vouchers.length > 0 && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => voucherDialog.current?.showModal()}
+                  aria-haspopup="dialog"
+                  className={cn(
+                    'flex h-[44px] w-full items-center gap-2.5 rounded-[6px] border border-foreground px-3 text-left transition-colors hover:bg-secondary',
+                    focusClass
+                  )}
+                >
+                  <TicketPercent aria-hidden className="size-4 shrink-0" />
+                  <span className="flex-1 text-xs font-medium">Voucher</span>
+                  {menuSlot.discount > 0 || shipSlot.discount > 0 ? (
+                    <span className="flex gap-1.5">
+                      {[
+                        { target: 'produk' as const, label: 'Diskon menu', s: menuSlot },
+                        { target: 'ongkir' as const, label: 'Diskon ongkir', s: shipSlot },
+                      ].map(
+                        ({ target, label, s }) =>
+                          s.discount > 0 && (
+                            <span
+                              key={target}
+                              title={label}
+                              className={cn(
+                                'rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap tabular-nums',
+                                TARGET_TONE[target]
+                              )}
+                            >
+                              <span className="sr-only">{label} </span>−{formatRupiah(s.discount)}
+                            </span>
+                          )
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-muted-foreground">Pilih voucher</span>
+                  )}
+                  <ChevronRight aria-hidden className="size-4 shrink-0" />
+                </button>
+                {[menuSlot, shipSlot].map(
+                  ({ voucher, reason }) =>
+                    voucher &&
+                    reason && (
+                      <p
+                        key={voucher.id}
+                        role="status"
+                        className="mt-1.5 text-[11px] text-destructive"
+                      >
+                        {voucher.name} belum bisa dipakai: {reason}
+                      </p>
+                    )
                 )}
-              >
-                <TicketPercent aria-hidden className="size-4 shrink-0" />
-                <span className="flex-1 text-xs font-medium">Voucher</span>
-                {menuSlot.discount > 0 || shipSlot.discount > 0 ? (
-                  <span className="flex gap-1.5">
-                    {[
-                      { target: 'produk' as const, label: 'Diskon menu', s: menuSlot },
-                      { target: 'ongkir' as const, label: 'Diskon ongkir', s: shipSlot },
-                    ].map(
-                      ({ target, label, s }) =>
-                        s.discount > 0 && (
-                          <span
-                            key={target}
-                            title={label}
-                            className={cn(
-                              'rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap tabular-nums',
-                              TARGET_TONE[target]
-                            )}
-                          >
-                            <span className="sr-only">{label} </span>−{formatRupiah(s.discount)}
-                          </span>
-                        )
-                    )}
-                  </span>
-                ) : (
-                  <span className="text-[11px] text-muted-foreground">Pilih voucher</span>
-                )}
-                <ChevronRight aria-hidden className="size-4 shrink-0" />
-              </button>
-              {[menuSlot, shipSlot].map(
-                ({ voucher, reason }) =>
-                  voucher &&
-                  reason && (
-                    <p
-                      key={voucher.id}
-                      role="status"
-                      className="mt-1.5 text-[11px] text-destructive"
-                    >
-                      {voucher.name} belum bisa dipakai: {reason}
-                    </p>
-                  )
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           <div className="border-t border-foreground p-4">
@@ -825,7 +829,7 @@ function Checkout({
               )}
             >
               {submitError
-                ? 'Gagal membuat pesanan. Coba lagi.'
+                ? submitError
                 : (problem ?? 'Bisa dibayar pakai semua e-wallet & m-banking.')}
             </p>
             {/* Tab baru: isian checkout tetap utuh */}
