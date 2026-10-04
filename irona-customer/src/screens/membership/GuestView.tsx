@@ -48,16 +48,15 @@ const STEPS = [
 
 const RULES = [
   'Poin masuk setelah pesanan dibayar.',
-  'Dihitung dari harga produk, tidak termasuk ongkir.',
+  'Dihitung dari harga produk setelah diskon, tidak termasuk ongkir.',
   'Pesanan yang direfund, poinnya ditarik kembali.',
   'Kode reward berlaku 1 hari. Lewat dari itu hangus dan poin tidak kembali.',
 ];
 
 export default function GuestView() {
-  const { login } = useMember();
+  const { openLogin } = useMember();
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [tiers, setTiers] = useState<PointTier[]>([]);
-  const [joining, setJoining] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,16 +72,8 @@ export default function GuestView() {
     };
   }, []);
 
-  // TODO(backend): arahkan ke halaman daftar/login (OTP WhatsApp). Sementara langsung masuk dummy.
-  const join = async () => {
-    setJoining(true);
-    try {
-      await login();
-      window.scrollTo(0, 0);
-    } finally {
-      setJoining(false);
-    }
-  };
+  // Berhasil login = GuestView diganti MemberView; mulai dari atas walau tombolnya di bawah halaman
+  useEffect(() => () => window.scrollTo(0, 0), []);
 
   // Satu skema saja untuk tamu: tingkat terkecil
   const baseTier = tiers[0];
@@ -90,11 +81,10 @@ export default function GuestView() {
   const cta = (label: string, className?: string) => (
     <button
       type="button"
-      onClick={join}
-      disabled={joining}
+      onClick={openLogin}
       className={cn(btnSolid, 'h-10 px-5 text-[13px]', className)}
     >
-      {joining ? 'Memproses…' : label}
+      {label}
     </button>
   );
 
@@ -120,8 +110,7 @@ export default function GuestView() {
               {cta('Daftar Gratis')}
               <button
                 type="button"
-                onClick={join}
-                disabled={joining}
+                onClick={openLogin}
                 className={cn(btnOutline, 'h-10 px-5 text-[13px]')}
               >
                 Sudah member? Login
@@ -283,7 +272,7 @@ export default function GuestView() {
               <h2 className="font-display text-[26px] leading-tight md:text-[30px]">
                 Siap jadi teman Kora?
               </h2>
-              <p className="mt-1 text-sm opacity-80">Daftar gratis, cukup pakai nomor HP.</p>
+              <p className="mt-1 text-sm opacity-80">Daftar gratis, cukup pakai email &amp; nomor HP.</p>
             </div>
           </div>
           {cta(

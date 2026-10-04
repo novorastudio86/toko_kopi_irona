@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Link } from 'react-router';
 import footerLogo from '@/assets/home/footer-logo.webp';
 import { NAV_LINKS } from '@/constants/navigation';
 import { useStoreHours } from '@/hooks/useStoreHours';
@@ -69,6 +70,12 @@ export default function Footer() {
               </a>
             </>
           )}
+          <Link to="/kebijakan-privasi" className="w-fit hover:underline">
+            Kebijakan Privasi
+          </Link>
+          <Link to="/syarat-ketentuan" className="w-fit hover:underline">
+            Syarat &amp; Ketentuan
+          </Link>
         </FooterColumn>
 
         <FooterColumn title="Jam Buka" className="md:flex-1 md:pt-[3px]">

@@ -1,5 +1,5 @@
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
-import { Check, Copy, LogOut } from 'lucide-react';
+import { Check, Copy, LogOut, Pencil } from 'lucide-react';
 import koraNgopi from '@/assets/tentang/kora-ngopi.webp';
 import { useMember } from '@/hooks/useMember';
 import { cn } from '@/lib/utils';
@@ -23,6 +23,7 @@ import type {
 } from '@/types/membership';
 import { formatRupiah } from '@/utils/format';
 import { canClaim, maskPhone, nextTarget, sortRewards, timeLeftLabel } from './membershipLogic';
+import ProfileDialog from './ProfileDialog';
 import RewardCard from './RewardCard';
 import { btnOutline, btnSolid, hardShadow, headingClass, sectionClass } from './styles';
 
@@ -345,6 +346,7 @@ export default function MemberView({ member }: { member: Member }) {
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [claims, setClaims] = useState<RewardClaim[]>([]);
   const [tab, setTab] = useState<'pesanan' | 'poin'>('pesanan');
+  const [editing, setEditing] = useState(false);
   // Jam untuk sisa waktu kode; diperbarui tiap menit
   const [now, setNow] = useState(() => Date.now());
 
@@ -479,10 +481,25 @@ export default function MemberView({ member }: { member: Member }) {
           </section>
 
           <section aria-labelledby="akun-title" className="self-start border border-foreground p-4">
-            <h2 id="akun-title" className="text-sm font-semibold">
-              Akun
-            </h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 id="akun-title" className="text-sm font-semibold">
+                Akun
+              </h2>
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                aria-haspopup="dialog"
+                className={cn(btnOutline, 'h-8 grid-flow-col gap-1.5 px-3')}
+              >
+                <Pencil aria-hidden className="size-3.5" />
+                Edit profil
+              </button>
+            </div>
             <dl className="mt-3 grid gap-2 text-[13px]">
+              <div>
+                <dt className="text-[11px] text-muted-foreground">Email</dt>
+                <dd className="break-all">{member.email}</dd>
+              </div>
               <div>
                 <dt className="text-[11px] text-muted-foreground">Nama</dt>
                 <dd>{member.name}</dd>
@@ -500,6 +517,7 @@ export default function MemberView({ member }: { member: Member }) {
               <LogOut aria-hidden className="size-3.5" />
               Keluar
             </button>
+            {editing && <ProfileDialog member={member} onClose={() => setEditing(false)} />}
           </section>
         </div>
       </section>

@@ -15,6 +15,7 @@ import { mockDelay } from './mockDelay';
 
 const MOCK_MEMBER: Member = {
   id: 'cust-dummy-1',
+  email: 'kora@irona.id',
   name: 'Kora Friend',
   phoneNumber: '081234567890',
   pointsBalance: 18,
@@ -115,14 +116,62 @@ function page<T>(items: T[], offset: number, limit: number): Promise<Page<T>> {
   });
 }
 
+/** Akun yang sudah terdaftar di mock; email lain dianggap member baru */
+export const DEMO_MEMBER_EMAIL = MOCK_MEMBER.email;
+
+// ponytail: akun dummy di memori modul, member baru hilang saat refresh; ganti dengan tabel customers
+const MOCK_ACCOUNTS: Member[] = [MOCK_MEMBER];
+
 /**
- * Login member. Sementara langsung mengembalikan member dummy.
- * TODO(backend): ganti dengan Supabase Auth (OTP WhatsApp / Google), lalu ambil baris customers
- * lewat customers.auth_user_id. Tolak kalau customers.is_active = false.
+ * Kirim kode masuk 6 angka ke email (dipakai untuk masuk maupun daftar).
+ * TODO(backend): supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true } })
  */
-export async function signInMember(): Promise<Member> {
-  return mockDelay(MOCK_MEMBER);
+export async function sendLoginCode(email: string): Promise<void> {
+  void email;
+  return mockDelay(undefined);
 }
+
+/**
+ * Cek kode. Hasil null = email belum punya data member → lanjut isi nama & nomor HP.
+ * Demo: kode apa saja diterima.
+ * TODO(backend): supabase.auth.verifyOtp({ email, token: code, type: 'email' }), lalu ambil
+ * customers lewat auth_user_id. Tolak kalau customers.is_active = false.
+ */
+export async function verifyLoginCode(email: string, code: string): Promise<Member | null> {
+  void code;
+  const key = email.trim().toLowerCase();
+  return mockDelay(MOCK_ACCOUNTS.find((m) => m.email === key) ?? null);
+}
+
+/** Member baru setelah kode valid. TODO(backend): insert customers (auth_user_id, name, phone) */
+export async function registerMember(
+  email: string,
+  name: string,
+  phoneNumber: string
+): Promise<Member> {
+  const member: Member = {
+    id: `cust-${Date.now()}`,
+    email: email.trim().toLowerCase(),
+    name,
+    phoneNumber,
+    pointsBalance: 0,
+  };
+  MOCK_ACCOUNTS.push(member);
+  return mockDelay(member);
+}
+
+/** Ubah nama & nomor HP. Email tidak bisa diubah. TODO(backend): update customers (RLS self) */
+export async function updateMemberProfile(
+  memberId: string,
+  data: Pick<Member, 'name' | 'phoneNumber'>
+): Promise<void> {
+  const account = MOCK_ACCOUNTS.find((m) => m.id === memberId);
+  if (account) Object.assign(account, data);
+  return mockDelay(undefined);
+}
+
+/** Riwayat & kode dummy hanya milik akun demo; member baru mulai dari kosong */
+const isDemo = (memberId: string) => memberId === MOCK_MEMBER.id;
 
 /** Reward aktif (reward_overview.is_active) urut poin termurah */
 export async function fetchActiveRewards(): Promise<Reward[]> {
@@ -136,8 +185,9 @@ export async function fetchPointTiers(): Promise<PointTier[]> {
 
 /** Kode reward yang belum ditukar & belum hangus (reward_claim_overview.status = 'menunggu') */
 export async function fetchActiveClaims(memberId: string): Promise<RewardClaim[]> {
-  void memberId; // TODO(backend): RLS reward_claims_self_select sudah membatasi ke member ini
-  return mockDelay(MOCK_CLAIMS.filter((c) => new Date(c.expiresAt).getTime() > Date.now()));
+  // TODO(backend): RLS reward_claims_self_select sudah membatasi ke member ini
+  const claims = isDemo(memberId) ? MOCK_CLAIMS : [];
+  return mockDelay(claims.filter((c) => new Date(c.expiresAt).getTime() > Date.now()));
 }
 
 /** Riwayat pesanan member, terbaru dulu */
@@ -146,8 +196,8 @@ export async function fetchMemberTransactions(
   offset: number,
   limit: number
 ): Promise<Page<MemberTransaction>> {
-  void memberId; // TODO(backend): filter transactions.customer_id = memberId
-  return page(MOCK_TRANSACTIONS, offset, limit);
+  // TODO(backend): filter transactions.customer_id = memberId
+  return page(isDemo(memberId) ? MOCK_TRANSACTIONS : [], offset, limit);
 }
 
 /** Riwayat poin masuk/keluar (point_transactions), terbaru dulu */
@@ -156,8 +206,8 @@ export async function fetchPointHistory(
   offset: number,
   limit: number
 ): Promise<Page<PointHistory>> {
-  void memberId; // TODO(backend): filter point_transactions.customer_id = memberId
-  return page(MOCK_POINTS, offset, limit);
+  // TODO(backend): filter point_transactions.customer_id = memberId
+  return page(isDemo(memberId) ? MOCK_POINTS : [], offset, limit);
 }
 
 /**

@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { Check, ChevronRight, MapPin, QrCode, TicketPercent, UserRound, X } from 'lucide-react';
+import {
+  Check,
+  ChevronRight,
+  MapPin,
+  Pencil,
+  QrCode,
+  TicketPercent,
+  UserRound,
+  X,
+} from 'lucide-react';
 import { useMember } from '@/hooks/useMember';
 import { cn } from '@/lib/utils';
 import {
@@ -13,7 +22,7 @@ import { fetchAllOnlineProducts } from '@/services/products';
 import type { Member } from '@/types/membership';
 import type { DeliveryQuote, DeliverySettings, LatLng, Voucher } from '@/types/onlineOrder';
 import type { Product } from '@/types/product';
-import { formatRupiah } from '@/utils/format';
+import { cleanPhone, formatRupiah, PHONE_PATTERN } from '@/utils/format';
 import {
   bestVoucher,
   checkVoucher,
@@ -39,8 +48,6 @@ const fieldClass = cn(
   'h-[36px] w-full rounded-[6px] border border-foreground bg-background px-3 text-xs placeholder:text-muted-foreground',
   focusClass
 );
-/** 08xx / 628xx / +628xx, 10–14 digit */
-const PHONE_PATTERN = /^(\+62|62|0)8\d{8,11}$/;
 
 interface SavedCheckout {
   name: string;
@@ -153,9 +160,8 @@ function Step({
   );
 }
 
-/** key = member: login/logout memasang ulang form, jadi isian awal ikut berganti */
 export default function CheckoutScreen() {
-  const { member, login } = useMember();
+  const { member, openLogin } = useMember();
   const { itemCount } = useQuickCart();
   const [recent] = useState(loadRecentOrders);
 
@@ -188,18 +194,18 @@ export default function CheckoutScreen() {
   return (
     <>
       <title>Checkout | Toko Kopi Irona</title>
-      <Checkout key={member?.id ?? 'guest'} member={member} login={login} recent={recent} />
+      <Checkout member={member} openLogin={openLogin} recent={recent} />
     </>
   );
 }
 
 function Checkout({
   member,
-  login,
+  openLogin,
   recent,
 }: {
   member: Member | null;
-  login: () => Promise<void>;
+  openLogin: () => void;
   recent: RecentOrder[];
 }) {
   const navigate = useNavigate();
@@ -213,17 +219,31 @@ function Checkout({
   const [location, setLocation] = useState<LatLng | null>(saved?.location ?? null);
   /** Titik yang sudah dikonfirmasi; titik tersimpan member dianggap sudah dikonfirmasi */
   const [confirmed, setConfirmed] = useState<LatLng | null>(saved?.location ?? null);
+  /** "Ubah titik": peta dibuka lagi, tapi titik & ongkir lama baru gugur kalau pin benar-benar digeser */
+  const [editingPoint, setEditingPoint] = useState(false);
   const [quoteAttempt, setQuoteAttempt] = useState(0);
   const [name, setName] = useState(saved?.name ?? member?.name ?? '');
   const [phone, setPhone] = useState(saved?.phone ?? member?.phoneNumber ?? '');
   const [driverNote, setDriverNote] = useState('');
   const [saveForNext, setSaveForNext] = useState(true);
   const [orderNote, setOrderNote] = useState('');
+
+  // Login lewat pop-up tanpa memasang ulang form: yang sudah diketik tetap, yang kosong diisi data member
+  const [filledFor, setFilledFor] = useState(member?.id);
+  if (member && member.id !== filledFor) {
+    setFilledFor(member.id);
+    const s = loadSaved(member.id);
+    if (!name.trim()) setName(s?.name ?? member.name);
+    if (!phone.trim()) setPhone(s?.phone ?? member.phoneNumber);
+    if (!location && s?.location) {
+      setLocation(s.location);
+      setConfirmed(s.location);
+    }
+  }
   /** Per sasaran: undefined = otomatis (promo otomatis potongan terbesar), null = tanpa voucher */
   const [voucherPicks, setVoucherPicks] = useState<
     Record<VoucherTarget, string | null | undefined>
   >({ produk: undefined, ongkir: undefined });
-  const [joining, setJoining] = useState(false);
   const voucherDialog = useRef<HTMLDialogElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
@@ -296,7 +316,7 @@ function Checkout({
   const adminFee = settings?.serviceFee ?? 0;
   const total = subtotal + (shippingFee ?? 0) + adminFee - menuSlot.discount - shipSlot.discount;
 
-  const cleanPhone = phone.replace(/[\s-]/g, '');
+  const phoneNumber = cleanPhone(phone);
   const problem = !products
     ? 'Memuat pesanan…'
     : subtotal === 0
@@ -313,20 +333,9 @@ function Checkout({
                 ? 'Titik antar di luar jangkauan'
                 : !name.trim()
                   ? 'Isi nama pemesan'
-                  : !PHONE_PATTERN.test(cleanPhone)
+                  : !PHONE_PATTERN.test(phoneNumber)
                     ? 'Nomor WhatsApp belum valid'
                     : null;
-
-  // TODO(backend): arahkan ke halaman daftar/login (OTP WhatsApp). Sementara langsung masuk dummy.
-  async function join() {
-    setJoining(true);
-    try {
-      await login(); // member berganti → form dipasang ulang dengan data tersimpan
-    } catch (err) {
-      console.error('Gagal masuk member', err);
-      setJoining(false);
-    }
-  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -334,14 +343,14 @@ function Checkout({
     if (member)
       storeSaved(
         member.id,
-        saveForNext ? { name: name.trim(), phone: cleanPhone, location } : null
+        saveForNext ? { name: name.trim(), phone: phoneNumber, location } : null
       );
     setSubmitting(true);
     setSubmitError(false);
     try {
       const order = await createOnlineOrder({
         customerName: name.trim(),
-        phone: cleanPhone,
+        phone: phoneNumber,
         location: confirmed,
         address,
         driverNote: driverNote.trim(),
@@ -415,21 +424,21 @@ function Checkout({
               </div>
               <button
                 type="button"
-                onClick={join}
-                disabled={joining}
+                onClick={openLogin}
+                aria-haspopup="dialog"
                 className={cn(
                   'h-9 shrink-0 rounded-[6px] bg-primary px-4 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/85 disabled:opacity-60',
                   focusClass
                 )}
               >
-                {joining ? 'Memproses…' : 'Masuk / Daftar'}
+                Masuk / Daftar
               </button>
             </div>
           )}
 
           <Step
             title="Titik Antar"
-            hint="Geser peta sampai pin tepat di lokasimu, lalu konfirmasi. Driver mengantar ke titik ini."
+            hint="Geser peta sampai pin tepat di lokasimu, lalu konfirmasi. Setelah dikonfirmasi, peta terkunci."
             aside={
               settings && (
                 <span className="shrink-0 rounded-full border border-foreground px-2.5 py-0.5 text-[11px] font-medium">
@@ -442,6 +451,7 @@ function Checkout({
               <LocationPicker
                 value={location}
                 fallback={store}
+                locked={confirmed !== null && !editingPoint}
                 onChange={(point) => {
                   // Pin bergeser = titik lama tidak berlaku, ongkir menunggu konfirmasi ulang
                   setLocation(point);
@@ -457,15 +467,46 @@ function Checkout({
                 <MapPin aria-hidden className="mt-px size-3.5 shrink-0" />
                 {!location ? 'Belum ada titik antar' : (address ?? 'Mencari alamat…')}
               </p>
-              {confirmed ? (
-                <p className="flex shrink-0 items-center gap-1 text-[11px] font-medium">
-                  <Check aria-hidden className="size-3.5" />
-                  Titik dikonfirmasi
-                </p>
+              {confirmed && !editingPoint ? (
+                <div className="flex shrink-0 items-center gap-2.5">
+                  <p className="flex items-center gap-1 text-[11px] font-medium">
+                    <Check aria-hidden className="size-3.5" />
+                    Titik dikonfirmasi
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setEditingPoint(true)}
+                    className={cn(
+                      'flex h-8 items-center gap-1.5 rounded-[6px] border border-foreground px-3 text-[11px] font-semibold transition-colors hover:bg-secondary',
+                      focusClass
+                    )}
+                  >
+                    <Pencil aria-hidden className="size-3" />
+                    Ubah titik
+                  </button>
+                </div>
+              ) : confirmed ? (
+                // Mode ubah, pin belum digeser: titik lama masih berlaku
+                <div className="flex shrink-0 items-center gap-2.5">
+                  <p className="text-[11px] text-muted-foreground">Geser peta ke titik baru</p>
+                  <button
+                    type="button"
+                    onClick={() => setEditingPoint(false)}
+                    className={cn(
+                      'h-8 rounded-[6px] border border-foreground px-3 text-[11px] font-semibold transition-colors hover:bg-secondary',
+                      focusClass
+                    )}
+                  >
+                    Batal
+                  </button>
+                </div>
               ) : (
                 <button
                   type="button"
-                  onClick={() => setConfirmed(location)}
+                  onClick={() => {
+                    setConfirmed(location);
+                    setEditingPoint(false);
+                  }}
                   disabled={!location}
                   className={cn(
                     'h-8 shrink-0 rounded-[6px] bg-primary px-3 text-[11px] font-semibold text-primary-foreground transition-colors hover:bg-primary/85 disabled:opacity-40',
@@ -786,6 +827,28 @@ function Checkout({
               {submitError
                 ? 'Gagal membuat pesanan. Coba lagi.'
                 : (problem ?? 'Bisa dibayar pakai semua e-wallet & m-banking.')}
+            </p>
+            {/* Tab baru: isian checkout tetap utuh */}
+            <p className="mt-1.5 text-center text-[11px] text-muted-foreground">
+              Dengan membayar, kamu menyetujui{' '}
+              <a
+                href="/syarat-ketentuan"
+                target="_blank"
+                rel="noreferrer"
+                className={cn('underline underline-offset-2', focusClass)}
+              >
+                S&amp;K
+              </a>{' '}
+              &amp;{' '}
+              <a
+                href="/kebijakan-privasi"
+                target="_blank"
+                rel="noreferrer"
+                className={cn('underline underline-offset-2', focusClass)}
+              >
+                Kebijakan Privasi
+              </a>
+              .
             </p>
           </div>
         </section>

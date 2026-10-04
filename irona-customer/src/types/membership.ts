@@ -4,6 +4,8 @@
 /** customers — member yang sedang login */
 export interface Member {
   id: string;
+  /** Dipakai untuk masuk (kode via email); tidak bisa diubah sendiri oleh member */
+  email: string;
   name: string;
   phoneNumber: string;
   pointsBalance: number;

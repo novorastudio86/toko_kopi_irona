@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { Menu, ShoppingCart, X } from 'lucide-react';
 import logoKoala from '@/assets/home/logo-koala.webp';
 import wordmark from '@/assets/home/wordmark.webp';
@@ -11,16 +11,13 @@ import NavItem from './NavItem';
 
 export default function Navbar() {
   const { itemCount } = useCart();
-  const { member, login } = useMember();
-  const navigate = useNavigate();
+  const { member, openLogin } = useMember();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const closeMenu = () => setMenuOpen(false);
-  // Sementara tanpa halaman login: CTA langsung masuk sebagai member dummy
-  const handleLogin = async () => {
+  const handleLogin = () => {
     closeMenu();
-    await login();
-    navigate('/membership');
+    openLogin();
   };
 
   useEffect(() => {

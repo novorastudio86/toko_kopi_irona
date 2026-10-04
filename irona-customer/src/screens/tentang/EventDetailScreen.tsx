@@ -1,6 +1,6 @@
 import { useRef, useState, type ReactNode } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, MapPin, Share2, X } from 'lucide-react';
 import koraNgopi from '@/assets/tentang/kora-ngopi.webp';
 import { useStoreProfile } from '@/hooks/useStoreProfile';
 import { cn } from '@/lib/utils';
@@ -24,7 +24,7 @@ import {
 import { FEED } from './events';
 
 const buttonClass =
-  'grid h-10 w-full place-items-center rounded-[6px] border border-foreground text-[13px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground';
+  'flex h-10 w-full items-center justify-center gap-2 rounded-[6px] border border-foreground text-[13px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground';
 const solidButtonClass = cn(buttonClass, 'bg-primary text-primary-foreground hover:bg-primary/85');
 const outlineButtonClass = cn(buttonClass, 'bg-background hover:bg-secondary');
 
@@ -58,26 +58,63 @@ function Info({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-function ShareButton({ label, title }: { label: string; title: string }) {
-  const [copied, setCopied] = useState(false);
+function ShareButton({
+  label,
+  title,
+  className,
+}: {
+  label: string;
+  title: string;
+  className?: string;
+}) {
+  const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
   const share = async () => {
-    const data = { title, url: window.location.href };
-    // Web Share di HP; desktop yang tidak mendukung → salin link
-    if (navigator.share) return navigator.share(data).catch(() => {});
-    await navigator.clipboard.writeText(data.url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const url = window.location.href;
+    // Web Share (lembar bagikan HP); tidak didukung / gagal → salin link
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return; // dibatalkan pengguna
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setStatus('copied');
+    } catch {
+      setStatus('failed'); // clipboard ditolak (mis. bukan HTTPS)
+    }
+    setTimeout(() => setStatus('idle'), 2500);
   };
   return (
-    <button type="button" onClick={share} className={outlineButtonClass}>
-      {copied ? 'Link disalin' : label}
+    <button type="button" onClick={share} className={cn(outlineButtonClass, className)}>
+      {status === 'copied' ? (
+        <Check aria-hidden className="size-4" />
+      ) : (
+        <Share2 aria-hidden className="size-4" />
+      )}
+      <span aria-live="polite">
+        {status === 'copied'
+          ? 'Link disalin'
+          : status === 'failed'
+            ? 'Gagal menyalin, salin dari address bar'
+            : label}
+      </span>
     </button>
   );
 }
 
 function MapsButton({ href, children }: { href?: string; children: ReactNode }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" className={solidButtonClass}>
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-disabled={!href || undefined}
+      className={cn(solidButtonClass, !href && 'pointer-events-none opacity-40')}
+    >
+      <MapPin aria-hidden className="size-4" />
       {children}
     </a>
   );
@@ -207,7 +244,7 @@ function UpcomingEvent({ event, today }: { event: EventItem; today: string }) {
           </Info>
         </dl>
         <div className="mt-4 flex flex-col gap-3">
-          <MapsButton href={event.mapsUrl}>Buka lokasi di Maps</MapsButton>
+          <MapsButton href={event.mapsUrl}>Buka lokasi</MapsButton>
           <ShareButton label="Bagikan event" title={event.title} />
         </div>
       </aside>
@@ -232,6 +269,7 @@ function PastEvent({ event }: { event: EventItem }) {
         <Info label="Waktu">{event.time}</Info>
         <Info label="Lokasi">{event.location}</Info>
       </dl>
+      <ShareButton label="Bagikan event" title={event.title} className="mt-4 w-auto px-5" />
 
       {event.photos?.length ? <Documentation title={event.title} photos={event.photos} /> : null}
     </div>
