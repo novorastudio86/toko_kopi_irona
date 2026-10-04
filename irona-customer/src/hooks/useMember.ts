@@ -5,6 +5,7 @@ export interface MemberState {
   /** null = pengunjung umum (belum login) */
   member: Member | null;
   login: () => Promise<void>;
+  logout: () => void;
   /** Kurangi saldo lokal setelah tukar reward */
   spendPoints: (points: number) => void;
 }

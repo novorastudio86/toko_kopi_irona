@@ -2,10 +2,11 @@ import icedLattePhoto from '@/assets/home/product-iced-latte.webp';
 import type {
   Member,
   MemberTransaction,
+  Page,
+  PointHistory,
   PointTier,
   Reward,
   RewardClaim,
-  TransactionPage,
 } from '@/types/membership';
 import { mockDelay } from './mockDelay';
 
@@ -15,30 +16,41 @@ import { mockDelay } from './mockDelay';
 const MOCK_MEMBER: Member = {
   id: 'cust-dummy-1',
   name: 'Kora Friend',
-  phoneNumber: '081200000000',
-  pointsBalance: 12,
+  phoneNumber: '081234567890',
+  pointsBalance: 18,
 };
 
 const MOCK_REWARDS: Reward[] = [
   {
     id: 'reward-1',
     name: 'Gratis 1 Americano',
-    category: 'Potongan Produk',
+    productName: 'Americano',
     pointsRequired: 8,
+    availableStock: 20,
     photoUrl: null,
   },
   {
     id: 'reward-2',
-    name: 'Gratis 1 Es Kopi Susu Irona',
-    category: 'Potongan Produk',
-    pointsRequired: 12,
-    photoUrl: icedLattePhoto,
+    name: 'Gratis Kentang Goreng',
+    productName: 'Kentang Goreng',
+    pointsRequired: 15,
+    availableStock: 0,
+    photoUrl: null,
   },
   {
     id: 'reward-3',
-    name: 'Gratis Kentang Goreng',
-    category: 'Potongan Produk',
-    pointsRequired: 15,
+    name: 'Gratis 1 Es Kopi Susu Irona',
+    productName: 'Es Kopi Susu Irona',
+    pointsRequired: 25,
+    availableStock: 12,
+    photoUrl: icedLattePhoto,
+  },
+  {
+    id: 'reward-4',
+    name: 'Paket Kopi + Roti Bakar',
+    productName: 'Es Kopi Susu Irona & Roti Bakar',
+    pointsRequired: 40,
+    availableStock: 5,
     photoUrl: null,
   },
 ];
@@ -51,11 +63,11 @@ const MOCK_TIERS: PointTier[] = [
 
 const MOCK_TRANSACTIONS: MemberTransaction[] = [
   ['online', 'selesai', 54000, 6],
-  ['dine_in', 'selesai', 38000, 3],
+  ['dine_in', 'selesai', 38000, 4],
   ['take_away', 'selesai', 18000, 1],
   ['online', 'refund_penuh', 25000, 0],
   ['dine_in', 'selesai', 72000, 7],
-  ['online', 'selesai', 20000, 1],
+  ['online', 'selesai', 20000, 2],
   ['take_away', 'dibatalkan', 15000, 0],
 ].map(([orderType, status, totalAmount, pointsEarned], i) => ({
   id: `trx-${i + 1}`,
@@ -67,47 +79,110 @@ const MOCK_TRANSACTIONS: MemberTransaction[] = [
   pointsEarned,
 })) as MemberTransaction[];
 
+const MOCK_POINTS: PointHistory[] = [
+  [MOCK_TRANSACTIONS[0], 'earn', 6, null],
+  [null, 'redeem', -8, 'Klaim reward: Gratis 1 Americano'],
+  [MOCK_TRANSACTIONS[1], 'earn', 4, null],
+  [MOCK_TRANSACTIONS[2], 'earn', 1, null],
+  [MOCK_TRANSACTIONS[3], 'refund_reversal', -3, 'Pesanan direfund'],
+  [MOCK_TRANSACTIONS[4], 'earn', 7, null],
+  [null, 'adjust', 2, 'Bonus member baru'],
+].map(([trx, type, change, notes], i) => ({
+  id: `pt-${i + 1}`,
+  date:
+    (trx as MemberTransaction | null)?.transactionDate ??
+    new Date(2026, 8, 29 - i * 3).toISOString(),
+  type,
+  change,
+  notes,
+  transactionNumber: (trx as MemberTransaction | null)?.transactionNumber ?? null,
+})) as PointHistory[];
+
+// ponytail: klaim dummy disimpan di memori modul supaya kode baru tetap muncul setelah pindah halaman
+const MOCK_CLAIMS: RewardClaim[] = [
+  {
+    id: 'claim-1',
+    code: 'K7M2QXPA',
+    rewardName: 'Gratis 1 Americano',
+    expiresAt: new Date(Date.now() + 21 * 60 * 60 * 1000).toISOString(),
+  },
+];
+
+function page<T>(items: T[], offset: number, limit: number): Promise<Page<T>> {
+  return mockDelay({
+    items: items.slice(offset, offset + limit),
+    hasMore: offset + limit < items.length,
+  });
+}
+
 /**
  * Login member. Sementara langsung mengembalikan member dummy.
  * TODO(backend): ganti dengan Supabase Auth (OTP WhatsApp / Google), lalu ambil baris customers
- * lewat customers.auth_user_id.
+ * lewat customers.auth_user_id. Tolak kalau customers.is_active = false.
  */
 export async function signInMember(): Promise<Member> {
   return mockDelay(MOCK_MEMBER);
 }
 
-/** Reward aktif (rewards.is_active) urut poin termurah */
+/** Reward aktif (reward_overview.is_active) urut poin termurah */
 export async function fetchActiveRewards(): Promise<Reward[]> {
   return mockDelay(MOCK_REWARDS);
 }
 
-/** Aturan kelipatan belanja → poin (point_earning_tiers) */
+/** Aturan kelipatan belanja → poin (point_earning_tiers), urut nominal terkecil */
 export async function fetchPointTiers(): Promise<PointTier[]> {
   return mockDelay(MOCK_TIERS);
 }
 
-/** Riwayat transaksi member, terbaru dulu */
+/** Kode reward yang belum ditukar & belum hangus (reward_claim_overview.status = 'menunggu') */
+export async function fetchActiveClaims(memberId: string): Promise<RewardClaim[]> {
+  void memberId; // TODO(backend): RLS reward_claims_self_select sudah membatasi ke member ini
+  return mockDelay(MOCK_CLAIMS.filter((c) => new Date(c.expiresAt).getTime() > Date.now()));
+}
+
+/** Riwayat pesanan member, terbaru dulu */
 export async function fetchMemberTransactions(
   memberId: string,
   offset: number,
   limit: number
-): Promise<TransactionPage> {
+): Promise<Page<MemberTransaction>> {
   void memberId; // TODO(backend): filter transactions.customer_id = memberId
-  return mockDelay({
-    items: MOCK_TRANSACTIONS.slice(offset, offset + limit),
-    hasMore: offset + limit < MOCK_TRANSACTIONS.length,
-  });
+  return page(MOCK_TRANSACTIONS, offset, limit);
+}
+
+/** Riwayat poin masuk/keluar (point_transactions), terbaru dulu */
+export async function fetchPointHistory(
+  memberId: string,
+  offset: number,
+  limit: number
+): Promise<Page<PointHistory>> {
+  void memberId; // TODO(backend): filter point_transactions.customer_id = memberId
+  return page(MOCK_POINTS, offset, limit);
 }
 
 /**
- * Tukar poin dengan reward → kode untuk ditunjukkan ke kasir.
- * TODO(backend): panggil RPC klaim reward (buat reward_claims + potong poin) dan kembalikan saldo baru.
+ * Tukar poin dengan reward → kode 8 karakter untuk ditunjukkan ke kasir, berlaku 1 hari.
+ * TODO(backend): supabase.rpc('claim_reward', { p_reward_id }) — RPC sudah memotong poin,
+ * mencatat point_transactions 'redeem', dan menolak kalau stok habis / poin kurang.
  */
-export async function redeemReward(memberId: string, rewardId: string): Promise<RewardClaim> {
+export async function redeemReward(memberId: string, reward: Reward): Promise<RewardClaim> {
   void memberId;
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  return mockDelay({
-    code: `KORA-${rewardId.slice(-1)}${Date.now() % 10000}`,
-    expiresAt: expires.toISOString(),
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const code = Array.from({ length: 8 }, () => alphabet[Math.floor(Math.random() * 32)]).join('');
+  const claim: RewardClaim = {
+    id: `claim-${Date.now()}`,
+    code,
+    rewardName: reward.name,
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  };
+  MOCK_CLAIMS.unshift(claim);
+  MOCK_POINTS.unshift({
+    id: `pt-${Date.now()}`,
+    date: new Date().toISOString(),
+    type: 'redeem',
+    change: -reward.pointsRequired,
+    notes: `Klaim reward: ${reward.name}`,
+    transactionNumber: null,
   });
+  return mockDelay(claim);
 }

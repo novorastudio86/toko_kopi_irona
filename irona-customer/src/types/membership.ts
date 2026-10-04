@@ -1,4 +1,5 @@
-// Kolom mengikuti tabel Supabase (irona-backend): customers, rewards, point_earning_tiers, transactions.
+// Kolom mengikuti tabel Supabase (irona-backend): customers, reward_overview, reward_claim_overview,
+// point_earning_tiers, point_transactions, transactions.
 
 /** customers — member yang sedang login */
 export interface Member {
@@ -8,19 +9,22 @@ export interface Member {
   pointsBalance: number;
 }
 
-/** rewards — hadiah yang bisa ditukar poin */
+/** reward_overview (is_active) — produk gratis yang bisa ditukar poin */
 export interface Reward {
   id: string;
   name: string;
-  /** Label jenis reward di kartu, mis. "Potongan Produk" */
-  category: string;
+  productName: string;
   pointsRequired: number;
+  /** stok − kode yang masih menunggu ditukar; 0 = tidak bisa diklaim */
+  availableStock: number;
   photoUrl: string | null;
 }
 
-/** reward_claims — kode tukar yang ditunjukkan ke kasir */
+/** reward_claim_overview status 'menunggu' — kode yang ditunjukkan ke kasir */
 export interface RewardClaim {
+  id: string;
   code: string;
+  rewardName: string;
   expiresAt: string;
 }
 
@@ -28,6 +32,18 @@ export interface RewardClaim {
 export interface PointTier {
   minAmount: number;
   points: number;
+}
+
+export type PointType = 'earn' | 'redeem' | 'redeem_cancel' | 'adjust' | 'refund_reversal';
+
+/** point_transactions milik member */
+export interface PointHistory {
+  id: string;
+  date: string;
+  type: PointType;
+  change: number;
+  notes: string | null;
+  transactionNumber: string | null;
 }
 
 export type TransactionStatus = 'selesai' | 'refund_sebagian' | 'refund_penuh' | 'dibatalkan';
@@ -44,7 +60,7 @@ export interface MemberTransaction {
   pointsEarned: number;
 }
 
-export interface TransactionPage {
-  items: MemberTransaction[];
+export interface Page<T> {
+  items: T[];
   hasMore: boolean;
 }
