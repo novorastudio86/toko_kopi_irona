@@ -1,13 +1,14 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { LocateFixed, Lock, MapPin } from 'lucide-react';
+import { LocateFixed, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { LatLng } from '@/types/onlineOrder';
+import AddressSearch from './AddressSearch';
 
 /**
  * Pin tetap di tengah, peta yang digeser (seperti Shopee/Gojek). Titik = tengah peta setelah berhenti digeser.
- * Saat pertama dibuka tanpa titik tersimpan, langsung minta lokasi perangkat.
+ * Saat pertama dibuka tanpa titik tersimpan, langsung minta lokasi perangkat. Bisa juga ketik alamat.
  * locked = titik sudah dikonfirmasi: peta tidak bisa digeser (zoom tetap boleh, pin di tengah tidak
  * berpindah), jadi titik & ongkir tidak gugur karena tergeser tanpa sengaja.
  */
@@ -56,6 +57,15 @@ export default function LocationPicker({
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
+  }
+
+  /** Alamat dipilih dari saran -> peta pindah ke sana; pin tetap perlu dikonfirmasi seperti hasil geser */
+  function goTo(point: LatLng) {
+    const map = mapRef.current;
+    if (!map || lockedRef.current) return;
+    setGeoError(null);
+    armedRef.current = true;
+    map.setView(point, 17);
   }
 
   const emit = useEffectEvent(() => {
@@ -152,12 +162,7 @@ export default function LocationPicker({
           aria-hidden
           className="pointer-events-none absolute top-1/2 left-1/2 z-[1000] size-1.5 -translate-1/2 rounded-full bg-primary/50"
         />
-        {locked ? (
-          <span className="pointer-events-none absolute top-2.5 left-2.5 z-[1000] flex h-8 items-center gap-1.5 rounded-[6px] border border-foreground bg-background px-2.5 text-[11px] font-medium shadow-sm">
-            <Lock aria-hidden className="size-3.5" />
-            Titik terkunci
-          </span>
-        ) : (
+        {!locked && (
           <button
             type="button"
             onClick={() => mapRef.current && locate(mapRef.current)}
@@ -169,6 +174,7 @@ export default function LocationPicker({
           </button>
         )}
       </div>
+      {!locked && <AddressSearch near={fallback} onPick={goTo} />}
       {geoError && (
         <p role="status" className="mt-2 text-[11px] text-destructive">
           {geoError}

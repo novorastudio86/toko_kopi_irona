@@ -438,7 +438,7 @@ function Checkout({
 
           <Step
             title="Titik Antar"
-            hint="Geser peta sampai pin tepat di lokasimu, lalu konfirmasi. Setelah dikonfirmasi, peta terkunci."
+            hint="Geser peta atau ketik alamat sampai pin tepat di lokasimu, lalu konfirmasi."
             aside={
               settings && (
                 <span className="shrink-0 rounded-full border border-foreground px-2.5 py-0.5 text-[11px] font-medium">
@@ -488,7 +488,7 @@ function Checkout({
               ) : confirmed ? (
                 // Mode ubah, pin belum digeser: titik lama masih berlaku
                 <div className="flex shrink-0 items-center gap-2.5">
-                  <p className="text-[11px] text-muted-foreground">Geser peta ke titik baru</p>
+                  <p className="text-[11px] text-muted-foreground">Geser peta atau ketik alamat baru</p>
                   <button
                     type="button"
                     onClick={() => setEditingPoint(false)}
