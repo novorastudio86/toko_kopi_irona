@@ -14,7 +14,8 @@ export async function fetchStoreHours(): Promise<Record<HoursChannel, DayHours[]
       dayOfWeek: row.day_of_week,
       isOpen: row.is_open,
       openTime: row.open_time?.slice(0, 5) ?? '',
-      closeTime: row.close_time?.slice(0, 5) ?? '',
+      // 24:00 (tengah malam) tidak bisa tampil di input type="time", jadi pakai 00:00
+      closeTime: row.close_time?.startsWith('24:') ? '00:00' : row.close_time?.slice(0, 5) ?? '',
     });
   });
   return result;
@@ -28,7 +29,7 @@ export async function saveStoreHours(channel: HoursChannel, days: DayHours[]): P
       day_of_week: d.dayOfWeek,
       is_open: d.isOpen,
       open_time: d.isOpen ? d.openTime : null,
-      close_time: d.isOpen ? d.closeTime : null,
+      close_time: d.isOpen ? (d.closeTime === '00:00' ? '24:00' : d.closeTime) : null,
     })),
   });
   if (error) throw error;

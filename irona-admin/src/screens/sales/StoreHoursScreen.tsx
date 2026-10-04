@@ -64,7 +64,10 @@ function HoursSection({
 
   async function handleSave() {
     const invalid = days.find(
-      (d) => d.isOpen && (!d.openTime || !d.closeTime || d.closeTime <= d.openTime)
+      // Jam tutup 00:00 = tengah malam (disimpan 24:00)
+      (d) =>
+        d.isOpen &&
+        (!d.openTime || !d.closeTime || (d.closeTime !== '00:00' && d.closeTime <= d.openTime))
     );
     if (invalid) {
       setError(`${DAY_NAMES[invalid.dayOfWeek]}: jam tutup harus setelah jam buka.`);
