@@ -73,10 +73,14 @@ export async function createOnlineOrder(input: NewOnlineOrder): Promise<OnlineOr
 
 /**
  * Status terbaru pesanan (dipanggil berkala selama menunggu bayar).
- * Status dibayar diisi webhook Midtrans (midtrans-webhook), bukan oleh client.
+ * Edge Function online-order-status: selama belum lunas, server ikut cek status ke Midtrans
+ * (cadangan webhook). Status dibayar tidak pernah diisi client.
  */
 export async function fetchOnlineOrder(id: string): Promise<OnlineOrder | null> {
-  const { data, error } = await supabase.rpc('get_online_order', { p_id: id });
+  const { data, error } = await supabase.functions.invoke<OnlineOrder | null>(
+    'online-order-status',
+    { body: { id } }
+  );
   if (error) throw error;
-  return (data as OnlineOrder | null) ?? null;
+  return data ?? null;
 }

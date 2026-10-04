@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { signatureOf } from '../_shared/midtrans.ts';
+import { applyMidtransStatus, signatureOf, UUID_PATTERN } from '../_shared/midtrans.ts';
 
 // Payment Notification URL Midtrans → https://<project>/functions/v1/midtrans-webhook
 // verify_jwt = false (Midtrans tidak mengirim JWT); keaslian dicek lewat signature_key.
@@ -24,45 +24,11 @@ Deno.serve(async (req) => {
   }
 
   // Mis. "Test notification" dari dashboard Midtrans: order_id bukan pesanan kita (bukan uuid)
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderId)) {
-    return new Response('ok');
-  }
+  if (!UUID_PATTERN.test(orderId)) return new Response('ok');
 
   const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-
   try {
-    const { data: order, error } = await admin
-      .from('online_orders')
-      .select('id, total')
-      .eq('id', orderId)
-      .maybeSingle();
-    if (error) throw error;
-    if (!order) return new Response('ok');
-    if (Number(grossAmount) !== Number(order.total)) {
-      console.error('midtrans-webhook: nominal tidak cocok', orderId, grossAmount, order.total);
-      return new Response('ok');
-    }
-
-    const status = String(n.transaction_status);
-    const paid = status === 'settlement' || (status === 'capture' && n.fraud_status === 'accept');
-    if (paid) {
-      const { error: settleErr } = await admin.rpc('settle_online_order', {
-        p_id: orderId,
-        p_midtrans_status: status,
-      });
-      if (settleErr) throw settleErr;
-    } else {
-      const next =
-        status === 'expire' ? 'kedaluwarsa'
-        : status === 'cancel' || status === 'deny' || status === 'failure' ? 'dibatalkan'
-        : null;
-      const { error: updErr } = await admin
-        .from('online_orders')
-        .update(next ? { midtrans_status: status, status: next } : { midtrans_status: status })
-        .eq('id', orderId)
-        .eq('status', 'menunggu_pembayaran');
-      if (updErr) throw updErr;
-    }
+    await applyMidtransStatus(admin, n);
     return new Response('ok');
   } catch (err) {
     console.error('midtrans-webhook', err);

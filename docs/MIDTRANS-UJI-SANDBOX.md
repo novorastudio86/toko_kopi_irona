@@ -14,6 +14,7 @@ Kerjakan dulu `docs/MIDTRANS-SETUP.md` sampai langkah 3 (akun sandbox dan Server
 | Migration | `irona-backend/supabase/migrations/20261004000000_online_orders_midtrans.sql` | Tabel `online_orders`, menu publik, `settle_online_order`, `get_online_order` |
 | Edge Function | `irona-backend/supabase/functions/create-online-order` | Hitung ulang harga & ongkir, simpan pesanan, minta QRIS ke Midtrans |
 | Edge Function | `irona-backend/supabase/functions/midtrans-webhook` | Terima notifikasi Midtrans, cek `signature_key`, tandai lunas / kedaluwarsa |
+| Edge Function | `irona-backend/supabase/functions/online-order-status` | Status untuk halaman pesanan; selama belum lunas ikut cek status ke Midtrans (cadangan webhook) |
 | Web Customer | `irona-customer/src/services/onlineOrder.ts`, `products.ts`, `categories.ts` | Baca menu dari Supabase, kirim checkout, cek status |
 
 ---
@@ -49,6 +50,8 @@ npx supabase functions serve --env-file supabase/functions/.env
 ---
 
 ## Langkah 3: Buka tunnel dan pasang Notification URL
+
+> **Opsional untuk uji lokal.** Tanpa ngrok, status tetap berubah jadi lunas karena halaman pesanan ikut mengecek status langsung ke Midtrans (`online-order-status`). Tunnel tetap perlu untuk menguji webhook itu sendiri (skenario C & D) dan wajib ada di production.
 
 Di terminal lain:
 
@@ -167,7 +170,7 @@ Di dashboard Midtrans, buka detail transaksi yang sudah `settlement`. Lalu kirim
 | Menu kosong di Web Customer | Belum ada kategori atau produk online (langkah 4), atau `.env.local` belum diisi |
 | "Pesanan online sedang tutup." | Jam Buka kanal Online sedang tutup (langkah 4) |
 | "Gagal membuat QRIS. Coba lagi sebentar." | Server Key salah/kosong, atau `functions serve` dijalankan tanpa `--env-file`. Lihat log terminal: `midtrans charge gagal 401` berarti Server Key salah |
-| QR muncul, simulator sukses, tapi status tidak berubah | Notification URL salah, ngrok mati, atau URL ngrok berganti. Cek log di http://127.0.0.1:4040 (inspector ngrok) |
+| QR muncul, simulator sukses, tapi status tidak berubah | Halaman pesanan harus tetap terbuka (status dicek tiap 5 detik). Kalau tetap tidak berubah, lihat error di terminal `functions serve`. Untuk webhook: cek Notification URL & ngrok di http://127.0.0.1:4040 |
 | Webhook membalas 401 | Server Key di `.env` berbeda dengan akun yang dipakai untuk membuat QRIS |
 | "Ada menu yang sudah tidak tersedia" | Produk dijeda atau dimatikan setelah masuk keranjang. Muat ulang halaman |
 

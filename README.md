@@ -147,6 +147,16 @@ npm run dev
 
 Buka http://localhost:5173
 
+Port tiap app sudah dikunci supaya bisa dijalankan bersamaan tanpa bentrok:
+
+| App | Alamat |
+|---|---|
+| Web Admin | http://localhost:5173 |
+| Web Customer | http://localhost:5174 |
+| Supabase (API / DB / Studio / Mailpit) | 54321 / 54322 / 54323 / 54324 |
+
+Kalau muncul error `Port 517x is already in use`, berarti app itu sudah jalan di terminal lain.
+
 ---
 
 ## 6. Login pertama kali

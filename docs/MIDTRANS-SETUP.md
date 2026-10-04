@@ -16,7 +16,7 @@ Aturan bisnis yang dipakai (lihat `docs/ATURAN-BISNIS.md`):
 |---|---|---|---|
 | 1 | **Email aktif** (disarankan email bisnis toko) | Daftar akun Midtrans | Ya |
 | 2 | **Akun Midtrans** (sandbox) | Mengambil Server Key & mengatur webhook | Ya |
-| 3 | **Server Key sandbox** (`SB-Mid-server-...`) | Dipakai Edge Function untuk membuat QRIS & mengecek status | Ya |
+| 3 | **Server Key sandbox** (salin persis dari dashboard; akun lama `SB-Mid-server-...`, akun baru `Mid-server-...`) | Dipakai Edge Function untuk membuat QRIS & mengecek status | Ya |
 | 4 | **Merchant ID** & **Client Key** sandbox | Catatan saja; Client Key tidak dipakai di alur QRIS Core API | Catat saja |
 | 5 | **Docker Desktop** + Supabase lokal jalan (`npx supabase start`) | Menjalankan database & Edge Function di komputer | Ya |
 | 6 | **Akun ngrok** (gratis) + authtoken, atau **cloudflared** | Membuka URL publik ke komputer lokal supaya webhook Midtrans bisa masuk | Ya, untuk uji di lokal |
@@ -51,8 +51,8 @@ Untuk **production** nanti (bukan sekarang), siapkan juga:
    | Nama | Contoh awalan | Rahasia? |
    |---|---|---|
    | Merchant ID | `G123456789` | Tidak |
-   | Client Key | `SB-Mid-client-...` | Tidak (boleh di browser) |
-   | **Server Key** | `SB-Mid-server-...` | **Ya, rahasia** |
+   | Client Key | `Mid-client-...` (akun lama: `SB-Mid-client-...`) | Tidak (boleh di browser) |
+   | **Server Key** | `Mid-server-...` (akun lama: `SB-Mid-server-...`) | **Ya, rahasia** |
 
 > **Penting:** Server Key **tidak boleh** ditulis di kode, di-commit ke Git, atau dimasukkan ke variabel `VITE_...`. Variabel `VITE_...` ikut terkirim ke browser pelanggan. Server Key hanya disimpan sebagai *secret* Edge Function (langkah 5).
 
@@ -153,7 +153,7 @@ Endpoint webhook harus membalas **HTTP 200**. Kalau tidak, Midtrans mengirim ula
 | Dokumentasi QRIS | https://docs.midtrans.com/reference/qris |
 | Dokumentasi webhook | https://docs.midtrans.com/docs/https-notification-webhooks |
 
-Untuk **production**, alamat API berganti ke `https://api.midtrans.com`, Server Key berawalan `Mid-server-...`, dan `MIDTRANS_IS_PRODUCTION=true`.
+Untuk **production**, alamat API berganti ke `https://api.midtrans.com`, Server Key diambil dari dashboard mode **Production** (berbeda dengan key sandbox walau awalannya bisa sama), dan `MIDTRANS_IS_PRODUCTION=true`.
 
 ---
 
