@@ -81,5 +81,8 @@ export function useQuickCart() {
     write(next);
   }, []);
 
-  return { quantityOf, setQuantity, itemCount };
+  /** Kosongkan keranjang (setelah pesanan dibuat) */
+  const clear = useCallback(() => write({}), []);
+
+  return { quantityOf, setQuantity, itemCount, clear };
 }

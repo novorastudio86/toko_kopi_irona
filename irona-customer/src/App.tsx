@@ -7,6 +7,7 @@ import HomeScreen from './screens/HomeScreen';
 import MenuDetailScreen from './screens/MenuDetailScreen';
 import MenuScreen from './screens/MenuScreen';
 import MembershipScreen from './screens/membership/MembershipScreen';
+import OrderScreen from './screens/order/OrderScreen';
 import SiteLayout from './screens/SiteLayout';
 import TentangScreen from './screens/tentang/TentangScreen';
 
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/menu" element={<MenuScreen />} />
         <Route path="/menu/:id" element={<MenuDetailScreen />} />
         <Route path="/keranjang" element={<CheckoutScreen />} />
+        <Route path="/pesanan/:id" element={<OrderScreen />} />
         <Route path="/tentang" element={<TentangScreen />} />
         <Route path="/tentang/:id" element={<EventDetailScreen />} />
         <Route path="/membership" element={<MembershipScreen />} />

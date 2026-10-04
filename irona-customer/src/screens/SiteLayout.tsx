@@ -66,7 +66,7 @@ export default function SiteLayout() {
         </MotionConfig>
       </main>
       <Footer />
-      <PromoPopup hidden={pathname === '/keranjang'} />
+      <PromoPopup hidden={pathname === '/keranjang' || pathname.startsWith('/pesanan/')} />
     </div>
   );
 }

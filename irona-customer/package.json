@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write .",
-    "check": "node scripts/storeHours.check.ts && node scripts/filterMenu.check.ts && node scripts/events.check.ts && node scripts/membership.check.ts && node scripts/checkout.check.ts"
+    "check": "node scripts/storeHours.check.ts && node scripts/filterMenu.check.ts && node scripts/events.check.ts && node scripts/membership.check.ts && node scripts/checkout.check.ts && node scripts/order.check.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

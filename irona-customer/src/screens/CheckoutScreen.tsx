@@ -1,9 +1,14 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Check, ChevronRight, MapPin, QrCode, TicketPercent, UserRound, X } from 'lucide-react';
 import { useMember } from '@/hooks/useMember';
 import { cn } from '@/lib/utils';
-import { fetchDeliverySettings, fetchOnlineVouchers, quoteDelivery } from '@/services/onlineOrder';
+import {
+  createOnlineOrder,
+  fetchDeliverySettings,
+  fetchOnlineVouchers,
+  quoteDelivery,
+} from '@/services/onlineOrder';
 import { fetchAllOnlineProducts } from '@/services/products';
 import type { Member } from '@/types/membership';
 import type { DeliveryQuote, DeliverySettings, LatLng, Voucher } from '@/types/onlineOrder';
@@ -19,10 +24,13 @@ import {
 import LocationPicker from './checkout/LocationPicker';
 import VoucherDialog from './checkout/VoucherDialog';
 import MenuImage from './home/MenuImage';
+import type { RecentOrder } from './order/orderLogic';
+import RecentOrders from './order/RecentOrders';
+import { loadRecentOrders, rememberOrder } from './order/orderHistory';
 import { MAX_QTY, useQuickCart } from './home/useQuickCart';
 
 // Checkout online: hanya diantar (delivery) & bayar QRIS.
-// ponytail: mockup — ongkir/voucher dari data mock, "Bayar" belum membuat order maupun QRIS Midtrans.
+// ponytail: mockup — ongkir/voucher/pesanan dari data mock, QRIS Midtrans belum tersambung.
 
 const panelClass = 'rounded-[4px] border border-foreground bg-card';
 const focusClass =
@@ -148,16 +156,54 @@ function Step({
 /** key = member: login/logout memasang ulang form, jadi isian awal ikut berganti */
 export default function CheckoutScreen() {
   const { member, login } = useMember();
+  const { itemCount } = useQuickCart();
+  const [recent] = useState(loadRecentOrders);
+
+  // Keranjang kosong + ada pesanan barusan: tampilkan status pesanan, bukan form checkout kosong
+  if (itemCount === 0 && recent.length > 0)
+    return (
+      <div className="mx-auto max-w-page px-4 pt-3 pb-8 md:px-[30px]">
+        <title>Pesanan | Toko Kopi Irona</title>
+        <h1 className="text-3xl font-semibold">Keranjang</h1>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Keranjang kosong. Pantau status pesananmu di sini.
+        </p>
+        <div className="mt-4 grid max-w-xl justify-items-start gap-4">
+          <div className="w-full">
+            <RecentOrders recent={recent} />
+          </div>
+          <Link
+            to="/menu"
+            className={cn(
+              'rounded-[6px] border border-foreground px-4 py-2 text-xs font-medium hover:bg-secondary',
+              focusClass
+            )}
+          >
+            Pesan lagi
+          </Link>
+        </div>
+      </div>
+    );
+
   return (
     <>
       <title>Checkout | Toko Kopi Irona</title>
-      <Checkout key={member?.id ?? 'guest'} member={member} login={login} />
+      <Checkout key={member?.id ?? 'guest'} member={member} login={login} recent={recent} />
     </>
   );
 }
 
-function Checkout({ member, login }: { member: Member | null; login: () => Promise<void> }) {
-  const { quantityOf, setQuantity } = useQuickCart();
+function Checkout({
+  member,
+  login,
+  recent,
+}: {
+  member: Member | null;
+  login: () => Promise<void>;
+  recent: RecentOrder[];
+}) {
+  const navigate = useNavigate();
+  const { quantityOf, setQuantity, clear: clearCart } = useQuickCart();
   const [products, setProducts] = useState<Product[] | null>(null);
   const [settings, setSettings] = useState<DeliverySettings | null>(null);
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
@@ -179,7 +225,18 @@ function Checkout({ member, login }: { member: Member | null; login: () => Promi
   >({ produk: undefined, ongkir: undefined });
   const [joining, setJoining] = useState(false);
   const voucherDialog = useRef<HTMLDialogElement>(null);
-  const [placed, setPlaced] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
+  const placed = useRef(false);
+
+  // Keranjang dikosongkan setelah halaman ini lepas (tirai transisi sudah menutup),
+  // supaya daftar pesanan tidak sempat terlihat kosong sebelum pindah ke halaman bayar
+  useEffect(
+    () => () => {
+      if (placed.current) clearCart();
+    },
+    [clearCart]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -271,17 +328,48 @@ function Checkout({ member, login }: { member: Member | null; login: () => Promi
     }
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (problem) return;
+    if (problem || submitting || !confirmed) return;
     if (member)
       storeSaved(
         member.id,
         saveForNext ? { name: name.trim(), phone: cleanPhone, location } : null
       );
-    // TODO(backend): buat order (items + catatan kasir + koordinat + voucher), minta QRIS dinamis
-    // Midtrans, lalu arahkan ke halaman pembayaran.
-    setPlaced(true);
+    setSubmitting(true);
+    setSubmitError(false);
+    try {
+      const order = await createOnlineOrder({
+        customerName: name.trim(),
+        phone: cleanPhone,
+        location: confirmed,
+        address,
+        driverNote: driverNote.trim(),
+        orderNote: orderNote.trim(),
+        voucherIds: [menuSlot, shipSlot].flatMap((s) =>
+          s.voucher && s.discount > 0 ? [s.voucher.id] : []
+        ),
+        items: items
+          .filter((i) => !i.product.isSoldOut)
+          .map(({ product, qty }) => ({
+            productId: product.id,
+            name: product.name,
+            qty,
+            price: product.sellingPrice ?? 0,
+          })),
+        subtotal,
+        shippingFee: shippingFee ?? 0,
+        discount: menuSlot.discount + shipSlot.discount,
+        serviceFee: adminFee,
+      });
+      rememberOrder({ id: order.id, createdAt: order.createdAt });
+      placed.current = true;
+      navigate(`/pesanan/${order.id}`);
+    } catch (err) {
+      console.error('Gagal membuat pesanan', err);
+      setSubmitError(true);
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -290,6 +378,12 @@ function Checkout({ member, login }: { member: Member | null; login: () => Promi
       <p className="mt-1 text-xs text-muted-foreground">
         Pesanan online diantar ke alamatmu &amp; dibayar dengan QRIS.
       </p>
+
+      {recent.length > 0 && (
+        <div className="mt-4">
+          <RecentOrders recent={recent} />
+        </div>
+      )}
 
       {loadError && (
         <p role="alert" className="mt-4 text-sm text-destructive">
@@ -673,18 +767,24 @@ function Checkout({ member, login }: { member: Member | null; login: () => Promi
 
             <button
               type="submit"
-              disabled={problem !== null}
+              disabled={problem !== null || submitting}
               className={cn(
                 'mt-3 flex h-[44px] w-full items-center justify-center gap-2 rounded-[6px] bg-primary text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/85 disabled:cursor-not-allowed disabled:opacity-40',
                 focusClass
               )}
             >
               <QrCode aria-hidden className="size-4" />
-              Bayar dengan QRIS
+              {submitting ? 'Membuat pesanan…' : 'Bayar dengan QRIS'}
             </button>
-            <p aria-live="polite" className="mt-2 text-center text-[11px] text-muted-foreground">
-              {placed
-                ? '(Mockup) Lanjut ke halaman pembayaran QRIS — belum terhubung Midtrans.'
+            <p
+              aria-live="polite"
+              className={cn(
+                'mt-2 text-center text-[11px] text-muted-foreground',
+                submitError && 'text-destructive'
+              )}
+            >
+              {submitError
+                ? 'Gagal membuat pesanan. Coba lagi.'
                 : (problem ?? 'Bisa dibayar pakai semua e-wallet & m-banking.')}
             </p>
           </div>

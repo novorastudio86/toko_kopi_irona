@@ -43,3 +43,53 @@ export interface DeliveryQuote {
   /** Internal (syarat voucher ongkir); tidak ditampilkan ke pelanggan */
   distanceKm: number;
 }
+
+/**
+ * Status pesanan online dari sisi pelanggan.
+ * menunggu_pembayaran → diproses (settlement Midtrans) → diantar → selesai;
+ * kedaluwarsa = QRIS lewat batas waktu tanpa dibayar.
+ */
+export type OrderStatus =
+  'menunggu_pembayaran' | 'diproses' | 'diantar' | 'selesai' | 'kedaluwarsa' | 'dibatalkan';
+
+export interface OrderItem {
+  productId: string;
+  name: string;
+  qty: number;
+  price: number;
+}
+
+export interface OnlineOrder {
+  id: string;
+  /** Kode pendek untuk ditunjukkan ke kasir/driver, mis. IRN-4821 */
+  code: string;
+  status: OrderStatus;
+  createdAt: string;
+  /** Batas bayar QRIS (ISO) */
+  payExpiresAt: string;
+  customerName: string;
+  phone: string;
+  address: string | null;
+  items: OrderItem[];
+  subtotal: number;
+  shippingFee: number;
+  discount: number;
+  serviceFee: number;
+  total: number;
+}
+
+/** Isi form checkout; harga & potongan final dihitung ulang server */
+export interface NewOnlineOrder {
+  customerName: string;
+  phone: string;
+  location: LatLng;
+  address: string | null;
+  driverNote: string;
+  orderNote: string;
+  voucherIds: string[];
+  items: OrderItem[];
+  subtotal: number;
+  shippingFee: number;
+  discount: number;
+  serviceFee: number;
+}
