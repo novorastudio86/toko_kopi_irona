@@ -1,51 +1,72 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import SheetDialog from '@/components/SheetDialog';
 import { cn } from '@/lib/utils';
 import {
   DEMO_MEMBER_EMAIL,
-  registerMember,
-  sendLoginCode,
-  verifyLoginCode,
+  DEMO_MEMBER_PASSWORD,
+  MemberAuthError,
+  resetPasswordWithCode,
+  sendResetCode,
+  signInMember,
+  signUpMember,
+  verifySignUpCode,
 } from '@/services/membership';
 import type { Member } from '@/types/membership';
 import { cleanPhone, PHONE_PATTERN } from '@/utils/format';
 import { btnOutline, btnSolid, fieldClass, labelClass } from './styles';
 
-type Step = 'email' | 'code' | 'profile';
+/** login = tampilan awal. Email notifikasi hanya untuk verify (daftar) & reset (lupa password). */
+type Step = 'login' | 'register' | 'verify' | 'forgot' | 'reset';
 
-const HEADINGS: Record<Step, { title: string; description: string }> = {
-  email: {
-    title: 'Masuk / Daftar Kora Club',
-    description: 'Masukkan email, kami kirim kode masuk. Belum punya akun? Caranya sama.',
+const MIN_PASSWORD = 8;
+
+const HEADINGS: Record<Step, { title: string; description: string; submit: string }> = {
+  login: {
+    title: 'Masuk Kora Club',
+    description: 'Masuk pakai email & password akun member kamu.',
+    submit: 'Masuk',
   },
-  code: { title: 'Cek email kamu', description: '' },
-  profile: {
-    title: 'Kenalan dulu, yuk',
-    description: 'Email ini belum terdaftar. Isi nama & nomor HP untuk jadi member.',
+  register: {
+    title: 'Daftar Kora Club',
+    description: 'Isi data di bawah, kami kirim kode verifikasi ke email kamu.',
+    submit: 'Daftar',
   },
+  verify: { title: 'Verifikasi email', description: '', submit: 'Verifikasi & masuk' },
+  forgot: {
+    title: 'Lupa password',
+    description: 'Masukkan email akun kamu, kami kirim kode untuk membuat password baru.',
+    submit: 'Kirim kode reset',
+  },
+  reset: { title: 'Buat password baru', description: '', submit: 'Simpan & masuk' },
 };
 
+const fieldLg = cn(fieldClass, 'h-11 md:text-[15px]');
+const labelLg = cn(labelClass, 'gap-1.5 text-sm');
 const linkClass = 'font-medium text-foreground underline underline-offset-2';
+const hintClass = 'text-[13px] text-muted-foreground';
 
 /**
- * Alur masuk: email → kode → (member baru) nama & nomor HP.
+ * Masuk = email + password. Daftar & lupa password lanjut ke kode 6 angka dari email.
  * Pop-up, bukan halaman, supaya isian checkout tidak hilang saat login.
  */
 export default function LoginDialog({
+  initialStep = 'login',
   onClose,
   onSignedIn,
 }: {
+  initialStep?: 'login' | 'register';
   onClose: () => void;
   onSignedIn: (member: Member) => void;
 }) {
-  const [step, setStep] = useState<Step>('email');
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
+  const [step, setStep] = useState<Step>(initialStep);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ReactNode>(null);
   const [resent, setResent] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -60,35 +81,69 @@ export default function LoginDialog({
     setStep(next);
   };
 
+  // Kode & password lama tidak ikut terbawa ke langkah berikutnya
+  const goToCode = (next: 'verify' | 'reset') => {
+    setCode('');
+    if (next === 'reset') setPassword('');
+    goTo(next);
+  };
+
   const finish = (member: Member) => {
     onSignedIn(member);
     onClose();
   };
 
+  const signUpData = () => ({
+    name: name.trim(),
+    phoneNumber: cleanPhone(phone),
+    email,
+    password,
+  });
+
+  function validate(): string | null {
+    if (step === 'register' && !PHONE_PATTERN.test(cleanPhone(phone)))
+      return 'Nomor WhatsApp belum valid. Contoh: 081234567890';
+    if ((step === 'register' || step === 'reset') && password.length < MIN_PASSWORD)
+      return `Password minimal ${MIN_PASSWORD} karakter.`;
+    return null;
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
-    if (step === 'profile' && !PHONE_PATTERN.test(cleanPhone(phone))) {
-      setError('Nomor HP belum valid. Contoh: 081234567890');
+    const invalid = validate();
+    if (invalid) {
+      setError(invalid);
       return;
     }
     setBusy(true);
     setError(null);
     try {
-      if (step === 'email') {
-        await sendLoginCode(email);
-        setCode('');
-        goTo('code');
-      } else if (step === 'code') {
-        const member = await verifyLoginCode(email, code);
-        if (member) finish(member);
-        else goTo('profile');
-      } else {
-        finish(await registerMember(email, name.trim(), cleanPhone(phone)));
-      }
+      if (step === 'login') finish(await signInMember(email, password));
+      else if (step === 'register') {
+        await signUpMember(signUpData());
+        goToCode('verify');
+      } else if (step === 'verify') finish(await verifySignUpCode(signUpData(), code));
+      else if (step === 'forgot') {
+        await sendResetCode(email);
+        goToCode('reset');
+      } else finish(await resetPasswordWithCode(email, code, password));
     } catch (err) {
-      console.error('Gagal masuk member', err);
-      setError('Ada gangguan, coba lagi sebentar.');
+      if (!(err instanceof MemberAuthError)) console.error('Gagal masuk member', err);
+      const message =
+        err instanceof MemberAuthError ? err.message : 'Ada gangguan, coba lagi sebentar.';
+      setError(
+        step === 'login' && err instanceof MemberAuthError ? (
+          <>
+            {message} Belum punya akun?{' '}
+            <button type="button" onClick={() => goTo('register')} className={linkClass}>
+              Daftar dulu
+            </button>
+          </>
+        ) : (
+          message
+        )
+      );
     } finally {
       setBusy(false);
     }
@@ -97,7 +152,8 @@ export default function LoginDialog({
   async function resend() {
     setError(null);
     try {
-      await sendLoginCode(email);
+      if (step === 'verify') await signUpMember(signUpData());
+      else await sendResetCode(email);
       setResent(true);
     } catch (err) {
       console.error('Gagal mengirim ulang kode', err);
@@ -105,62 +161,149 @@ export default function LoginDialog({
     }
   }
 
-  const heading =
-    step === 'code'
-      ? { title: HEADINGS.code.title, description: `Kode 6 angka sudah dikirim ke ${email}.` }
-      : HEADINGS[step];
+  const heading = HEADINGS[step];
+  const description =
+    step === 'verify' || step === 'reset'
+      ? `Kode 6 angka sudah dikirim ke ${email}.`
+      : heading.description;
+
+  const emailField = (
+    <label className={labelLg}>
+      Email
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="nama@email.com"
+        autoComplete="email"
+        required
+        className={fieldLg}
+      />
+    </label>
+  );
+
+  const codeField = (
+    <label className={labelLg}>
+      Kode dari email
+      <input
+        value={code}
+        onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+        inputMode="numeric"
+        autoComplete="one-time-code"
+        pattern="\d{6}"
+        maxLength={6}
+        placeholder="••••••"
+        required
+        className={cn(fieldLg, 'text-center font-mono text-lg tracking-[0.5em] md:text-lg')}
+      />
+      <span className="text-[13px] font-normal text-muted-foreground">
+        Demo: kode 6 angka apa saja diterima.
+      </span>
+    </label>
+  );
 
   return (
-    <SheetDialog title={heading.title} description={heading.description} onClose={onClose}>
-      <form ref={formRef} onSubmit={handleSubmit} noValidate={step === 'profile'}>
-        {step === 'email' && (
+    <SheetDialog title={heading.title} description={description} onClose={onClose} large>
+      <form ref={formRef} onSubmit={handleSubmit} className="grid gap-4">
+        {step === 'login' && (
           <>
-            <label className={labelClass}>
-              Email
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="nama@email.com"
-                autoComplete="email"
-                required
-                className={fieldClass}
-              />
-            </label>
-            <p className="mt-2 text-[12px] text-muted-foreground">
-              Demo: <span className="font-mono">{DEMO_MEMBER_EMAIL}</span> = member lama, email lain
-              = member baru.
+            {emailField}
+            <PasswordField
+              label="Password"
+              value={password}
+              onChange={setPassword}
+              autoComplete="current-password"
+              action={
+                <button
+                  type="button"
+                  onClick={() => goTo('forgot')}
+                  className={cn(linkClass, 'text-[13px]')}
+                >
+                  Lupa password?
+                </button>
+              }
+            />
+            <p className={hintClass}>
+              Demo: <span className="font-mono">{DEMO_MEMBER_EMAIL}</span> /{' '}
+              <span className="font-mono">{DEMO_MEMBER_PASSWORD}</span>
             </p>
           </>
         )}
 
-        {step === 'code' && (
+        {step === 'register' && (
           <>
-            <label className={labelClass}>
-              Kode masuk
+            <label className={labelLg}>
+              Nama
               <input
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                pattern="\d{6}"
-                maxLength={6}
-                placeholder="••••••"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Nama panggilan"
+                autoComplete="name"
+                maxLength={50}
                 required
-                className={cn(fieldClass, 'text-center font-mono text-lg tracking-[0.5em]')}
+                className={fieldLg}
               />
             </label>
-            <p className="mt-2 text-[12px] text-muted-foreground">
-              Demo: kode 6 angka apa saja diterima.
+            <label className={labelLg}>
+              Nomor WhatsApp
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="08xxxxxxxxxx"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                required
+                className={fieldLg}
+              />
+              <span className="text-[13px] font-normal text-muted-foreground">
+                Sebut nomor ini ke kasir saat belanja di toko supaya poinnya masuk.
+              </span>
+            </label>
+            {emailField}
+            <PasswordField
+              label="Password"
+              value={password}
+              onChange={setPassword}
+              autoComplete="new-password"
+              hint={`Minimal ${MIN_PASSWORD} karakter.`}
+            />
+            <p className={hintClass}>
+              Dengan mendaftar, kamu menyetujui{' '}
+              <a href="/syarat-ketentuan" target="_blank" rel="noreferrer" className={linkClass}>
+                Syarat &amp; Ketentuan
+              </a>{' '}
+              dan{' '}
+              <a href="/kebijakan-privasi" target="_blank" rel="noreferrer" className={linkClass}>
+                Kebijakan Privasi
+              </a>
+              .
             </p>
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[12px]">
+          </>
+        )}
+
+        {step === 'forgot' && emailField}
+
+        {(step === 'verify' || step === 'reset') && (
+          <>
+            {codeField}
+            {step === 'reset' && (
+              <PasswordField
+                label="Password baru"
+                value={password}
+                onChange={setPassword}
+                autoComplete="new-password"
+                hint={`Minimal ${MIN_PASSWORD} karakter.`}
+              />
+            )}
+            <div className="flex flex-wrap items-center justify-between gap-2 text-[13px]">
               <button
                 type="button"
-                onClick={() => goTo('email')}
+                onClick={() => goTo(step === 'verify' ? 'register' : 'forgot')}
                 className={cn(linkClass, 'inline-flex items-center gap-1')}
               >
                 <ArrowLeft aria-hidden className="size-3.5" />
-                Ganti email
+                {step === 'verify' ? 'Ubah data' : 'Ganti email'}
               </button>
               <span aria-live="polite">
                 {resent ? (
@@ -175,82 +318,99 @@ export default function LoginDialog({
           </>
         )}
 
-        {step === 'profile' && (
-          <div className="grid gap-3">
-            <label className={labelClass}>
-              Nama
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nama panggilan"
-                autoComplete="name"
-                maxLength={50}
-                required
-                className={fieldClass}
-              />
-            </label>
-            <label className={labelClass}>
-              Nomor HP / WhatsApp
-              <input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="08xxxxxxxxxx"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                required
-                aria-invalid={error !== null || undefined}
-                className={fieldClass}
-              />
-              <span className="font-normal text-muted-foreground">
-                Sebut nomor ini ke kasir saat belanja di toko supaya poinnya masuk.
-              </span>
-            </label>
-            <p className="text-[12px] text-muted-foreground">
-              Dengan mendaftar, kamu menyetujui{' '}
-              <a href="/syarat-ketentuan" target="_blank" rel="noreferrer" className={linkClass}>
-                Syarat &amp; Ketentuan
-              </a>{' '}
-              dan{' '}
-              <a href="/kebijakan-privasi" target="_blank" rel="noreferrer" className={linkClass}>
-                Kebijakan Privasi
-              </a>
-              .
-            </p>
-          </div>
-        )}
-
         {error && (
-          <p role="alert" className="mt-3 text-[12px] text-destructive">
+          <p role="alert" className="text-[13px] text-destructive">
             {error}
           </p>
         )}
 
-        <div className="mt-4 grid gap-2">
-          <button
-            type="submit"
-            disabled={busy || (step === 'profile' && !name.trim())}
-            className={cn(btnSolid, 'h-10 text-[13px]')}
-          >
-            {busy
-              ? 'Memproses…'
-              : step === 'email'
-                ? 'Kirim kode'
-                : step === 'code'
-                  ? 'Masuk'
-                  : 'Daftar & masuk'}
+        <div className="grid gap-3">
+          <button type="submit" disabled={busy} className={cn(btnSolid, 'h-11 text-sm')}>
+            {busy ? 'Memproses…' : heading.submit}
           </button>
-          {step === 'profile' && (
-            <button
-              type="button"
-              onClick={() => goTo('email')}
-              className={cn(btnOutline, 'h-10 text-[13px]')}
-            >
-              Pakai email lain
-            </button>
+          {step === 'login' && (
+            <>
+              <Divider>Belum punya akun?</Divider>
+              <button
+                type="button"
+                onClick={() => goTo('register')}
+                className={cn(btnOutline, 'h-11 text-sm')}
+              >
+                Daftar member baru
+              </button>
+            </>
+          )}
+          {(step === 'register' || step === 'forgot') && (
+            <p className="text-center text-[13px] text-muted-foreground">
+              {step === 'register' ? 'Sudah punya akun? ' : 'Ingat password? '}
+              <button type="button" onClick={() => goTo('login')} className={linkClass}>
+                Masuk
+              </button>
+            </p>
           )}
         </div>
       </form>
     </SheetDialog>
+  );
+}
+
+function PasswordField({
+  label,
+  value,
+  onChange,
+  autoComplete,
+  hint,
+  action,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  autoComplete: 'current-password' | 'new-password';
+  hint?: string;
+  action?: ReactNode;
+}) {
+  const [visible, setVisible] = useState(false);
+  const Icon = visible ? EyeOff : Eye;
+  return (
+    <div className="grid gap-1.5">
+      {/* Label & aksi (mis. lupa password) sebaris; tombol di luar <label> supaya klik tidak memfokus input */}
+      <div className="flex items-baseline justify-between gap-2">
+        <label htmlFor={`pw-${autoComplete}`} className={labelLg}>
+          {label}
+        </label>
+        {action}
+      </div>
+      <div className="relative">
+        <input
+          id={`pw-${autoComplete}`}
+          type={visible ? 'text' : 'password'}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          autoComplete={autoComplete}
+          required
+          className={cn(fieldLg, 'pr-11')}
+        />
+        <button
+          type="button"
+          onClick={() => setVisible((v) => !v)}
+          aria-label={visible ? 'Sembunyikan password' : 'Tampilkan password'}
+          aria-pressed={visible}
+          className="absolute inset-y-0 right-0 grid w-11 place-items-center rounded-r-[6px] text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground"
+        >
+          <Icon aria-hidden className="size-4" />
+        </button>
+      </div>
+      {hint && <span className="text-[13px] text-muted-foreground">{hint}</span>}
+    </div>
+  );
+}
+
+function Divider({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex items-center gap-3 text-[13px] text-muted-foreground">
+      <span aria-hidden className="h-px flex-1 bg-border" />
+      {children}
+      <span aria-hidden className="h-px flex-1 bg-border" />
+    </div>
   );
 }

@@ -7,9 +7,12 @@ import type { Member } from '@/types/membership';
 // ponytail: sesi hanya di memori (refresh = kembali jadi pengunjung umum); ganti dengan sesi Supabase Auth
 export default function MemberProvider({ children }: { children: ReactNode }) {
   const [member, setMember] = useState<Member | null>(null);
-  const [loginOpen, setLoginOpen] = useState(false);
+  const [loginMode, setLoginMode] = useState<'login' | 'register' | null>(null);
 
-  const openLogin = useCallback(() => setLoginOpen(true), []);
+  const openLogin = useCallback(
+    (mode: 'login' | 'register' = 'login') => setLoginMode(mode),
+    []
+  );
   // TODO(backend): supabase.auth.signOut()
   const logout = useCallback(() => setMember(null), []);
   const spendPoints = useCallback(
@@ -34,7 +37,13 @@ export default function MemberProvider({ children }: { children: ReactNode }) {
   return (
     <MemberContext value={value}>
       {children}
-      {loginOpen && <LoginDialog onClose={() => setLoginOpen(false)} onSignedIn={setMember} />}
+      {loginMode && (
+        <LoginDialog
+          initialStep={loginMode}
+          onClose={() => setLoginMode(null)}
+          onSignedIn={setMember}
+        />
+      )}
     </MemberContext>
   );
 }

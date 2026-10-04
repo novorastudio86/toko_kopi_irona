@@ -5,17 +5,19 @@ import { cn } from '@/lib/utils';
 /**
  * Pop-up dasar: <dialog> native (focus trap + Esc gratis). Mobile = bottom-sheet, md+ = modal.
  * Pasang hanya saat terbuka (`{open && <SheetDialog …/>}`) supaya isinya selalu mulai dari awal.
- * Esc, klik latar, dan tombol X memanggil onClose.
+ * Esc, klik latar, dan tombol X memanggil onClose. `large` = versi lebih lega untuk form panjang.
  */
 export default function SheetDialog({
   title,
   description,
   onClose,
+  large = false,
   children,
 }: {
   title: string;
   description?: ReactNode;
   onClose: () => void;
+  large?: boolean;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -32,15 +34,30 @@ export default function SheetDialog({
       aria-labelledby={titleId}
       onClose={onClose}
       onClick={(e) => e.target === e.currentTarget && onClose()}
-      className="m-0 mt-auto flex max-h-[90dvh] w-full max-w-none flex-col overflow-hidden rounded-t-2xl border border-foreground bg-background p-0 text-foreground backdrop:bg-black/50 not-open:hidden motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-6 md:m-auto md:max-w-[420px] md:rounded-[6px]"
+      className={cn(
+        'm-0 mt-auto flex max-h-[90dvh] w-full max-w-none flex-col overflow-hidden rounded-t-2xl border border-foreground bg-background p-0 text-foreground backdrop:bg-black/50 not-open:hidden motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-6 md:m-auto md:rounded-[6px]',
+        large ? 'md:max-w-[480px]' : 'md:max-w-[420px]'
+      )}
     >
-      <div className="flex items-start justify-between gap-3 border-b border-foreground px-4 py-3">
+      <div
+        className={cn(
+          'flex items-start justify-between gap-3 border-b border-foreground',
+          large ? 'px-5 py-4' : 'px-4 py-3'
+        )}
+      >
         <div>
-          <h2 id={titleId} className="text-sm font-semibold">
+          <h2 id={titleId} className={cn('font-semibold', large ? 'text-lg' : 'text-sm')}>
             {title}
           </h2>
           {description && (
-            <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{description}</p>
+            <p
+              className={cn(
+                'mt-0.5 text-muted-foreground',
+                large ? 'text-sm leading-6' : 'text-xs leading-5'
+              )}
+            >
+              {description}
+            </p>
           )}
         </div>
         <button
@@ -55,7 +72,7 @@ export default function SheetDialog({
           <X aria-hidden className="size-4" />
         </button>
       </div>
-      <div className="overflow-y-auto px-4 py-4">{children}</div>
+      <div className={cn('overflow-y-auto', large ? 'px-5 py-5' : 'px-4 py-4')}>{children}</div>
     </dialog>
   );
 }

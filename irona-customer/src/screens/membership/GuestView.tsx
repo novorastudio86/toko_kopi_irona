@@ -81,7 +81,7 @@ export default function GuestView() {
   const cta = (label: string, className?: string) => (
     <button
       type="button"
-      onClick={openLogin}
+      onClick={() => openLogin('register')}
       className={cn(btnSolid, 'h-10 px-5 text-[13px]', className)}
     >
       {label}
@@ -110,7 +110,7 @@ export default function GuestView() {
               {cta('Daftar Gratis')}
               <button
                 type="button"
-                onClick={openLogin}
+                onClick={() => openLogin()}
                 className={cn(btnOutline, 'h-10 px-5 text-[13px]')}
               >
                 Sudah member? Login

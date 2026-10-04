@@ -116,48 +116,101 @@ function page<T>(items: T[], offset: number, limit: number): Promise<Page<T>> {
   });
 }
 
-/** Akun yang sudah terdaftar di mock; email lain dianggap member baru */
+/** Akun demo yang sudah terdaftar di mock */
 export const DEMO_MEMBER_EMAIL = MOCK_MEMBER.email;
+export const DEMO_MEMBER_PASSWORD = 'kora1234';
 
-// ponytail: akun dummy di memori modul, member baru hilang saat refresh; ganti dengan tabel customers
+// ponytail: akun & password dummy di memori modul, member baru hilang saat refresh; ganti dengan Supabase Auth + tabel customers
 const MOCK_ACCOUNTS: Member[] = [MOCK_MEMBER];
+const MOCK_PASSWORDS = new Map([[MOCK_MEMBER.email, DEMO_MEMBER_PASSWORD]]);
+
+/** Gagal yang pesannya aman ditampilkan ke pengguna */
+export class MemberAuthError extends Error {}
+
+export interface SignUpInput {
+  name: string;
+  phoneNumber: string;
+  email: string;
+  password: string;
+}
+
+const normEmail = (email: string) => email.trim().toLowerCase();
+const findAccount = (email: string) => MOCK_ACCOUNTS.find((m) => m.email === normEmail(email));
 
 /**
- * Kirim kode masuk 6 angka ke email (dipakai untuk masuk maupun daftar).
- * TODO(backend): supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true } })
+ * Masuk pakai email + password, tanpa email notifikasi.
+ * TODO(backend): supabase.auth.signInWithPassword({ email, password }), lalu ambil customers lewat
+ * auth_user_id. Tolak kalau customers.is_active = false.
  */
-export async function sendLoginCode(email: string): Promise<void> {
+export async function signInMember(email: string, password: string): Promise<Member> {
+  const account = findAccount(email);
+  if (!account || MOCK_PASSWORDS.get(account.email) !== password) {
+    await mockDelay(undefined);
+    throw new MemberAuthError('Email atau password salah.');
+  }
+  return mockDelay(account);
+}
+
+/**
+ * Daftar → kirim kode verifikasi 6 angka ke email (email notifikasi #1).
+ * TODO(backend): supabase.auth.signUp({ email, password, options: { data: { name, phone } } }).
+ * Perlu [auth.email] enable_confirmations = true & template "Confirm signup" pakai {{ .Token }}.
+ */
+export async function signUpMember(data: SignUpInput): Promise<void> {
+  if (findAccount(data.email)) {
+    await mockDelay(undefined);
+    throw new MemberAuthError('Email ini sudah terdaftar. Silakan masuk.');
+  }
+  return mockDelay(undefined);
+}
+
+/**
+ * Cek kode daftar lalu buat member. Demo: kode 6 angka apa saja diterima.
+ * TODO(backend): supabase.auth.verifyOtp({ email, token: code, type: 'email' }), lalu insert
+ * customers (auth_user_id, name, phone) — atau lewat trigger dari user metadata.
+ */
+export async function verifySignUpCode(data: SignUpInput, code: string): Promise<Member> {
+  void code;
+  const member: Member = {
+    id: `cust-${Date.now()}`,
+    email: normEmail(data.email),
+    name: data.name,
+    phoneNumber: data.phoneNumber,
+    pointsBalance: 0,
+  };
+  MOCK_ACCOUNTS.push(member);
+  MOCK_PASSWORDS.set(member.email, data.password);
+  return mockDelay(member);
+}
+
+/**
+ * Lupa password → kirim kode reset 6 angka ke email (email notifikasi #2).
+ * Tidak memberi tahu apakah email terdaftar, supaya daftar email member tidak bisa ditebak.
+ * TODO(backend): supabase.auth.resetPasswordForEmail(email), template "Reset password" pakai {{ .Token }}.
+ */
+export async function sendResetCode(email: string): Promise<void> {
   void email;
   return mockDelay(undefined);
 }
 
 /**
- * Cek kode. Hasil null = email belum punya data member → lanjut isi nama & nomor HP.
- * Demo: kode apa saja diterima.
- * TODO(backend): supabase.auth.verifyOtp({ email, token: code, type: 'email' }), lalu ambil
- * customers lewat auth_user_id. Tolak kalau customers.is_active = false.
+ * Cek kode reset, simpan password baru, langsung masuk. Demo: kode 6 angka apa saja diterima.
+ * TODO(backend): supabase.auth.verifyOtp({ email, token: code, type: 'recovery' }), lalu
+ * supabase.auth.updateUser({ password }) dan ambil customers.
  */
-export async function verifyLoginCode(email: string, code: string): Promise<Member | null> {
-  void code;
-  const key = email.trim().toLowerCase();
-  return mockDelay(MOCK_ACCOUNTS.find((m) => m.email === key) ?? null);
-}
-
-/** Member baru setelah kode valid. TODO(backend): insert customers (auth_user_id, name, phone) */
-export async function registerMember(
+export async function resetPasswordWithCode(
   email: string,
-  name: string,
-  phoneNumber: string
+  code: string,
+  password: string
 ): Promise<Member> {
-  const member: Member = {
-    id: `cust-${Date.now()}`,
-    email: email.trim().toLowerCase(),
-    name,
-    phoneNumber,
-    pointsBalance: 0,
-  };
-  MOCK_ACCOUNTS.push(member);
-  return mockDelay(member);
+  void code;
+  const account = findAccount(email);
+  if (!account) {
+    await mockDelay(undefined);
+    throw new MemberAuthError('Kode salah atau sudah kedaluwarsa.');
+  }
+  MOCK_PASSWORDS.set(account.email, password);
+  return mockDelay(account);
 }
 
 /** Ubah nama & nomor HP. Email tidak bisa diubah. TODO(backend): update customers (RLS self) */

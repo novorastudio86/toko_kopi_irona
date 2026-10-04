@@ -41,7 +41,7 @@ const PRIVASI: LegalDoc = {
         'Memproses, menyiapkan, dan mengantar pesanan.',
         'Menghubungimu lewat WhatsApp soal pesanan (mis. driver mencari alamat).',
         'Menghitung ongkir dari jarak rute toko ke titik antar.',
-        'Mengirim kode masuk ke email, mencatat poin, dan menukar reward.',
+        'Mengirim kode verifikasi ke email saat daftar & reset password, mencatat poin, dan menukar reward.',
         'Memperbaiki layanan dari data pesanan secara keseluruhan (tidak per orang).',
       ],
     },

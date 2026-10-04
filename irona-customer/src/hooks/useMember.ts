@@ -6,8 +6,8 @@ export type ProfileInput = Pick<Member, 'name' | 'phoneNumber'>;
 export interface MemberState {
   /** null = pengunjung umum (belum login) */
   member: Member | null;
-  /** Buka pop-up masuk/daftar; halaman di belakangnya tetap (isian checkout aman) */
-  openLogin: () => void;
+  /** Buka pop-up masuk (default) / daftar; halaman di belakangnya tetap (isian checkout aman) */
+  openLogin: (mode?: 'login' | 'register') => void;
   logout: () => void;
   /** Kurangi saldo lokal setelah tukar reward */
   spendPoints: (points: number) => void;
