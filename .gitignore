@@ -7,6 +7,8 @@ dist-ssr/
 .env
 .env.*
 *.local
+graphify-out/
+docs/Masterlink_IronaKopi.xlsx
 
 # Salinan data database (berisi data karyawan/pelanggan) — jangan di-upload
 irona-backend/backup_*.sql
