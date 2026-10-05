@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Irona API Docs</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+  <style>
+    body { margin: 0; background: #fafafa; }
+    .topbar-irona {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      padding: 10px 24px; background: #1b2a3a; color: #fff;
+      font-family: "Titillium Web", sans-serif; box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    }
+    .topbar-irona .brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; }
+    .topbar-irona .brand .logo {
+      width: 34px; height: 34px; border-radius: 50%; background: #85ea2d;
+      display: grid; place-items: center; color: #1b2a3a; font-size: 18px; font-weight: 800;
+    }
+    .topbar-irona .brand small { display: block; font-size: 11px; font-weight: 400; color: #9fb3c8; }
+    .topbar-irona .spacer { flex: 1; }
+    .topbar-irona label { font-size: 13px; color: #c9d6e3; }
+    .topbar-irona select {
+      background: #fff; border: 0; border-radius: 4px; padding: 6px 8px; font-weight: 600; color: #1b2a3a;
+    }
+    .topbar-irona .status { font-size: 13px; display: flex; align-items: center; gap: 6px; }
+    .topbar-irona .dot { width: 10px; height: 10px; border-radius: 50%; background: #aaa; }
+    .topbar-irona .dot.ok { background: #85ea2d; }
+    .topbar-irona .dot.err { background: #f93e3e; }
+    .swagger-ui .topbar { display: none; }
+    .swagger-ui .info { margin: 30px 0 10px; }
+    .swagger-ui .scheme-container { box-shadow: none; border-bottom: 1px solid #e5e5e5; }
+    #error { display: none; margin: 40px auto; max-width: 640px; padding: 16px 20px; font-family: sans-serif;
+      background: #fff1f0; border: 1px solid #f93e3e; border-radius: 6px; color: #3b4151; }
+  </style>
+</head>
+<body>
+  <header class="topbar-irona">
+    <div class="brand">
+      <div class="logo">{ }</div>
+      <div>Irona API<small>Supabase lokal · 127.0.0.1:54321</small></div>
+    </div>
+    <div class="spacer"></div>
+    <label>Role
+      <select id="role">
+        <option value="anon">anon (customer belum login)</option>
+        <option value="service_role">service_role (bypass RLS)</option>
+      </select>
+    </label>
+    <div class="status"><span class="dot" id="dot"></span><span id="status-text">Memuat…</span></div>
+  </header>
+
+  <div id="error"></div>
+  <div id="swagger-ui"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    const BASE = 'http://127.0.0.1:54321';
+    // Default local-dev keys printed by `supabase status` (same for every local Supabase; never use in production).
+    const KEYS = {
+      anon: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+      service_role: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+    };
+
+    const roleEl = document.getElementById('role');
+    const setStatus = (cls, text) => {
+      document.getElementById('dot').className = 'dot ' + cls;
+      document.getElementById('status-text').textContent = text;
+    };
+
+    let ui;
+    function authorize(role) {
+      ui.preauthorizeApiKey('apikey', KEYS[role]);
+      ui.preauthorizeApiKey('bearer', 'Bearer ' + KEYS[role]);
+    }
+    roleEl.onchange = () => ui && authorize(roleEl.value);
+
+    // Urutan grup = sheet "Fix PRD-WA" di docs/Masterlink_IronaKopi.xlsx (Modul › Sub Modul › Sec Sub Modul).
+    // Satu endpoint boleh muncul di beberapa grup (mis. laporan yang memakai API Keuangan).
+    // Grup kosong = halaman itu belum punya API. Endpoint baru yang belum dipetakan masuk ke grup "Lainnya".
+    const MODULES = [
+      ['01 · Dashboard', 'dashboard_summary dashboard_period_stats dashboard_sales_series sales_targets save_sales_targets store_hours'],
+      ['02 · Keuangan › Cash Flow', 'finance_settings cash_flow_summary cash_flow_entries hpp_monthly net_profit_monthly finance_expenses save_finance_expense delete_finance_expense employee_payroll online_balance_overview online_disbursements record_online_disbursement cancel_online_disbursement bank_holidays add_business_days finance_periods finance_open_periods finance_period_log close_finance_period reopen_finance_period is_period_locked assert_period_open is_current_month month_label_id'],
+      ['03.1 · Produk › Daftar Kategori', 'categories'],
+      ['03.2 · Produk › Daftar Produk', 'products products_with_cost save_product product_history product_low_stock product_recipe_components product_recipe_cost'],
+      ['03.3 · Produk › Master Resep', 'recipe_list racikan racikan_components product_recipe_components save_racikan racikan_low_stock racikan_references racikan_batch_cost racikan_unit_cost'],
+      ['03.4 · Produk › Daftar Bahan Baku', 'raw_materials units raw_material_usage'],
+      ['03.5 · Produk › Kelola Stok', 'stock_card stock_movements record_stock_in record_stock_adjustment record_racikan_production'],
+      ['03.6 · Produk › Aset Barang', 'assets save_asset update_asset_status asset_history'],
+      ['04.1 · Karyawan › Daftar Karyawan', 'employees employee_payroll employee_regular_hours'],
+      ['04.2 · Karyawan › Hak Akses', 'roles is_admin'],
+      ['04.3 · Karyawan › Presensi', 'attendance record_attendance_scan create_manual_attendance correct_attendance review_overtime calc_attendance_minutes'],
+      ['04.4 · Karyawan › Shift Kerja', 'shift_patterns employee_shift_defaults shift_date_overrides shift_changes shift_change_events list_employee_shifts get_effective_shift effective_shift_slots save_weekly_shifts add_shift_slot swap_shift_slots cover_shift_slot set_shift_day_off undo_shift_change slot_exists assert_valid_shift_day'],
+      ['04.5 · Karyawan › Kasbon', 'kasbon kasbon_overview kasbon_quota create_kasbon update_kasbon delete_kasbon settle_kasbon_cash assert_valid_kasbon assert_kasbon_open jakarta_today'],
+      ['05 · Pelanggan', 'customers customer_overview customer_status_history point_transactions set_customer_active delete_customer adjust_customer_points find_member_by_phone is_employee current_customer_id'],
+      ['06.1 · Promosi › Diskon', 'promotions promotion_overview promotion_products promotion_claims promotion_history save_promotion delete_promotion set_promotion_active promotion_snapshot'],
+      ['06.2 · Promosi › Point Reward', 'rewards reward_overview reward_claims reward_claim_overview point_earning_settings point_earning_tiers point_rule_history save_point_rules point_rules_snapshot save_reward delete_reward set_reward_active cancel_reward_claim reward_pending_count calc_points claim_reward redeem_reward_code'],
+      ['07.1 · Penjualan › Tipe Order', 'order_type_rules order_type_rule_overview order_type_rule_products order_type_rule_items order_type_rule_item_costs order_type_rule_history save_order_type_rule delete_order_type_rule order_type_rule_snapshot applicable_order_type_rules product_order_type_prices'],
+      ['07.2 · Penjualan › Order Online', 'online_order_settings online_order_history online_product_pauses pause_product_online resume_product_online is_product_visible_online save_service_fee save_delivery_settings calc_delivery_fee online_menu_categories online_menu_products online_checkout_settings online_orders get_online_order settle_online_order deliveries complete_delivery'],
+      ['07.3 · Penjualan › Jam Buka', 'store_hours store_hours_history save_store_hours store_hours_snapshot is_store_open'],
+      ['07.4 · Penjualan › Custom Struk', 'receipt_settings store_settings'],
+      ['07.5 · Penjualan › Penyesuaian Transaksi', 'transaction_adjustment_overview transactions transaction_items refunds create_refund try_error_records try_error_items try_error_recipe_options try_error_usage create_try_error expand_product_usage expand_racikan_components'],
+      ['08.1.1 · Laporan › Cash Flow › HPP', 'finance_settings cash_flow_summary cash_flow_entries hpp_monthly'],
+      ['08.1.2 · Laporan › Cash Flow › Fixed Cost', 'finance_settings cash_flow_summary cash_flow_entries'],
+      ['08.1.3 · Laporan › Cash Flow › Net Profit', 'finance_settings cash_flow_summary cash_flow_entries'],
+      ['08.1.4 · Laporan › Cash Flow › Saldo Online (pay gat)', 'online_balance_overview online_order_settings'],
+      ['08.2.1 · Laporan › Penjualan › Ringkasan Penjualan', 'report_sales_summary'],
+      ['08.2.2 · Laporan › Penjualan › Detail Penjualan', 'sales_report_filtered sales_report_rows report_sales_summary transaction_items'],
+      ['08.2.3 · Laporan › Penjualan › Detail Per Periode', 'report_sales_by_period'],
+      ['08.2.4 · Laporan › Penjualan › Laporan Jenis Bayar', 'report_payment_methods'],
+      ['08.2.5 · Laporan › Penjualan › Laporan Penjualan Online', 'sales_report_filtered sales_report_rows report_sales_summary'],
+      ['08.2.6 · Laporan › Penjualan › Laporan Penyesuaian', 'transaction_adjustment_overview'],
+      ['08.3.1 · Laporan › Produk › Penjualan Produk', ''],
+      ['08.3.2 · Laporan › Produk › Penjualan Kategori', ''],
+      ['08.4.1 · Laporan › Karyawan › Absensi', ''],
+      ['08.5.1 · Laporan › Toko › Laporan Pendapatan Kasir', ''],
+      ['08.5.2 · Laporan › Toko › Laporan Jam Operasional', ''],
+      ['08.6.1 · Laporan › Pelanggan › Laporan Membership', ''],
+      ['08.6.2 · Laporan › Pelanggan › Laporan Redeem Point', ''],
+      ['08.7.1 · Laporan › Persediaan › Laporan Ringkasan Persediaan', ''],
+      ['08.7.2 · Laporan › Persediaan › Laporan Pembelian', ''],
+      ['08.7.3 · Laporan › Persediaan › Laporan Penyesuaian Stok', ''],
+      ['09.1 · Analisa Laporan › Waktu Teramai Produk', ''],
+      ['09.2 · Analisa Laporan › Waktu Teramai Penjualan', ''],
+      ['09.3 · Analisa Laporan › Perputaran Stok', ''],
+      ['10 · Pengaturan', '']
+    ];
+    const OTHER = '99 · Lainnya (belum dipetakan ke modul)';
+
+    function groupByModule(spec) {
+      const tagsOf = {};
+      for (const [tag, names] of MODULES)
+        for (const n of names.split(' ').filter(Boolean)) (tagsOf[n] ||= []).push(tag);
+      const nameOf = p => p.replace(/^\/(rpc\/)?/, '');
+      // Rebuild paths in MODULES order so endpoints inside each group follow the list.
+      const order = [...new Set(MODULES.flatMap(([, n]) => n.split(' ').filter(Boolean)))];
+      const paths = Object.keys(spec.paths).sort((a, b) =>
+        ((order.indexOf(nameOf(a)) + 1) || 1e9) - ((order.indexOf(nameOf(b)) + 1) || 1e9));
+      const count = {};
+      spec.paths = Object.fromEntries(paths.map(p => {
+        const tags = p === '/' ? ['00 · Introspection'] : tagsOf[nameOf(p)] || [OTHER];
+        for (const op of Object.values(spec.paths[p])) {
+          op.tags = tags;
+          op.summary = op.summary || (p.startsWith('/rpc/') ? 'RPC ' : 'Tabel/View ') + nameOf(p);
+        }
+        for (const t of tags) count[t] = (count[t] || 0) + 1;
+        return [p, spec.paths[p]];
+      }));
+      spec.tags = ['00 · Introspection', ...MODULES.map(([t]) => t), OTHER]
+        .filter(t => t !== OTHER || count[t])
+        .map(name => ({ name, description: count[name] ? count[name] + ' endpoint' : '⚠ Belum ada API' }));
+    }
+
+    // Spec generation takes a few seconds and exceeds anon's 3s statement_timeout, so fetch it as service_role.
+    setStatus('', 'Memuat spec (±5 detik)…');
+    fetch(BASE + '/rest/v1/', { headers: { apikey: KEYS.service_role, Authorization: 'Bearer ' + KEYS.service_role } })
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(spec => {
+        // PostgREST reports its internal host (0.0.0.0:3000); point "Try it out" at the Supabase gateway.
+        spec.host = new URL(BASE).host;
+        spec.basePath = '/rest/v1';
+        spec.info.title = 'Irona Backend API';
+        spec.info.description = 'REST API (PostgREST) dari Supabase lokal. Key sudah terisi otomatis — ' +
+          'klik endpoint → **Try it out** → **Execute**. Ganti role di pojok kanan atas, atau klik **Authorize** ' +
+          'dan isi `bearer` dengan `Bearer <access_token>` untuk menguji sebagai user yang login.';
+        spec.securityDefinitions = {
+          apikey: { type: 'apiKey', in: 'header', name: 'apikey' },
+          bearer: { type: 'apiKey', in: 'header', name: 'Authorization', description: 'Format: Bearer <token>' }
+        };
+        spec.security = [{ apikey: [], bearer: [] }];
+        groupByModule(spec);
+
+        ui = SwaggerUIBundle({
+          spec,
+          dom_id: '#swagger-ui',
+          deepLinking: true,
+          filter: true,
+          docExpansion: 'list',
+          tryItOutEnabled: true,
+          displayRequestDuration: true,
+          defaultModelsExpandDepth: -1,
+          presets: [SwaggerUIBundle.presets.apis],
+          layout: 'BaseLayout',
+          onComplete: () => authorize(roleEl.value)
+        });
+        setStatus('ok', 'Terhubung · ' + Object.keys(spec.paths).length + ' endpoint');
+      })
+      .catch(err => {
+        setStatus('err', 'Tidak terhubung');
+        const box = document.getElementById('error');
+        box.style.display = 'block';
+        box.innerHTML = '<b>Gagal memuat spec dari ' + BASE + '/rest/v1/</b><br>' +
+          'Pastikan <code>supabase start</code> sudah jalan di folder <code>irona-backend</code>, lalu refresh.<br>' +
+          '<small>' + err + '</small>';
+      });
+  </script>
+</body>
+</html>
