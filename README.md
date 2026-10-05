@@ -177,11 +177,30 @@ docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/du
 
 # 3. Lengkapi pesanan online dummy dengan jarak, ongkir, biaya layanan, alamat, driver
 docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_pesanan_online.sql
+
+# 4. Sesi login–logout kasir (Laporan Pendapatan Kasir & Jam Operasional)
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_sesi_kasir.sql
+
+# 5. Klaim reward member (Laporan Redeem Point)
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_redeem.sql
+
+# 6. Penyesuaian stok bahan baku (Laporan Penyesuaian Stok)
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_penyesuaian_stok.sql
+
+# 7. Pemakaian bahan dari penjualan dummy + stok awal (Perputaran Stok, kolom Terjual di Kelola Stok)
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_pemakaian_stok.sql
+
+# 8. PIN uji untuk karyawan Kasir/Driver yang belum punya PIN (lihat isi file untuk PIN-nya)
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_pin_karyawan.sql
 ```
 
-Untuk **menghapus** data contoh:
+Untuk **menghapus** data contoh (urutannya penting):
 
 ```bash
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_pemakaian_stok_hapus.sql
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_penyesuaian_stok_hapus.sql
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_redeem_hapus.sql
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_sesi_kasir_hapus.sql
 docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_keuangan_hapus.sql
 docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_pelanggan_hapus.sql
 ```

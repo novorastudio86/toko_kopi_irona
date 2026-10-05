@@ -3,14 +3,14 @@ import { Undo2, X } from 'lucide-react';
 import { cancelRewardClaim, fetchRewardClaims } from '../../services/rewards';
 import type { ClaimStatus, Reward, RewardClaim } from '../../types/reward';
 
-const STATUS_LABELS: Record<ClaimStatus, string> = {
+export const CLAIM_STATUS_LABELS: Record<ClaimStatus, string> = {
   menunggu: 'Menunggu Ditukar',
   sudah_ditukar: 'Sudah Ditukar',
   hangus: 'Hangus',
   dibatalkan: 'Dibatalkan',
 };
 
-function StatusBadge({ status }: { status: ClaimStatus }) {
+export function ClaimStatusBadge({ status }: { status: ClaimStatus }) {
   const cls =
     status === 'menunggu'
       ? 'border border-[#f59e0b] bg-[#fffbeb] text-[#92400e]'
@@ -21,7 +21,7 @@ function StatusBadge({ status }: { status: ClaimStatus }) {
           : 'border border-dashed border-[#94a3b8] bg-[#f1f5f9] text-[#64748b]';
   return (
     <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${cls}`}>
-      {STATUS_LABELS[status]}
+      {CLAIM_STATUS_LABELS[status]}
     </span>
   );
 }
@@ -156,7 +156,7 @@ export default function RewardClaimsModal({ reward, onClose, onChanged }: Props)
                     {c.code}
                   </td>
                   <td className="py-2.5">
-                    <StatusBadge status={c.status} />
+                    <ClaimStatusBadge status={c.status} />
                   </td>
                   <td className="py-2.5 text-xs text-[#475569]">
                     {c.status === 'sudah_ditukar' && c.redeemedAt ? (

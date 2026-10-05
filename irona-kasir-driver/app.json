@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Irona Kasir",
+    "slug": "irona-kasir-driver",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.novorastudio.ironakasir",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Izinkan Irona Kasir memakai kamera untuk scan kartu QR absensi karyawan."
+        }
+      ],
+      [
+        "@ricka7x/expo-thermal-printer",
+        {
+          "bluetoothPermission": "Izinkan Irona Kasir memakai Bluetooth untuk mencetak struk."
+        }
+      ]
+    ]
+  }
+}

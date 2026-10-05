@@ -3,7 +3,9 @@ import { Eye, EyeOff, X } from 'lucide-react';
 import {
   createEmployee,
   fetchEmployeeDetail,
+  fetchEmployeesWithPin,
   fetchRoles,
+  setEmployeePin,
   updateEmployee,
 } from '../../services/employees';
 import type { RoleOption, RoleType } from '../../types/employee';
@@ -30,6 +32,9 @@ export default function EmployeeFormModal({ employeeId = null, onClose, onSaved 
   const [hireDate, setHireDate] = useState(todayISO());
   const [originalRoleType, setOriginalRoleType] = useState<RoleType | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [pin, setPin] = useState('');
+  const [showPin, setShowPin] = useState(false);
+  const [hasPin, setHasPin] = useState(false);
 
   const [roles, setRoles] = useState<RoleOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,8 +52,12 @@ export default function EmployeeFormModal({ employeeId = null, onClose, onSaved 
         if (!employeeId) {
           setRoleId(roleList.find((r) => r.type === 'kasir')?.id ?? roleList[0]?.id ?? '');
         } else {
-          const detail = await fetchEmployeeDetail(employeeId);
+          const [detail, withPin] = await Promise.all([
+            fetchEmployeeDetail(employeeId),
+            fetchEmployeesWithPin(),
+          ]);
           if (cancelled || !detail) return;
+          setHasPin(withPin.has(employeeId));
           setFullName(detail.fullName);
           setAddress(detail.address ?? '');
           setPhone(detail.phoneNumber);
@@ -80,10 +89,14 @@ export default function EmployeeFormModal({ employeeId = null, onClose, onSaved 
 
   const roleType = roles.find((r) => r.id === roleId)?.type;
   const isDriverRole = roleType === 'driver';
-  // Role "Tanpa Aplikasi" (mis. Barista) tidak login, jadi tidak perlu password
-  const isStaffRole = roleType === 'staf';
-  // Password wajib untuk karyawan baru, atau kalau pindah dari Barista ke role yang butuh login
-  const passwordRequired = !isStaffRole && (!isEdit || originalRoleType === 'staf');
+  // Hanya Admin/Owner yang login dengan password (Web Admin & membuka Kasir/Driver App).
+  // Kasir & Driver masuk aplikasi dengan PIN 6 digit; Staf (mis. Barista) tidak login sama sekali.
+  const usesPassword = roleType === 'admin';
+  const usesPin = roleType === 'kasir' || roleType === 'driver';
+  // Password wajib untuk admin baru, atau kalau role lama belum memakai password
+  const passwordRequired = usesPassword && (!isEdit || originalRoleType !== 'admin');
+  // PIN wajib untuk kasir/driver baru; saat ubah, kosongkan = tidak diubah
+  const pinRequired = usesPin && !isEdit;
 
   async function handleSave() {
     const next: Record<string, string | undefined> = {};
@@ -93,10 +106,14 @@ export default function EmployeeFormModal({ employeeId = null, onClose, onSaved 
     if (!username.trim()) next.username = 'Username wajib diisi.';
     else if (!/^[a-z0-9._-]+$/i.test(username.trim()))
       next.username = 'Username hanya boleh huruf, angka, titik, garis bawah, dan strip.';
-    if (!isStaffRole) {
+    if (usesPassword) {
       if (passwordRequired && password.length < 6) next.password = 'Password minimal 6 karakter.';
       if (!passwordRequired && password && password.length < 6)
         next.password = 'Password minimal 6 karakter.';
+    }
+    if (usesPin) {
+      if (pinRequired && !pin) next.pin = 'PIN wajib diisi.';
+      else if (pin && !/^\d{6}$/.test(pin)) next.pin = 'PIN harus 6 digit angka.';
     }
     if (!hireDate) next.hireDate = 'Tanggal mulai kerja wajib diisi.';
     setErrors(next);
@@ -107,7 +124,7 @@ export default function EmployeeFormModal({ employeeId = null, onClose, onSaved 
       address: address.trim() || null,
       phoneNumber: phone.trim(),
       username: username.trim().toLowerCase(),
-      password: isStaffRole ? '' : password,
+      password: usesPassword ? password : '',
       roleId,
       baseSalary: Number(salary) || 0,
       deliveryBonus: isDriverRole ? Number(deliveryBonus) || 0 : 0,
@@ -116,8 +133,9 @@ export default function EmployeeFormModal({ employeeId = null, onClose, onSaved 
 
     setSaving(true);
     try {
-      if (isEdit) await updateEmployee(employeeId!, input);
-      else await createEmployee(input);
+      const id = isEdit ? employeeId! : await createEmployee(input);
+      if (isEdit) await updateEmployee(id, input);
+      if (usesPin && pin) await setEmployeePin(id, pin);
       onSaved(input.fullName, isEdit ? 'edit' : 'create');
     } catch (err: any) {
       const message = String(err?.message ?? '');
@@ -237,7 +255,11 @@ export default function EmployeeFormModal({ employeeId = null, onClose, onSaved 
               <div className="relative flex items-center justify-center py-1">
                 <span className="absolute inset-x-0 top-1/2 h-px bg-[#e2e8f0]" />
                 <span className="relative rounded-lg bg-[#f1f5f9] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.55px] text-[#475569]">
-                  {isStaffRole ? 'Identitas Karyawan' : 'Akses Login Kasir / Driver App'}
+                  {usesPassword
+                    ? 'Akses Login Web Admin & Perangkat Kasir/Driver'
+                    : usesPin
+                      ? 'Akses Kasir / Driver App (PIN)'
+                      : 'Identitas Karyawan'}
                 </span>
               </div>
 
@@ -262,10 +284,50 @@ export default function EmployeeFormModal({ employeeId = null, onClose, onSaved 
                   <FieldError message={errors.username} />
                 </div>
 
-                {isStaffRole ? (
+                {usesPin ? (
+                  <div className="flex flex-1 flex-col gap-2">
+                    <FieldLabel required={pinRequired}>PIN (6 digit)</FieldLabel>
+                    <div
+                      className={`flex items-center rounded-xl border bg-white pr-3 ${
+                        errors.pin ? 'border-[#f43f5e]' : 'border-[#cbd5e1]'
+                      }`}
+                    >
+                      <input
+                        type={showPin ? 'text' : 'password'}
+                        inputMode="numeric"
+                        maxLength={6}
+                        value={pin}
+                        onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        placeholder={
+                          pinRequired || !hasPin ? '6 digit angka' : 'Kosongkan jika tidak diubah'
+                        }
+                        autoComplete="off"
+                        className="w-full bg-transparent px-4 py-[13px] font-mono text-sm tracking-[0.3em] text-[#0f172a] outline-none placeholder:font-sans placeholder:tracking-normal placeholder:text-[#94a3b8]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPin((v) => !v)}
+                        aria-label={showPin ? 'Sembunyikan PIN' : 'Tampilkan PIN'}
+                        className="text-[#94a3b8] hover:text-[#0f172a]"
+                      >
+                        {showPin ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                    <FieldError message={errors.pin} />
+                    {!errors.pin && (
+                      <p
+                        className={`text-xs leading-4 ${isEdit && !hasPin ? 'text-[#92400e]' : 'text-[#94a3b8]'}`}
+                      >
+                        {isEdit && !hasPin
+                          ? 'Belum punya PIN — karyawan ini belum bisa masuk Kasir/Driver App.'
+                          : 'Dipakai untuk masuk Kasir/Driver App. Boleh sama dengan karyawan lain.'}
+                      </p>
+                    )}
+                  </div>
+                ) : !usesPassword ? (
                   <div className="flex flex-1 items-center rounded-xl border border-dashed border-[#cbd5e1] bg-[#f8fafc] px-4 py-3 text-xs leading-5 text-[#64748b]">
-                    Role ini tidak login ke aplikasi, jadi tidak perlu password. Absen cukup dengan
-                    kartu QR.
+                    Role ini tidak login ke aplikasi, jadi tidak perlu password atau PIN. Absen
+                    cukup dengan kartu QR.
                   </div>
                 ) : (
                   <div className="flex flex-1 flex-col gap-2">

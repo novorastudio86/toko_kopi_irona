@@ -1,5 +1,13 @@
 import { supabase } from './supabase';
-import type { PointRules, PointTier, Reward, RewardClaim, RewardInput } from '../types/reward';
+import { toTs } from './salesReports';
+import type {
+  PointRules,
+  PointTier,
+  RedeemReportRow,
+  Reward,
+  RewardClaim,
+  RewardInput,
+} from '../types/reward';
 
 export async function fetchPointRules(): Promise<PointRules> {
   const [settings, tiers] = await Promise.all([
@@ -112,6 +120,46 @@ export async function fetchRewardClaims(rewardId: string): Promise<RewardClaim[]
     const c: any = byId.get(row.customer_id);
     return {
       id: row.id,
+      customerName: c?.name ?? '—',
+      phoneNumber: c?.phone_number ?? '',
+      code: row.code,
+      pointsUsed: row.points_used,
+      claimedAt: row.claimed_at,
+      expiresAt: row.expires_at,
+      redeemedAt: row.redeemed_at,
+      cancelledAt: row.cancelled_at,
+      cancelReason: row.cancel_reason,
+      status: row.status,
+    };
+  });
+}
+
+/** Semua klaim reward yang diklaim di rentang tanggal lokal (inklusif), terbaru dulu */
+export async function fetchRedeemReport(start: string, end: string): Promise<RedeemReportRow[]> {
+  const ts = toTs(start, end);
+  const [claims, customers, rewards] = await Promise.all([
+    supabase
+      .from('reward_claim_overview')
+      .select(
+        'id, reward_id, customer_id, code, points_used, claimed_at, expires_at, redeemed_at, cancelled_at, cancel_reason, status'
+      )
+      .gte('claimed_at', ts.start)
+      .lt('claimed_at', ts.end)
+      .order('claimed_at', { ascending: false }),
+    supabase.from('customers').select('id, name, phone_number'),
+    supabase.from('rewards').select('id, name'),
+  ]);
+  if (claims.error) throw claims.error;
+  if (customers.error) throw customers.error;
+  if (rewards.error) throw rewards.error;
+
+  const customerById = new Map((customers.data ?? []).map((c: any) => [c.id, c]));
+  const rewardById = new Map((rewards.data ?? []).map((r: any) => [r.id, r.name]));
+  return (claims.data ?? []).map((row: any) => {
+    const c: any = customerById.get(row.customer_id);
+    return {
+      id: row.id,
+      rewardName: rewardById.get(row.reward_id) ?? '—',
       customerName: c?.name ?? '—',
       phoneNumber: c?.phone_number ?? '',
       code: row.code,

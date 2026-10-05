@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { ChevronDown, ChevronRight, Download, Plus } from 'lucide-react';
 import {
   DropdownMenu,
@@ -42,12 +43,14 @@ function Delta({ value, unit }: { value: number; unit?: string }) {
 }
 
 export default function StockCardScreen() {
+  // ?q=nama bahan (mis. dari Perputaran Stok) langsung mengisi pencarian
+  const [searchParams] = useSearchParams();
   const [range, setRange] = useState(defaultRange);
   const [rows, setRows] = useState<StockCardRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(() => searchParams.get('q') ?? '');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
