@@ -18,6 +18,8 @@ interface OnlineOrderRow {
   delivery_address: string | null;
   address_note: string | null;
   delivery_distance_km: number | string | null;
+  delivery_lat: number | string | null;
+  delivery_lng: number | string | null;
   payment_method: PaymentMethod;
   subtotal: number | string;
   total_amount: number | string;
@@ -48,8 +50,8 @@ interface AvailableDriverRow {
 
 const SELECT = [
   'id, transaction_number, transaction_date, customer_name, customer_id, customer_phone',
-  'customer_email, delivery_address, address_note, delivery_distance_km, payment_method',
-  'subtotal, total_amount, delivery_fee, service_fee, online_status, driver_id, receipt_print_count',
+  'customer_email, delivery_address, address_note, delivery_distance_km, delivery_lat, delivery_lng',
+  'payment_method, subtotal, total_amount, delivery_fee, service_fee, online_status, driver_id, receipt_print_count',
   'cashier:employees!transactions_employee_id_fkey(full_name)',
   'driver:employees!transactions_driver_id_fkey(full_name)',
   'transaction_items(quantity, unit_price, line_total, notes, products(name))',
@@ -99,6 +101,10 @@ function toOnlineOrder(row: OnlineOrderRow): OnlineOrder {
     address: row.delivery_address ?? '-',
     addressNote: row.address_note,
     distanceKm: row.delivery_distance_km === null ? null : Number(row.delivery_distance_km),
+    destination:
+      row.delivery_lat === null || row.delivery_lng === null
+        ? null
+        : { latitude: Number(row.delivery_lat), longitude: Number(row.delivery_lng) },
     deliveryFee,
     serviceFee,
     grandTotal: total + deliveryFee + serviceFee,

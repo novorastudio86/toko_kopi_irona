@@ -15,3 +15,8 @@ export function whatsAppUrl(phone: string, message?: string): string {
 export function googleMapsUrl(address: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 }
+
+/** Link navigasi Google Maps ke titik tujuan (rute dari lokasi HP saat ini) */
+export function googleMapsDirectionsUrl(lat: number, lng: number): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+}

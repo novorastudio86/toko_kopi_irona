@@ -14,7 +14,7 @@ import { colors } from '@/constants/colors';
 import { usePrintReceipt } from '@/kasir/hooks/usePrintReceipt';
 import { advanceOnlineOrder, assignOnlineDriver } from '@/kasir/services/online';
 import type { OnlineEventType, OnlineOrder, OnlineStatus } from '@/kasir/types/online';
-import { googleMapsUrl, whatsAppUrl } from '@/utils/contactLinks';
+import { googleMapsDirectionsUrl, googleMapsUrl, whatsAppUrl } from '@/utils/contactLinks';
 import { formatRupiah } from '@/utils/formatCurrency';
 import DriverPickerModal from './DriverPickerModal';
 import OnlineStatusBadge from './OnlineStatusBadge';
@@ -35,6 +35,7 @@ const EVENT_LABELS: Record<OnlineEventType, string> = {
   siap_diantar: 'Siap diantar',
   driver_ditugaskan: 'Driver ditugaskan',
   diantar: 'Diantar driver',
+  driver_tiba: 'Driver tiba di lokasi',
   selesai: 'Selesai',
   dibatalkan: 'Ditolak',
 };
@@ -201,7 +202,13 @@ export default function OnlineOrderDetailPanel({
             <LinkButton
               icon={<MapIcon size={16} color={colors.info} />}
               label="Buka di Google Maps"
-              onPress={() => Linking.openURL(googleMapsUrl(o.address))}
+              onPress={() =>
+                Linking.openURL(
+                  o.destination
+                    ? googleMapsDirectionsUrl(o.destination.latitude, o.destination.longitude)
+                    : googleMapsUrl(o.address)
+                )
+              }
             />
           </Section>
 

@@ -1,5 +1,6 @@
 -- Menghapus pesanan online contoh dari dummy_online_masuk.sql (email @dummy.irona.test)
--- beserta stok, poin, dan tugas antar yang terlanjur tercatat saat dicoba.
+-- beserta stok, poin, tugas antar yang terlanjur tercatat saat dicoba, dan absen
+-- driver dari dummy_antaran_driver.sql.
 begin;
 create temp table dummy_online on commit drop as
   select id from transactions where customer_email like '%@dummy.irona.test';
@@ -12,4 +13,5 @@ delete from point_transactions where transaction_id in (select id from dummy_onl
 delete from stock_movements where transaction_id in (select id from dummy_online);
 delete from deliveries where transaction_id in (select id from dummy_online);
 delete from transactions where id in (select id from dummy_online);
+delete from attendance where notes = '[DUMMY] absen uji antaran';
 commit;

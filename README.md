@@ -196,6 +196,10 @@ docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/du
 # 9. 4 pesanan online BARU hari ini (2 member, 2 tamu) untuk mencoba menu Online di Kasir App.
 #    Boleh dijalankan berkali-kali; tiap kali menambah 4 pesanan.
 docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_online_masuk.sql
+
+# 10. Absenkan driver + tugaskan 3 pesanan contoh ke driver (1 Dibuat, 2 Siap Diantar)
+#     untuk mencoba Driver App. Butuh pesanan "masuk" dari langkah 9.
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_antaran_driver.sql
 ```
 
 Untuk **menghapus** data contoh (urutannya penting):

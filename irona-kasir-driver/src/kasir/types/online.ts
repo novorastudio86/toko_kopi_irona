@@ -1,10 +1,11 @@
+import type { LatLng } from '@/types/store';
 import type { OrderReceipt } from './order';
 
 /** Tahap pesanan online (lihat migration online_order_flow) */
 export type OnlineStatus = 'masuk' | 'dibuat' | 'siap_diantar' | 'diantar' | 'selesai' | 'dibatalkan';
 
-/** Jenis catatan di riwayat pesanan: perubahan status + driver ditugaskan */
-export type OnlineEventType = OnlineStatus | 'driver_ditugaskan';
+/** Jenis catatan di riwayat pesanan: perubahan status + driver ditugaskan / tiba di lokasi */
+export type OnlineEventType = OnlineStatus | 'driver_ditugaskan' | 'driver_tiba';
 
 export interface OnlineOrderEvent {
   status: OnlineEventType;
@@ -20,6 +21,8 @@ export interface OnlineOrder extends OrderReceipt {
   address: string;
   addressNote: string | null;
   distanceKm: number | null;
+  /** Titik antar dari pin pelanggan; null untuk pesanan lama tanpa titik */
+  destination: LatLng | null;
   deliveryFee: number;
   serviceFee: number;
   /** Total yang dibayar pelanggan (produk + ongkir + biaya layanan) */

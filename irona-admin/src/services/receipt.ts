@@ -23,7 +23,8 @@ export async function fetchStoreProfile(): Promise<StoreProfile> {
   const { data, error } = await supabase
     .from('store_settings')
     .select(
-      'store_name, address, phone, email, logo_url, social_facebook, social_instagram, social_twitter, social_youtube'
+      'store_name, address, phone, email, logo_url, social_facebook, social_instagram, social_twitter, social_youtube, ' +
+        'latitude, longitude'
     )
     .single();
   if (error) throw error;
@@ -38,6 +39,8 @@ export async function fetchStoreProfile(): Promise<StoreProfile> {
     socialInstagram: d.social_instagram ?? '',
     socialTwitter: d.social_twitter ?? '',
     socialYoutube: d.social_youtube ?? '',
+    latitude: d.latitude === null ? null : Number(d.latitude),
+    longitude: d.longitude === null ? null : Number(d.longitude),
   };
 }
 
@@ -55,6 +58,8 @@ export async function saveStoreProfile(p: StoreProfile): Promise<void> {
       social_instagram: clean(p.socialInstagram),
       social_twitter: clean(p.socialTwitter),
       social_youtube: clean(p.socialYoutube),
+      latitude: p.latitude,
+      longitude: p.longitude,
       updated_at: new Date().toISOString(),
     })
     .eq('id', true);

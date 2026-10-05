@@ -34,7 +34,8 @@
         {
           "bluetoothPermission": "Izinkan Irona Kasir memakai Bluetooth untuk mencetak struk."
         }
-      ]
+      ],
+      "expo-image"
     ]
   }
 }

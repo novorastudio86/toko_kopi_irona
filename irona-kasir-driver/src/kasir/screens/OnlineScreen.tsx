@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Bike, Search } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
@@ -53,15 +53,9 @@ export default function OnlineScreen({ online, sessionId }: OnlineScreenProps) {
         ? b.transactionDate.localeCompare(a.transactionDate)
         : a.transactionDate.localeCompare(b.transactionDate)
     );
+  // Detail tetap tampil walaupun pesanan sudah pindah ke tab lain
   const selected = orders.find((o) => o.transactionId === selectedId) ?? null;
 
-  // Pesanan terpilih pindah tahap → ikut pindah tab supaya tidak "hilang" dari layar
-  useEffect(() => {
-    if (!selected) return;
-    const owner = TABS.find((t) => t.statuses.includes(selected.onlineStatus));
-    if (owner && owner.key !== tab) setTab(owner.key);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected?.onlineStatus]);
 
   return (
     <View style={styles.container}>

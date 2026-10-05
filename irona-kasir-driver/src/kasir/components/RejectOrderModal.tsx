@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors } from '@/constants/colors';
 
@@ -22,14 +22,16 @@ export default function RejectOrderModal({
 }: RejectOrderModalProps) {
   const [reason, setReason] = useState('');
 
-  useEffect(() => {
-    if (visible) setReason('');
-  }, [visible]);
-
   const valid = reason.trim().length > 0;
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onShow={() => setReason('')}
+      onRequestClose={onClose}
+    >
       <View style={styles.backdrop}>
         <View style={styles.card}>
           <Text style={styles.title}>Tolak pesanan {orderNumber}?</Text>
