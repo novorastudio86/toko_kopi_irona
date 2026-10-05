@@ -5,9 +5,11 @@ import { OrientationLock } from 'expo-screen-orientation';
 import { colors } from '@/constants/colors';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 import KasirSidebar from '@/kasir/components/KasirSidebar';
+import { useOnlineOrders } from '@/kasir/hooks/useOnlineOrders';
 import AttendanceScreen from '@/kasir/screens/AttendanceScreen';
 import HistoryScreen from '@/kasir/screens/HistoryScreen';
 import MenuScreen from '@/kasir/screens/MenuScreen';
+import OnlineScreen from '@/kasir/screens/OnlineScreen';
 import PrinterSettingsScreen from '@/kasir/screens/PrinterSettingsScreen';
 import { endCashierSession, startCashierSession } from '@/kasir/services/cashierSession';
 import type { KasirSection } from '@/kasir/types/section';
@@ -32,6 +34,8 @@ export default function KasirShell({ employee, onSwitchEmployee }: KasirShellPro
   useScreenOrientation(OrientationLock.LANDSCAPE);
   const [section, setSection] = useState<KasirSection>('menu');
   const [sessionId, setSessionId] = useState<string | null>(null);
+  // Pesanan online didengarkan terus (bukan hanya saat menu Online dibuka) untuk badge sidebar
+  const online = useOnlineOrders();
 
   // Buka sesi kasir sekali saat kasir masuk (untuk Laporan Pendapatan Kasir & Jam Operasional)
   useEffect(() => {
@@ -52,6 +56,7 @@ export default function KasirShell({ employee, onSwitchEmployee }: KasirShellPro
         active={section}
         onChange={setSection}
         employeeName={employee.fullName}
+        onlineBadge={online.newCount}
         onSwitchEmployee={handleSwitchEmployee}
       />
 
@@ -67,16 +72,15 @@ export default function KasirShell({ employee, onSwitchEmployee }: KasirShellPro
 
         {section !== 'menu' ? (
           <View style={styles.body}>
-            {section === 'histori' ? (
+            {section === 'online' ? (
+              <OnlineScreen online={online} sessionId={sessionId} />
+            ) : section === 'histori' ? (
               <HistoryScreen />
             ) : section === 'absensi' ? (
               <AttendanceScreen />
             ) : section === 'printer' ? (
               <PrinterSettingsScreen />
-            ) : (
-              // Sementara: menu lain dibuat di langkah berikutnya
-              <Text style={styles.subtitle}>Halaman ini akan dibuat di langkah berikutnya.</Text>
-            )}
+            ) : null}
           </View>
         ) : null}
       </SafeAreaView>
@@ -108,10 +112,5 @@ const styles = StyleSheet.create({
   },
   hidden: {
     display: 'none',
-  },
-  subtitle: {
-    marginTop: 4,
-    fontSize: 14,
-    color: colors.textMuted,
   },
 });

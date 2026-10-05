@@ -192,11 +192,16 @@ docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/du
 
 # 8. PIN uji untuk karyawan Kasir/Driver yang belum punya PIN (lihat isi file untuk PIN-nya)
 docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_pin_karyawan.sql
+
+# 9. 4 pesanan online BARU hari ini (2 member, 2 tamu) untuk mencoba menu Online di Kasir App.
+#    Boleh dijalankan berkali-kali; tiap kali menambah 4 pesanan.
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_online_masuk.sql
 ```
 
 Untuk **menghapus** data contoh (urutannya penting):
 
 ```bash
+docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_online_masuk_hapus.sql
 docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_pemakaian_stok_hapus.sql
 docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_penyesuaian_stok_hapus.sql
 docker exec -i supabase_db_irona-backend psql -U postgres < supabase/dev-data/dummy_redeem_hapus.sql

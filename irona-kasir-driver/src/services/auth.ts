@@ -1,3 +1,4 @@
+import { isAuthRetryableFetchError } from '@supabase/supabase-js';
 import { supabase } from './supabase';
 import type { OwnerProfile } from '@/types/auth';
 
@@ -33,6 +34,10 @@ export async function signInOwner(username: string, password: string): Promise<O
     email: toEmail(username),
     password,
   });
+  // Gagal terhubung (Wi-Fi putus / alamat server berubah) ≠ password salah
+  if (isAuthRetryableFetchError(error)) {
+    throw new Error('Tidak bisa terhubung ke server. Periksa Wi-Fi & alamat server (Doppler).');
+  }
   if (error || !data.user) throw new Error('Username atau password salah.');
 
   const owner = await fetchOwnerProfile(data.user.id);
