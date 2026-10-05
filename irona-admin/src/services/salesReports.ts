@@ -12,7 +12,7 @@ import { parseLocalDate, toLocalISO } from '../utils/date';
 const num = (v: unknown) => Number(v ?? 0);
 
 /** Rentang tanggal lokal → timestamptz WIB (akhir eksklusif = hari setelah tanggal akhir) */
-function toTs(start: string, end: string) {
+export function toTs(start: string, end: string) {
   const next = parseLocalDate(end);
   next.setDate(next.getDate() + 1);
   return { start: `${start}T00:00:00+07:00`, end: `${toLocalISO(next)}T00:00:00+07:00` };

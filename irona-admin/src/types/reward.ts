@@ -52,3 +52,8 @@ export interface RewardClaim {
   cancelReason: string | null;
   status: ClaimStatus;
 }
+
+/** Baris Laporan Redeem Point (semua reward) */
+export interface RedeemReportRow extends RewardClaim {
+  rewardName: string;
+}

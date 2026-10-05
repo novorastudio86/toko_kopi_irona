@@ -34,6 +34,19 @@ import SalesByPeriodReportScreen from './screens/reports/SalesByPeriodReportScre
 import PaymentReportScreen from './screens/reports/PaymentReportScreen';
 import OnlineSalesReportScreen from './screens/reports/OnlineSalesReportScreen';
 import AdjustmentReportScreen from './screens/reports/AdjustmentReportScreen';
+import ProductSalesReportScreen from './screens/reports/ProductSalesReportScreen';
+import CategorySalesReportScreen from './screens/reports/CategorySalesReportScreen';
+import AttendanceReportScreen from './screens/reports/AttendanceReportScreen';
+import CashierIncomeReportScreen from './screens/reports/CashierIncomeReportScreen';
+import OpeningHoursReportScreen from './screens/reports/OpeningHoursReportScreen';
+import MembershipReportScreen from './screens/reports/MembershipReportScreen';
+import RedeemReportScreen from './screens/reports/RedeemReportScreen';
+import StockSummaryReportScreen from './screens/reports/StockSummaryReportScreen';
+import StockPurchaseReportScreen from './screens/reports/StockPurchaseReportScreen';
+import StockAdjustmentReportScreen from './screens/reports/StockAdjustmentReportScreen';
+import PeakProductScreen from './screens/analysis/PeakProductScreen';
+import PeakTransactionScreen from './screens/analysis/PeakTransactionScreen';
+import StockCycleScreen from './screens/analysis/StockCycleScreen';
 
 export default function App() {
   return (
@@ -102,6 +115,19 @@ export default function App() {
         <Route path="/report/sales/payment" element={<PaymentReportScreen />} />
         <Route path="/report/sales/online-order" element={<OnlineSalesReportScreen />} />
         <Route path="/report/sales/adjustment-order" element={<AdjustmentReportScreen />} />
+        <Route path="/report/product/sales-product" element={<ProductSalesReportScreen />} />
+        <Route path="/report/product/product-category" element={<CategorySalesReportScreen />} />
+        <Route path="/report/employee/presence" element={<AttendanceReportScreen />} />
+        <Route path="/report/store/cashier-income" element={<CashierIncomeReportScreen />} />
+        <Route path="/report/store/opening-hour" element={<OpeningHoursReportScreen />} />
+        <Route path="/report/membership/list-member" element={<MembershipReportScreen />} />
+        <Route path="/report/membership/redeem" element={<RedeemReportScreen />} />
+        <Route path="/report/inventory/summary-stock" element={<StockSummaryReportScreen />} />
+        <Route path="/report/inventory/purchase-stock" element={<StockPurchaseReportScreen />} />
+        <Route path="/report/inventory/stock-adjustment" element={<StockAdjustmentReportScreen />} />
+        <Route path="/analyst/peak-product" element={<PeakProductScreen />} />
+        <Route path="/analyst/peak-transaction" element={<PeakTransactionScreen />} />
+        <Route path="/analyst/stock-cycle" element={<StockCycleScreen />} />
 
         {/* Halaman yang belum dibangun jatuh ke placeholder */}
         <Route path="*" element={<PlaceholderPage />} />

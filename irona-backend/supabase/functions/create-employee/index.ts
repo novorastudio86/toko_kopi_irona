@@ -59,13 +59,14 @@ Deno.serve(async (req) => {
     const { data: role } = await adminClient.from('roles').select('type').eq('id', role_id).single();
     if (!role) return json({ error: 'Role tidak ditemukan.' }, 400);
 
-    // Role tipe "staf" (mis. Barista) tidak login ke aplikasi apa pun: akunnya tetap dibuat
+    // Hanya Admin/Owner yang login dengan password. Kasir & Driver masuk aplikasi lewat PIN
+    // (perangkat login sebagai Owner), Staf tidak login sama sekali. Akun Auth tetap dibuat
     // karena data karyawan terhubung ke Auth, tapi dengan password acak yang tidak diketahui siapa pun
-    const isStaff = role.type === 'staf';
-    if (!isStaff && (!password || String(password).length < 6)) {
+    const usesPassword = role.type === 'admin';
+    if (usesPassword && (!password || String(password).length < 6)) {
       return json({ error: 'Password minimal 6 karakter.' }, 400);
     }
-    const loginPassword = isStaff ? `${crypto.randomUUID()}${crypto.randomUUID()}` : password;
+    const loginPassword = usesPassword ? password : `${crypto.randomUUID()}${crypto.randomUUID()}`;
 
     const cleanUsername = String(username).trim().toLowerCase();
     const email = `${cleanUsername}@irona.internal`;
@@ -98,7 +99,7 @@ Deno.serve(async (req) => {
       return json({ error: insertError.message }, 400);
     }
 
-    return json({ success: true });
+    return json({ success: true, id: newUser.user.id });
   } catch (err) {
     return json({ error: (err as Error).message }, 500);
   }

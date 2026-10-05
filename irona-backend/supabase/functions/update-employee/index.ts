@@ -66,15 +66,16 @@ Deno.serve(async (req) => {
     const { data: newRole } = await adminClient.from('roles').select('type').eq('id', role_id).single();
     if (!newRole) return json({ error: 'Role tidak ditemukan.' }, 400);
 
-    const wasStaff = (current.roles as any)?.type === 'staf';
-    const isStaff = newRole.type === 'staf';
+    // Hanya Admin/Owner yang login dengan password (Kasir & Driver pakai PIN, Staf tidak login)
+    const usedPassword = (current.roles as any)?.type === 'admin';
+    const usesPassword = newRole.type === 'admin';
 
-    if (password && String(password).length < 6) {
+    if (usesPassword && password && String(password).length < 6) {
       return json({ error: 'Password minimal 6 karakter.' }, 400);
     }
-    // Pindah dari staf (tanpa aplikasi) ke Kasir/Driver: wajib dibuatkan password baru
-    if (wasStaff && !isStaff && !password) {
-      return json({ error: 'Isi password untuk akses aplikasi, karena role baru memerlukan login.' }, 400);
+    // Naik jadi Admin/Owner: wajib dibuatkan password baru
+    if (usesPassword && !usedPassword && !password) {
+      return json({ error: 'Isi password, karena role Admin/Owner login dengan password.' }, 400);
     }
 
     const newUsername = String(username).trim().toLowerCase();
@@ -82,9 +83,10 @@ Deno.serve(async (req) => {
 
     // Username adalah bagian dari email login, jadi ikut diperbarui di Auth
     if (newUsername !== current.username) authUpdate.email = `${newUsername}@irona.internal`;
-    if (isStaff) {
-      // Staf tidak login: password lama (kalau ada) diganti password acak supaya tidak bisa dipakai lagi
-      if (!wasStaff) authUpdate.password = `${crypto.randomUUID()}${crypto.randomUUID()}`;
+    if (!usesPassword) {
+      // Bukan Admin/Owner: password lama (mis. dari sebelum ada PIN) diganti password acak
+      // supaya tidak bisa dipakai login lagi
+      authUpdate.password = `${crypto.randomUUID()}${crypto.randomUUID()}`;
     } else if (password) {
       authUpdate.password = password;
     }

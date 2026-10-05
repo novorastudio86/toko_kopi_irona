@@ -19,7 +19,9 @@ export async function fetchEmployees(): Promise<EmployeeListItem[]> {
   const [employeeRes, roleRes] = await Promise.all([
     supabase
       .from('employees')
-      .select('id, full_name, phone_number, username, role_id, base_salary, delivery_bonus, is_active, hire_date')
+      .select(
+        'id, full_name, phone_number, username, role_id, base_salary, delivery_bonus, is_active, hire_date'
+      )
       .order('full_name'),
     fetchRoles(),
   ]);
@@ -81,8 +83,8 @@ export async function fetchEmployeeDetail(id: string): Promise<EmployeeDetail | 
   };
 }
 
-/** Akun login dibuat lewat Edge Function karena butuh hak akses service role */
-export async function createEmployee(input: EmployeeInput): Promise<void> {
+/** Akun login dibuat lewat Edge Function karena butuh hak akses service role. Mengembalikan id karyawan baru */
+export async function createEmployee(input: EmployeeInput): Promise<string> {
   const { data, error } = await supabase.functions.invoke('create-employee', {
     body: {
       username: input.username,
@@ -111,6 +113,7 @@ export async function createEmployee(input: EmployeeInput): Promise<void> {
     }
     throw new Error(message);
   }
+  return data.id as string;
 }
 
 /** Password dikosongkan = tidak diubah */
@@ -142,6 +145,22 @@ export async function updateEmployee(id: string, input: EmployeeInput): Promise<
     }
     throw new Error(message);
   }
+}
+
+/** PIN 6 digit untuk masuk Kasir/Driver App (disimpan sebagai hash, tidak bisa dibaca lagi) */
+export async function setEmployeePin(employeeId: string, pin: string): Promise<void> {
+  const { error } = await supabase.rpc('set_employee_pin', {
+    p_employee_id: employeeId,
+    p_pin: pin,
+  });
+  if (error) throw error;
+}
+
+/** Karyawan yang sudah punya PIN */
+export async function fetchEmployeesWithPin(): Promise<Set<string>> {
+  const { data, error } = await supabase.rpc('employee_pin_status');
+  if (error) throw error;
+  return new Set((data ?? []).map((r: { employee_id: string }) => r.employee_id));
 }
 
 /** Karyawan nonaktif otomatis ditolak saat login */
