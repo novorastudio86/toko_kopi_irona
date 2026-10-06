@@ -115,8 +115,7 @@ export default function CategoryFormModal({ categoryId, onClose, onSaved }: Prop
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
-    // Nama di Web Customer = nama kategori, jadi online_name selalu dikosongkan
-    const input = { name: name.trim(), onlineName: null, icon, displayOrder: order, showInMenu, showOnline };
+    const input = { name: name.trim(), icon, displayOrder: order, showInMenu, showOnline };
 
     setSaving(true);
     try {

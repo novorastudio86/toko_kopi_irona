@@ -126,7 +126,7 @@ export default function CategoryTabs({
                 />
               )}
               <span className="relative z-[2]">
-                {toTitleCase(category.onlineName ?? category.name)}
+                {toTitleCase(category.name)}
               </span>
             </button>
           );

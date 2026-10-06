@@ -94,7 +94,7 @@ function MenuDetail({ id }: { id: string | undefined }) {
 
   const { name, sellingPrice, isSoldOut } = product;
   const total = sellingPrice === null ? null : sellingPrice * qty;
-  const categoryName = category ? (category.onlineName ?? category.name) : null;
+  const categoryName = category?.name ?? null;
   const canOrder = !isSoldOut && sellingPrice !== null;
 
   const addToCart = () => {

@@ -258,20 +258,10 @@ update public.categories set icon = case name
 end
 where icon is null;
 
--- Nama & visibilitas kategori di Web Customer, mengikuti frame "Kategori Menu Online"
-update public.categories c
-set online_name = v.online_name,
-    show_online = true
-from (values
-  ('BASIC COFFEE',    'Basic Coffee'),
-  ('AMERICANO BASED', 'Americano Series'),
-  ('TEA BASED',       'Tea Based'),
-  ('ICE COFFEE',      'Ice Coffee'),
-  ('MATCHA BASED',    'Matcha Series'),
-  ('APPETIZER',       'Appetizer'),
-  ('MAIN COURSE',     'Main Course')
-) as v(name, online_name)
-where c.name = v.name;
+-- Visibilitas kategori di Web Customer, mengikuti frame "Kategori Menu Online"
+update public.categories
+set show_online = true
+where name in ('BASIC COFFEE', 'AMERICANO BASED', 'TEA BASED', 'ICE COFFEE', 'MATCHA BASED', 'APPETIZER', 'MAIN COURSE');
 
 -- Tidak tampil sebagai tab di Web Customer
 update public.categories

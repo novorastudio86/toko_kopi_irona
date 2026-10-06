@@ -2,14 +2,13 @@ import { supabase } from './supabase';
 import type { Category, CategoryInput } from '../types/category';
 
 const CATEGORY_SELECT =
-  'id, code, name, online_name, icon, display_order, show_in_menu, show_online, products(count)';
+  'id, code, name, icon, display_order, show_in_menu, show_online, products(count)';
 
 function mapCategory(row: any): Category {
   return {
     id: row.id,
     code: row.code,
     name: row.name,
-    onlineName: row.online_name,
     icon: row.icon,
     displayOrder: row.display_order,
     showInMenu: row.show_in_menu,
@@ -21,7 +20,6 @@ function mapCategory(row: any): Category {
 function toRow(input: CategoryInput) {
   return {
     name: input.name,
-    online_name: input.onlineName,
     icon: input.icon,
     display_order: input.displayOrder,
     show_in_menu: input.showInMenu,

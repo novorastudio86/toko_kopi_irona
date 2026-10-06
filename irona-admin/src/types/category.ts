@@ -2,7 +2,6 @@ export interface Category {
   id: string;
   code: string;
   name: string;
-  onlineName: string | null;
   icon: string | null;
   displayOrder: number;
   showInMenu: boolean;
@@ -12,7 +11,6 @@ export interface Category {
 
 export interface CategoryInput {
   name: string;
-  onlineName: string | null;
   icon: string | null;
   displayOrder: number;
   showInMenu: boolean;

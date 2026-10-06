@@ -134,7 +134,6 @@ export function InfoStep({ values, onChange, errors, categories, onCategoryCreat
     try {
       const id = await createCategory({
         name: quickName.trim(),
-        onlineName: null,
         icon: null,
         displayOrder: order,
         showInMenu: true,

@@ -20,7 +20,6 @@ export function categoryKind(categoryId: string): MenuKind {
 export const RECOMMENDED_CATEGORY: Category = {
   id: 'recommended',
   name: 'Pilihan Kora',
-  onlineName: null,
   displayOrder: 0,
   showOnline: true,
 };
@@ -28,7 +27,6 @@ export const RECOMMENDED_CATEGORY: Category = {
 export const ALL_CATEGORY: Category = {
   id: 'all',
   name: 'All Product',
-  onlineName: null,
   displayOrder: 0,
   showOnline: true,
 };
@@ -38,11 +36,10 @@ export async function fetchOnlineCategories(): Promise<Category[]> {
   const { data, error } = await supabase.rpc('online_menu_categories');
   if (error) throw error;
   return (
-    data as { id: string; name: string; online_name: string | null; display_order: number }[]
+    data as { id: string; name: string; display_order: number }[]
   ).map((row) => ({
     id: row.id,
     name: row.name,
-    onlineName: row.online_name,
     displayOrder: row.display_order,
     showOnline: true,
   }));
