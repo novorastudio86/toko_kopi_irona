@@ -264,13 +264,6 @@ export default function MasterRecipeScreen() {
       <PageHeader
         title="Master Resep"
         info="Formula produk dan racikan. Biaya bahan selalu mengikuti harga pembelian terkini di Inventory."
-        badge={
-          loading
-            ? undefined
-            : incompleteProducts.length > 0
-              ? `${incompleteProducts.length} belum lengkap resep`
-              : `${rows.length} Resep`
-        }
         action={
           <div className="flex items-center gap-3">
             <HistoryButton onClick={() => setHistoryOpen(true)} />

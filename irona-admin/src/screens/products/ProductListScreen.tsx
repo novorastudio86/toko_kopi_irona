@@ -107,7 +107,8 @@ export default function ProductListScreen() {
 
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'name', dir: 'asc' });
+  // 'default' = resep belum diisi → bahan menipis → sisanya A-Z; klik header kolom untuk urutan lain
+  const [sort, setSort] = useState<{ key: SortKey | 'default'; dir: SortDir }>({ key: 'default', dir: 'asc' });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -185,9 +186,14 @@ export default function ProductListScreen() {
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
+    if (sort.key === 'default') {
+      const rank = (r: Row) => (r.recipeStatus === 'belum_lengkap' ? 0 : r.lowStock.length > 0 ? 1 : 2);
+      return arr.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'id'));
+    }
+    const key = sort.key;
     arr.sort((a, b) => {
-      const va = a[sort.key];
-      const vb = b[sort.key];
+      const va = a[key];
+      const vb = b[key];
       // Nilai kosong (mis. resep belum diisi) selalu di bawah
       if (va === null && vb === null) return 0;
       if (va === null) return 1;
@@ -257,7 +263,6 @@ export default function ProductListScreen() {
       <PageHeader
         title="Daftar Produk"
         info="Kelola menu yang dijual: harga jual, margin terhadap total cost resep, dan kanal penjualannya."
-        badge={loading ? undefined : `${products.length} Produk`}
         action={
           <div className="flex items-center gap-3">
             <HistoryButton onClick={() => setHistoryOpen(true)} />
