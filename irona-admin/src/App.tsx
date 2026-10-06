@@ -3,7 +3,6 @@ import LoginScreen from './screens/LoginScreen';
 import DashboardLayout from './screens/DashboardLayout';
 import PlaceholderPage from './screens/PlaceholderPage';
 import CategoryListScreen from './screens/products/CategoryListScreen';
-import CategoryFormScreen from './screens/products/CategoryFormScreen';
 import ProductListScreen from './screens/products/ProductListScreen';
 import { GuestOnly, RequireAdmin } from './components/RouteGuards';
 import MasterRecipeScreen from './screens/products/MasterRecipeScreen';
@@ -72,8 +71,6 @@ export default function App() {
 
         {/* Produk & Menu */}
         <Route path="/product/category" element={<CategoryListScreen />} />
-        <Route path="/product/category/new" element={<CategoryFormScreen />} />
-        <Route path="/product/category/:id/edit" element={<CategoryFormScreen />} />
         <Route path="/product/list" element={<ProductListScreen />} />
         <Route path="/product/recipe" element={<MasterRecipeScreen />} />
 

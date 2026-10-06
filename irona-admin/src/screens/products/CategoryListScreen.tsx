@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
 import { CheckCircle2 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -15,6 +14,7 @@ import { fetchCategories } from '../../services/categories';
 import { getCategoryIconSrc } from '../../constants/categoryIcons';
 import type { Category } from '../../types/category';
 import CategoryProductsModal from './CategoryProductsModal';
+import CategoryFormModal from './CategoryFormModal';
 import icPlus from '../../assets/ui/plus.svg';
 import icChevronRight from '../../assets/ui/chevron-right.svg';
 import icMore from '../../assets/ui/more.svg';
@@ -47,21 +47,11 @@ export default function CategoryListScreen() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [productsOf, setProductsOf] = useState<Category | null>(null);
+  // null = tertutup, { id: undefined } = tambah, { id } = ubah
+  const [formTarget, setFormTarget] = useState<{ id?: string } | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [flash, setFlash] = useState<string | null>(
-    (location.state as { flash?: string } | null)?.flash ?? null
-  );
-
-  // Tampilkan pesan sukses dari form, lalu hapus dari history supaya tidak muncul lagi saat refresh
-  useEffect(() => {
-    if (!flash) return;
-    navigate(location.pathname, { replace: true, state: null });
-    const timer = setTimeout(() => setFlash(null), 4000);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [flash, setFlash] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -72,7 +62,14 @@ export default function CategoryListScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [reloadKey]);
+
+  // Pesan sukses dari form modal hilang sendiri setelah 4 detik
+  useEffect(() => {
+    if (!flash) return;
+    const timer = setTimeout(() => setFlash(null), 4000);
+    return () => clearTimeout(timer);
+  }, [flash]);
 
   function handleSort(key: string) {
     const k = key as SortKey;
@@ -110,7 +107,7 @@ export default function CategoryListScreen() {
         info="Modul ini mengatur pengelompokan menu kopi, makanan, dan minuman di Toko Kopi Irona serta tata letak tab kasir POS dan katalog pesanan online."
         action={
           <button
-            onClick={() => navigate('/product/category/new')}
+            onClick={() => setFormTarget({})}
             className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-4 py-2.5 text-xs font-semibold leading-4 tracking-[0.3px] text-white drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#1e293b]"
           >
             <img src={icPlus} alt="" className="size-4" />
@@ -240,7 +237,7 @@ export default function CategoryListScreen() {
                           <img src={icMore} alt="Aksi" className="size-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem onClick={() => navigate(`/product/category/${cat.id}/edit`)}>
+                          <DropdownMenuItem onClick={() => setFormTarget({ id: cat.id })}>
                             Ubah
                           </DropdownMenuItem>
                           <DropdownMenuItem disabled>Lihat Produk</DropdownMenuItem>
@@ -268,6 +265,18 @@ export default function CategoryListScreen() {
       </div>
 
       <CategoryProductsModal category={productsOf} onClose={() => setProductsOf(null)} />
+
+      {formTarget && (
+        <CategoryFormModal
+          categoryId={formTarget.id}
+          onClose={() => setFormTarget(null)}
+          onSaved={(message) => {
+            setFormTarget(null);
+            setFlash(message);
+            setReloadKey((k) => k + 1);
+          }}
+        />
+      )}
     </div>
   );
 }
