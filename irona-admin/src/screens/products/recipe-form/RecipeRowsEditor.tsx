@@ -53,7 +53,7 @@ export function RecipeRowsEditor({ title, rows, onChange, sources, allowRacikan 
         return (
           <div
             key={row.rowId}
-            className="grid grid-cols-[minmax(0,5fr)_92px_56px_104px_128px] items-center gap-2.5 rounded-md border border-[#e2e8f0] bg-white p-[13px] drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)]"
+            className="grid grid-cols-[minmax(0,5fr)_92px_56px_104px_128px] items-center gap-2.5 rounded-md border border-[#e2e8f0] bg-white p-[13px] shadow-[0px_1px_1px_rgba(0,0,0,0.05)]"
           >
             <SourcePicker
               value={row.sourceKey}
@@ -70,7 +70,7 @@ export function RecipeRowsEditor({ title, rows, onChange, sources, allowRacikan 
               value={row.quantity}
               onChange={(e) => updateRow(row.rowId, { quantity: e.target.value })}
               placeholder="0"
-              className="w-[70px] rounded border border-[#0f172a] bg-white px-[9px] py-[7px] text-xs font-medium text-[#0f172a] outline-none"
+              className="w-[70px] rounded border border-[#cbd5e1] bg-white px-[9px] py-[7px] text-xs font-medium text-[#0f172a] outline-none placeholder:text-[#94a3b8] focus:border-[#94a3b8]"
             />
 
             <span className="text-xs font-medium text-[#64748b]">{source?.unitName ?? '-'}</span>
