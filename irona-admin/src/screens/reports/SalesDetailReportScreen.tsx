@@ -334,7 +334,7 @@ export default function SalesDetailReportScreen() {
   const filterClass =
     'rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]';
   const thClass =
-    'whitespace-nowrap py-[14px] pr-3 text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'whitespace-nowrap py-[14px] pr-3 text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
 
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
@@ -491,7 +491,7 @@ export default function SalesDetailReportScreen() {
                 <tr>
                   <td
                     colSpan={shown.length + 1}
-                    className="py-10 text-center text-xs text-[#94a3b8]"
+                    className="py-10 text-center text-sm text-[#94a3b8]"
                   >
                     Memuat transaksi...
                   </td>
@@ -501,7 +501,7 @@ export default function SalesDetailReportScreen() {
                 <tr>
                   <td
                     colSpan={shown.length + 1}
-                    className="py-10 text-center text-xs text-[#94a3b8]"
+                    className="py-10 text-center text-sm text-[#94a3b8]"
                   >
                     Tidak ada transaksi di periode ini.
                   </td>
@@ -513,7 +513,7 @@ export default function SalesDetailReportScreen() {
                     {shown.map((c, i) => (
                       <td
                         key={c.key}
-                        className={`whitespace-nowrap py-3 pr-3 text-xs text-[#475569] ${i === 0 ? 'pl-6' : ''} ${c.align === 'right' ? 'text-right' : ''}`}
+                        className={`whitespace-nowrap py-3 pr-3 text-sm text-[#475569] ${i === 0 ? 'pl-6' : ''} ${c.align === 'right' ? 'text-right' : ''}`}
                       >
                         {c.render(r)}
                       </td>

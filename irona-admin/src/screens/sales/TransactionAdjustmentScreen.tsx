@@ -113,7 +113,7 @@ export default function TransactionAdjustmentScreen() {
 
   const hasFilter = !!(search || typeFilter || channelFilter || startDate || endDate);
   const thClass =
-    'py-[14px] text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'py-[14px] text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
   const filterClass =
     'rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]';
 
@@ -291,7 +291,7 @@ export default function TransactionAdjustmentScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat penyesuaian...
                   </td>
                 </tr>
@@ -299,7 +299,7 @@ export default function TransactionAdjustmentScreen() {
 
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     {hasFilter
                       ? 'Tidak ada catatan yang cocok.'
                       : 'Belum ada penyesuaian transaksi.'}
@@ -310,7 +310,7 @@ export default function TransactionAdjustmentScreen() {
               {!loading &&
                 paged.map((a) => (
                   <tr key={a.id} className="border-t border-[#f1f5f9] first:border-t-0">
-                    <td className="py-4 pl-6 pr-3 text-xs text-[#475569]">
+                    <td className="py-4 pl-6 pr-3 text-sm text-[#475569]">
                       {formatDateTime(a.createdAt)}
                     </td>
                     <td className="py-4 pr-3">
@@ -318,11 +318,11 @@ export default function TransactionAdjustmentScreen() {
                     </td>
                     <td className="py-4 pr-3">
                       <span
-                        className={`text-xs font-semibold text-[#0f172a] ${a.adjustmentType === 'refund' ? 'font-mono' : ''}`}
+                        className={`text-sm font-semibold text-[#0f172a] ${a.adjustmentType === 'refund' ? 'font-mono' : ''}`}
                       >
                         {a.reference}
                       </span>
-                      <span className="block pt-0.5 text-[11px] text-[#94a3b8]">
+                      <span className="block pt-0.5 text-xs text-[#94a3b8]">
                         {a.adjustmentType === 'refund'
                           ? `${a.channel === 'online' ? 'Online · ID Pesanan' : 'Offline · No Transaksi'}${a.customerName ? ` · ${a.customerName}` : ''}`
                           : a.tneType === 'racikan_baru'
@@ -336,19 +336,19 @@ export default function TransactionAdjustmentScreen() {
                       {a.productStatus ? (
                         <ProductStatusBadge status={a.productStatus} />
                       ) : (
-                        <span className="text-xs text-[#94a3b8]">-</span>
+                        <span className="text-sm text-[#94a3b8]">-</span>
                       )}
                     </td>
-                    <td className="max-w-[260px] py-4 pr-3 text-xs text-[#475569]">
+                    <td className="max-w-[260px] py-4 pr-3 text-sm text-[#475569]">
                       <span className="line-clamp-2">{a.notes || '-'}</span>
                     </td>
-                    <td className="py-4 pr-3 text-right font-mono text-xs font-bold text-[#0f172a]">
+                    <td className="py-4 pr-3 text-right font-mono text-sm font-bold text-[#0f172a]">
                       {formatRupiah(a.amount)}
                     </td>
                     <td className="py-4 pr-6 text-right">
                       <button
                         onClick={() => setDetail(a)}
-                        className="text-xs font-medium text-[#334155] underline hover:text-[#0f172a]"
+                        className="text-sm font-medium text-[#334155] underline hover:text-[#0f172a]"
                       >
                         Detail
                       </button>

@@ -214,7 +214,7 @@ export default function ProductDetailModal({ productId, categoryName, lowStockIt
                   <>
                     <div className="overflow-hidden rounded-xl border border-[#e2e8f0]">
                       <table className="w-full border-collapse text-sm">
-                        <thead className="bg-[#f8fafc] text-[11px] font-bold uppercase tracking-[0.5px] text-[#64748b]">
+                        <thead className="bg-[#f8fafc] text-xs font-bold uppercase tracking-[0.5px] text-[#64748b]">
                           <tr>
                             <th className="px-4 py-2.5 text-left">Nama Bahan / Racikan</th>
                             <th className="px-4 py-2.5 text-left">Takaran</th>
@@ -227,13 +227,13 @@ export default function ProductDetailModal({ productId, categoryName, lowStockIt
                               <td className="px-4 py-2.5 text-[#0f172a]">
                                 {line.name}
                                 {line.type === 'racikan' && (
-                                  <span className="ml-1.5 text-[11px] text-[#94a3b8]">(racikan)</span>
+                                  <span className="ml-1.5 text-xs text-[#94a3b8]">(racikan)</span>
                                 )}
                               </td>
                               <td className="px-4 py-2.5 text-[#475569]">
                                 {formatQty(line.quantity)} {line.unit}
                               </td>
-                              <td className="px-4 py-2.5 text-right font-mono text-xs text-[#0f172a]">
+                              <td className="px-4 py-2.5 text-right font-mono text-sm text-[#0f172a]">
                                 {formatRupiah(line.subtotal)}
                               </td>
                             </tr>

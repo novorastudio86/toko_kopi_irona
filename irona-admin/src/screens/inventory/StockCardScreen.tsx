@@ -182,7 +182,7 @@ export default function StockCardScreen() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[980px] border-collapse">
             <thead className="border-b border-[#e2e8f0] bg-[rgba(248,250,252,0.75)]">
-              <tr className="text-[11px] font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
+              <tr className="text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                 <th className="px-4 py-3 text-left">Nama Bahan</th>
                 <th className="px-3 py-3 text-left">Satuan</th>
                 <th className="px-3 py-3 text-right">Stok Awal</th>
@@ -196,7 +196,7 @@ export default function StockCardScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat kartu stok...
                   </td>
                 </tr>
@@ -204,7 +204,7 @@ export default function StockCardScreen() {
 
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     {search ? 'Tidak ada bahan yang cocok.' : 'Belum ada data stok.'}
                   </td>
                 </tr>
@@ -237,22 +237,22 @@ export default function StockCardScreen() {
                             >
                               {isOpen ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
                             </button>
-                            <span className="text-xs font-semibold text-[#0f172a]">{row.itemName}</span>
+                            <span className="text-sm font-semibold text-[#0f172a]">{row.itemName}</span>
                             {row.itemType === 'racikan' && (
-                              <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-1.5 py-0.5 text-[10px] text-[#475569]">
+                              <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-1.5 py-0.5 text-xs text-[#475569]">
                                 Racikan
                               </span>
                             )}
                           </div>
                         </td>
-                        <td className="px-3 py-3.5 font-mono text-xs text-[#64748b]">{row.unitName}</td>
-                        <td className="px-3 py-3.5 text-right font-mono text-xs text-[#334155]">
+                        <td className="px-3 py-3.5 font-mono text-sm text-[#64748b]">{row.unitName}</td>
+                        <td className="px-3 py-3.5 text-right font-mono text-sm text-[#334155]">
                           {formatQty(row.opening)}
                         </td>
                         <td className="px-3 py-3.5 text-right">
                           <Delta value={row.incoming} />
                         </td>
-                        <td className="px-3 py-3.5 text-right font-mono text-xs text-[#334155]">
+                        <td className="px-3 py-3.5 text-right font-mono text-sm text-[#334155]">
                           {row.sold === 0 ? '0' : formatQty(-row.sold)}
                         </td>
                         <td className="px-3 py-3.5 text-right">
@@ -265,7 +265,7 @@ export default function StockCardScreen() {
                                 !
                               </span>
                             )}
-                            <span className="font-mono text-xs font-bold text-[#0f172a]">
+                            <span className="font-mono text-sm font-bold text-[#0f172a]">
                               {formatQty(row.closing)} {row.unitName}
                             </span>
                           </div>
@@ -273,7 +273,7 @@ export default function StockCardScreen() {
                         <td className="px-4 py-3.5 text-center">
                           <button
                             onClick={() => toggleExpand(row)}
-                            className="text-xs font-medium text-[#334155] underline hover:text-[#0f172a]"
+                            className="text-sm font-medium text-[#334155] underline hover:text-[#0f172a]"
                           >
                             Detail
                           </button>
@@ -285,34 +285,34 @@ export default function StockCardScreen() {
                           <td colSpan={8} className="py-4 pl-10 pr-4">
                             <div className="flex flex-col gap-4 rounded-lg border border-[#cbd5e1] bg-white p-[17px]">
                               <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-2.5">
-                                <p className="text-xs font-bold uppercase tracking-[0.6px] text-[#334155]">
+                                <p className="text-sm font-bold uppercase tracking-[0.6px] text-[#334155]">
                                   Rincian Kartu Stok Periode Ini
                                 </p>
-                                <span className="font-mono text-[11px] text-[#64748b]">
+                                <span className="font-mono text-xs text-[#64748b]">
                                   Batas minimum: {row.minStock > 0 ? `${formatQty(row.minStock)} ${row.unitName}` : '—'}
                                 </span>
                               </div>
 
                               {loadingMovements === row.itemId ? (
-                                <p className="py-4 text-center text-xs text-[#94a3b8]">Memuat riwayat...</p>
+                                <p className="py-4 text-center text-sm text-[#94a3b8]">Memuat riwayat...</p>
                               ) : (
                                 <div className="flex gap-4">
                                   {/* Ringkasan pemakaian */}
                                   <div className="flex flex-1 flex-col justify-between rounded border border-[#e2e8f0] bg-[#f8fafc] p-3">
                                     <div>
-                                      <p className="text-[11px] font-bold uppercase text-[#64748b]">
+                                      <p className="text-xs font-bold uppercase text-[#64748b]">
                                         Ringkasan Terjual (POS)
                                       </p>
                                       <p className="pt-1 font-mono text-lg font-bold text-[#0f172a]">
                                         {formatQty(row.sold)} {row.unitName}
                                       </p>
-                                      <p className="text-[11px] leading-4 text-[#64748b]">
+                                      <p className="text-xs leading-4 text-[#64748b]">
                                         Total konsumsi resep dari pesanan kasir pada periode ini.
                                       </p>
                                     </div>
                                     <div className="mt-3 flex items-center justify-between border-t border-[#e2e8f0] pt-3">
-                                      <span className="text-[11px] text-[#475569]">Produksi racikan:</span>
-                                      <span className="font-mono text-[11px] font-semibold text-[#475569]">
+                                      <span className="text-xs text-[#475569]">Produksi racikan:</span>
+                                      <span className="font-mono text-xs font-semibold text-[#475569]">
                                         {formatQty(row.production)} {row.unitName}
                                       </span>
                                     </div>
@@ -321,27 +321,27 @@ export default function StockCardScreen() {
                                   {/* Riwayat stok masuk */}
                                   <div className="flex flex-1 flex-col gap-2 rounded border border-[#e2e8f0] bg-[#f8fafc] p-3">
                                     <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-1.5">
-                                      <p className="text-[11px] font-bold uppercase text-[#64748b]">
+                                      <p className="text-xs font-bold uppercase text-[#64748b]">
                                         Riwayat Stok Masuk
                                       </p>
-                                      <span className="font-mono text-[11px] font-bold text-[#334155]">
+                                      <span className="font-mono text-xs font-bold text-[#334155]">
                                         +{formatQty(row.incoming)} {row.unitName}
                                       </span>
                                     </div>
                                     {incoming.length === 0 ? (
-                                      <p className="py-2 text-[11px] text-[#94a3b8]">Belum ada stok masuk.</p>
+                                      <p className="py-2 text-xs text-[#94a3b8]">Belum ada stok masuk.</p>
                                     ) : (
                                       incoming.map((m) => (
                                         <div key={m.id} className="border-b border-[#f1f5f9] pb-1.5 last:border-b-0">
                                           <div className="flex items-start justify-between">
-                                            <span className="font-mono text-xs font-semibold text-[#475569]">
+                                            <span className="font-mono text-sm font-semibold text-[#475569]">
                                               {formatDate(m.movementDate)}
                                             </span>
-                                            <span className="font-mono text-xs font-semibold text-[#0f172a]">
+                                            <span className="font-mono text-sm font-semibold text-[#0f172a]">
                                               +{formatQty(m.quantity)} {m.unitName}
                                             </span>
                                           </div>
-                                          <p className="text-[10px] leading-4 text-[#64748b]">
+                                          <p className="text-xs leading-4 text-[#64748b]">
                                             {m.purchaseQty ? `${formatQty(m.purchaseQty)} kemasan` : ''}
                                             {m.totalPrice ? ` × ${formatRupiah(m.totalPrice)}` : ''}
                                             {m.notes ? ` / ${m.notes}` : ''}
@@ -354,28 +354,28 @@ export default function StockCardScreen() {
                                   {/* Riwayat penyesuaian */}
                                   <div className="flex flex-1 flex-col gap-2 rounded border border-[#e2e8f0] bg-[#f8fafc] p-3">
                                     <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-1.5">
-                                      <p className="text-[11px] font-bold uppercase text-[#64748b]">
+                                      <p className="text-xs font-bold uppercase text-[#64748b]">
                                         Riwayat Penyesuaian
                                       </p>
-                                      <span className="font-mono text-[11px] font-bold text-[#334155]">
+                                      <span className="font-mono text-xs font-bold text-[#334155]">
                                         {formatQty(row.adjustment)} {row.unitName}
                                       </span>
                                     </div>
                                     {adjustments.length === 0 ? (
-                                      <p className="py-2 text-[11px] text-[#94a3b8]">Belum ada penyesuaian.</p>
+                                      <p className="py-2 text-xs text-[#94a3b8]">Belum ada penyesuaian.</p>
                                     ) : (
                                       adjustments.map((m) => (
                                         <div key={m.id} className="border-b border-[#f1f5f9] pb-1.5 last:border-b-0">
                                           <div className="flex items-start justify-between">
-                                            <span className="font-mono text-xs font-semibold text-[#475569]">
+                                            <span className="font-mono text-sm font-semibold text-[#475569]">
                                               {formatDate(m.movementDate)}
                                             </span>
-                                            <span className="font-mono text-xs font-semibold text-[#0f172a]">
+                                            <span className="font-mono text-sm font-semibold text-[#0f172a]">
                                               {m.quantity > 0 ? '+' : ''}
                                               {formatQty(m.quantity)} {m.unitName}
                                             </span>
                                           </div>
-                                          <p className="text-[10px] leading-4 text-[#64748b]">
+                                          <p className="text-xs leading-4 text-[#64748b]">
                                             {m.adjustmentReason ?? ''}
                                             {m.notes ? ` — ${m.notes}` : ''}
                                           </p>
@@ -387,7 +387,7 @@ export default function StockCardScreen() {
                               )}
 
                               {productions.length > 0 && (
-                                <p className="text-[11px] text-[#64748b]">
+                                <p className="text-xs text-[#64748b]">
                                   {productions.length} catatan produksi racikan pada periode ini.
                                 </p>
                               )}

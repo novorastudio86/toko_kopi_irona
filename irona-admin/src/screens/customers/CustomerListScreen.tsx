@@ -149,7 +149,7 @@ export default function CustomerListScreen() {
   }
 
   const thClass =
-    'py-[14px] text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'py-[14px] text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
 
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
@@ -273,7 +273,7 @@ export default function CustomerListScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat data member...
                   </td>
                 </tr>
@@ -281,7 +281,7 @@ export default function CustomerListScreen() {
 
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     {search || statusFilter
                       ? 'Tidak ada member yang cocok.'
                       : 'Belum ada member. Member mendaftar sendiri dari Web Customer.'}
@@ -298,28 +298,28 @@ export default function CustomerListScreen() {
                     <td className="py-4 pl-6">
                       <button onClick={() => setDetail(c)} className="text-left">
                         <span
-                          className={`text-xs font-semibold hover:underline ${c.isActive ? 'text-[#0f172a]' : 'text-[#64748b]'}`}
+                          className={`text-sm font-semibold hover:underline ${c.isActive ? 'text-[#0f172a]' : 'text-[#64748b]'}`}
                         >
                           {c.name}
                         </span>
                         {c.totalTransactions === 0 && (
-                          <span className="ml-1.5 rounded-full bg-[#eff6ff] px-1.5 py-0.5 text-[10px] font-bold text-[#1d4ed8]">
+                          <span className="ml-1.5 rounded-full bg-[#eff6ff] px-1.5 py-0.5 text-xs font-bold text-[#1d4ed8]">
                             Member Baru
                           </span>
                         )}
                       </button>
                     </td>
-                    <td className="py-4 font-mono text-xs text-[#475569]">{c.phoneNumber}</td>
-                    <td className="py-4 text-center text-xs font-medium text-[#0f172a]">
+                    <td className="py-4 font-mono text-sm text-[#475569]">{c.phoneNumber}</td>
+                    <td className="py-4 text-center text-sm font-medium text-[#0f172a]">
                       {c.totalTransactions}
                     </td>
-                    <td className="py-4 font-mono text-xs font-bold text-[#0f172a]">
+                    <td className="py-4 font-mono text-sm font-bold text-[#0f172a]">
                       {formatRupiah(c.totalSpent)}
                     </td>
-                    <td className="py-4 text-center font-mono text-xs font-bold text-[#0f172a]">
+                    <td className="py-4 text-center font-mono text-sm font-bold text-[#0f172a]">
                       {c.pointsBalance}
                     </td>
-                    <td className="py-4 text-xs text-[#475569]">
+                    <td className="py-4 text-sm text-[#475569]">
                       {c.lastTransactionAt ? (
                         <>
                           {new Date(c.lastTransactionAt).toLocaleDateString('id-ID', {
@@ -327,7 +327,7 @@ export default function CustomerListScreen() {
                             month: 'short',
                             year: 'numeric',
                           })}
-                          <span className="block text-[11px] text-[#94a3b8]">
+                          <span className="block text-xs text-[#94a3b8]">
                             {relativeDays(c.lastTransactionAt)}
                           </span>
                         </>
@@ -337,11 +337,11 @@ export default function CustomerListScreen() {
                     </td>
                     <td className="py-4 text-center">
                       {c.isActive ? (
-                        <span className="inline-flex items-center rounded-full bg-[#0f172a] px-2.5 py-0.5 text-[10px] font-bold text-white">
+                        <span className="inline-flex items-center rounded-full bg-[#0f172a] px-2.5 py-0.5 text-xs font-bold text-white">
                           Aktif
                         </span>
                       ) : (
-                        <span className="inline-flex items-center rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-2.5 py-0.5 text-[10px] font-bold text-[#475569]">
+                        <span className="inline-flex items-center rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-2.5 py-0.5 text-xs font-bold text-[#475569]">
                           Nonaktif
                         </span>
                       )}

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type Props = {
   page: number;
@@ -13,17 +14,20 @@ type Props = {
 function NavButton({
   disabled,
   onClick,
+  label,
   children,
 }: {
   disabled: boolean;
   onClick: () => void;
+  label: string;
   children: ReactNode;
 }) {
   return (
     <button
       disabled={disabled}
       onClick={onClick}
-      className={`rounded-lg border border-[#e2e8f0] px-[13px] py-[7px] text-xs font-medium leading-4 ${
+      aria-label={label}
+      className={`rounded-lg border border-[#e2e8f0] px-[9px] py-[5px] ${
         disabled
           ? 'cursor-not-allowed bg-[#f1f5f9] text-[#94a3b8]'
           : 'bg-white text-[#334155] hover:bg-[#f8fafc]'
@@ -74,8 +78,8 @@ export function TablePagination({
       </div>
 
       <div className="flex items-center gap-2">
-        <NavButton disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
-          Sebelumnya
+        <NavButton disabled={page <= 1} onClick={() => onPageChange(page - 1)} label="Halaman sebelumnya">
+          <ChevronLeft className="size-4" />
         </NavButton>
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
           <button
@@ -90,8 +94,8 @@ export function TablePagination({
             {p}
           </button>
         ))}
-        <NavButton disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>
-          Selanjutnya
+        <NavButton disabled={page >= totalPages} onClick={() => onPageChange(page + 1)} label="Halaman selanjutnya">
+          <ChevronRight className="size-4" />
         </NavButton>
       </div>
     </div>

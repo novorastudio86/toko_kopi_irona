@@ -170,7 +170,7 @@ export default function RawMaterialDetailModal({ materialId, onClose, onEdit }: 
                   <div className="overflow-hidden rounded-lg border border-[#e2e8f0] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
                     <table className="w-full border-collapse">
                       <thead className="border-b border-[#e2e8f0] bg-[rgba(248,250,252,0.75)]">
-                        <tr className="text-[11px] font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
+                        <tr className="text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                           <th className="px-4 py-2.5 text-left">Nama Produk / Racikan</th>
                           <th className="px-4 py-2.5 text-right">Kategori</th>
                         </tr>
@@ -182,14 +182,14 @@ export default function RawMaterialDetailModal({ materialId, onClose, onEdit }: 
                             className="border-t border-[rgba(226,232,240,0.8)] first:border-t-0"
                           >
                             <td className="px-4 py-2.5">
-                              <p className="text-xs font-bold leading-4 text-[#0f172a]">{item.itemName}</p>
+                              <p className="text-sm font-bold leading-5 text-[#0f172a]">{item.itemName}</p>
                               <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                                <span className="text-[11px] font-semibold leading-4 text-[#334155]">
+                                <span className="text-xs font-semibold leading-4 text-[#334155]">
                                   {formatQty(item.quantity)} {item.unitName}
                                   {item.usageType === 'produk' ? ' / porsi' : ''}
                                 </span>
                                 {item.viaName && (
-                                  <span className="rounded border border-[rgba(226,232,240,0.8)] bg-[#f1f5f9] px-1.5 py-0.5 text-[10px] leading-4 text-[#475569]">
+                                  <span className="rounded border border-[rgba(226,232,240,0.8)] bg-[#f1f5f9] px-1.5 py-0.5 text-xs leading-4 text-[#475569]">
                                     via {item.viaName}
                                   </span>
                                 )}
@@ -197,11 +197,11 @@ export default function RawMaterialDetailModal({ materialId, onClose, onEdit }: 
                             </td>
                             <td className="px-4 py-2.5 text-right">
                               {item.usageType === 'racikan' ? (
-                                <span className="inline-block rounded bg-[#0f172a] px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.275px] text-white">
+                                <span className="inline-block rounded bg-[#0f172a] px-2 py-0.5 text-xs font-bold uppercase tracking-[0.275px] text-white">
                                   Racikan
                                 </span>
                               ) : (
-                                <span className="text-xs font-medium text-[#475569]">{item.categoryName}</span>
+                                <span className="text-sm font-medium text-[#475569]">{item.categoryName}</span>
                               )}
                             </td>
                           </tr>

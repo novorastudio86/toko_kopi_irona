@@ -122,7 +122,7 @@ export default function RewardClaimsModal({ reward, onClose, onChanged }: Props)
           )}
           <table className="w-full border-collapse">
             <thead>
-              <tr className="text-[10px] font-bold uppercase tracking-[0.4px] text-[#64748b]">
+              <tr className="text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]">
                 <th className="pb-2 text-left">Pelanggan</th>
                 <th className="pb-2 text-left">No. Telp</th>
                 <th className="pb-2 text-left">Tanggal & Jam Klaim</th>
@@ -135,30 +135,30 @@ export default function RewardClaimsModal({ reward, onClose, onChanged }: Props)
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="py-6 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-6 text-center text-sm text-[#94a3b8]">
                     Memuat riwayat klaim...
                   </td>
                 </tr>
               )}
               {!loading && claims.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-6 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-6 text-center text-sm text-[#94a3b8]">
                     Belum ada member yang mengklaim reward ini.
                   </td>
                 </tr>
               )}
               {claims.map((c) => (
                 <tr key={c.id} className="border-t border-[#f1f5f9]">
-                  <td className="py-2.5 text-xs font-semibold text-[#0f172a]">{c.customerName}</td>
-                  <td className="py-2.5 font-mono text-xs text-[#475569]">{c.phoneNumber}</td>
-                  <td className="py-2.5 text-xs text-[#475569]">{formatDateTime(c.claimedAt)}</td>
-                  <td className="py-2.5 font-mono text-xs font-bold tracking-wider text-[#0f172a]">
+                  <td className="py-2.5 text-sm font-semibold text-[#0f172a]">{c.customerName}</td>
+                  <td className="py-2.5 font-mono text-sm text-[#475569]">{c.phoneNumber}</td>
+                  <td className="py-2.5 text-sm text-[#475569]">{formatDateTime(c.claimedAt)}</td>
+                  <td className="py-2.5 font-mono text-sm font-bold tracking-wider text-[#0f172a]">
                     {c.code}
                   </td>
                   <td className="py-2.5">
                     <ClaimStatusBadge status={c.status} />
                   </td>
-                  <td className="py-2.5 text-xs text-[#475569]">
+                  <td className="py-2.5 text-sm text-[#475569]">
                     {c.status === 'sudah_ditukar' && c.redeemedAt ? (
                       formatDateTime(c.redeemedAt)
                     ) : c.status === 'hangus' ? (
@@ -167,7 +167,7 @@ export default function RewardClaimsModal({ reward, onClose, onChanged }: Props)
                       <span>
                         {formatDateTime(c.cancelledAt)}
                         {c.cancelReason && (
-                          <span className="block text-[11px] text-[#94a3b8]">
+                          <span className="block text-xs text-[#94a3b8]">
                             "{c.cancelReason}"
                           </span>
                         )}
@@ -183,7 +183,7 @@ export default function RewardClaimsModal({ reward, onClose, onChanged }: Props)
                       <button
                         onClick={() => handleCancel(c)}
                         disabled={cancellingId !== null}
-                        className="inline-flex items-center gap-1 rounded-lg border border-[#e2e8f0] px-2 py-1 text-[11px] font-semibold text-[#475569] hover:border-[#fecdd3] hover:text-[#e11d48] disabled:opacity-50"
+                        className="inline-flex items-center gap-1 rounded-lg border border-[#e2e8f0] px-2 py-1 text-xs font-semibold text-[#475569] hover:border-[#fecdd3] hover:text-[#e11d48] disabled:opacity-50"
                       >
                         <Undo2 className="size-3" />
                         {cancellingId === c.id ? 'Membatalkan...' : 'Batalkan'}

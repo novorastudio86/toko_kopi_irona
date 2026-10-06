@@ -267,8 +267,8 @@ export default function TryErrorFormModal({ onClose, onSaved }: Props) {
 
               {recipe && (
                 <div className="rounded-xl border border-[#e2e8f0]">
-                  <table className="w-full text-xs">
-                    <thead className="bg-[#f8fafc] text-[10px] font-bold uppercase tracking-[0.5px] text-[#64748b]">
+                  <table className="w-full text-sm">
+                    <thead className="bg-[#f8fafc] text-xs font-bold uppercase tracking-[0.5px] text-[#64748b]">
                       <tr>
                         <th className="px-3 py-2 text-left">Bahan Terpotong</th>
                         <th className="px-3 py-2 text-right">Jumlah</th>
@@ -290,7 +290,7 @@ export default function TryErrorFormModal({ onClose, onSaved }: Props) {
                             <td className="px-3 py-2 text-[#334155]">
                               {u.itemName}
                               {u.itemType === 'racikan' && (
-                                <span className="ml-1.5 rounded border border-[#cbd5e1] bg-[#f1f5f9] px-1 text-[10px] text-[#475569]">
+                                <span className="ml-1.5 rounded border border-[#cbd5e1] bg-[#f1f5f9] px-1 text-xs text-[#475569]">
                                   Racikan
                                 </span>
                               )}

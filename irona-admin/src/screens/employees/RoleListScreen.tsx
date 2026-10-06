@@ -247,7 +247,7 @@ export default function RoleListScreen() {
                         <div className="overflow-hidden rounded-xl border border-[#e2e8f0] bg-white">
                           <table className="w-full border-collapse">
                             <thead className="border-b border-[#f1f5f9] bg-[#f8fafc]">
-                              <tr className="text-[10px] font-bold uppercase tracking-[0.4px] text-[#64748b]">
+                              <tr className="text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]">
                                 <th className="px-4 py-2 text-left">Karyawan</th>
                                 <th className="px-3 py-2 text-right">Gaji Pokok</th>
                                 {role.type === 'driver' && <th className="px-3 py-2 text-right">Bonus Antar</th>}
@@ -285,10 +285,10 @@ export default function RoleListScreen() {
                                           {initials(employee.fullName)}
                                         </span>
                                         <span className="flex flex-col">
-                                          <span className="text-xs font-bold text-[#0f172a]">
+                                          <span className="text-sm font-bold text-[#0f172a]">
                                             {employee.fullName}
                                           </span>
-                                          <span className="font-mono text-[11px] text-[#64748b]">
+                                          <span className="font-mono text-xs text-[#64748b]">
                                             @{employee.username}
                                             {!employee.isActive && ' · nonaktif'}
                                           </span>
@@ -296,16 +296,16 @@ export default function RoleListScreen() {
                                       </button>
                                     </td>
 
-                                    <td className="px-3 py-2.5 text-right font-mono text-xs text-[#475569]">
+                                    <td className="px-3 py-2.5 text-right font-mono text-sm text-[#475569]">
                                       {formatRupiah(employee.baseSalary)}
                                     </td>
 
                                     {role.type === 'driver' && (
                                       <td className="px-3 py-2.5 text-right">
-                                        <span className="font-mono text-xs text-[#475569]">
+                                        <span className="font-mono text-sm text-[#475569]">
                                           {formatRupiah(deliveryBonus)}
                                         </span>
-                                        <span className="block text-[10px] text-[#94a3b8]">
+                                        <span className="block text-xs text-[#94a3b8]">
                                           {pay?.deliveryCount ?? 0} antar ×{' '}
                                           {employee.deliveryBonus > 0
                                             ? formatRupiah(employee.deliveryBonus)
@@ -315,10 +315,10 @@ export default function RoleListScreen() {
                                     )}
 
                                     <td className="px-3 py-2.5 text-right">
-                                      <span className="font-mono text-xs text-[#475569]">
+                                      <span className="font-mono text-sm text-[#475569]">
                                         {formatRupiah(overtimeBonus)}
                                       </span>
-                                      <span className="block text-[10px] text-[#94a3b8]">
+                                      <span className="block text-xs text-[#94a3b8]">
                                         {overtimeMinutes > 0
                                           ? `${formatDuration(overtimeMinutes)} × ${formatRupiah(pay?.hourlyRate ?? 0)}/jam`
                                           : 'Tidak ada lembur'}
@@ -326,10 +326,10 @@ export default function RoleListScreen() {
                                     </td>
 
                                     <td className="px-3 py-2.5 text-right">
-                                      <span className="font-mono text-xs text-[#475569]">
+                                      <span className="font-mono text-sm text-[#475569]">
                                         {formatRupiah(extraShiftBonus)}
                                       </span>
-                                      <span className="block text-[10px] text-[#94a3b8]">
+                                      <span className="block text-xs text-[#94a3b8]">
                                         {extraShiftMinutes > 0
                                           ? `${formatDuration(extraShiftMinutes)} × ${formatRupiah(pay?.hourlyRate ?? 0)}/jam`
                                           : 'Tidak ada shift 2'}
@@ -338,16 +338,16 @@ export default function RoleListScreen() {
 
                                     <td className="px-3 py-2.5 text-right">
                                       <span
-                                        className={`font-mono text-xs ${kasbonTotal > 0 ? 'font-semibold text-[#e11d48]' : 'text-[#475569]'}`}
+                                        className={`font-mono text-sm ${kasbonTotal > 0 ? 'font-semibold text-[#e11d48]' : 'text-[#475569]'}`}
                                       >
                                         {kasbonTotal > 0 ? `− ${formatRupiah(kasbonTotal)}` : formatRupiah(0)}
                                       </span>
-                                      <span className="block text-[10px] text-[#94a3b8]">
+                                      <span className="block text-xs text-[#94a3b8]">
                                         {kasbonTotal > 0 ? `${pay?.kasbonCount ?? 0} kasbon` : 'Tidak ada kasbon'}
                                       </span>
                                     </td>
 
-                                    <td className="px-4 py-2.5 text-right font-mono text-xs font-bold text-[#0f172a]">
+                                    <td className="px-4 py-2.5 text-right font-mono text-sm font-bold text-[#0f172a]">
                                       {formatRupiah(total)}
                                     </td>
                                   </tr>

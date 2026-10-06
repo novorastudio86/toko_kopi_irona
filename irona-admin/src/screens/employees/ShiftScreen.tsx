@@ -158,13 +158,13 @@ export default function ShiftScreen() {
       <div className="overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
         <table className="w-full border-collapse">
           <thead className="border-b border-[#e2e8f0] bg-[rgba(248,250,252,0.75)]">
-            <tr className="text-[11px] font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
+            <tr className="text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
               <th className="px-4 py-3 text-left">Nama</th>
               <th className="px-3 py-3 text-left">Username</th>
               <th className="px-3 py-3 text-left">
                 Shift ({formatDayLabel(date)})
                 {overridesToday.length > 0 && (
-                  <span className="ml-2 rounded-full bg-[#fef3c7] px-2 py-0.5 text-[10px] normal-case tracking-normal text-[#92400e]">
+                  <span className="ml-2 rounded-full bg-[#fef3c7] px-2 py-0.5 text-xs normal-case tracking-normal text-[#92400e]">
                     ada jam khusus
                   </span>
                 )}
@@ -175,14 +175,14 @@ export default function ShiftScreen() {
           <tbody>
             {loading && (
               <tr>
-                <td colSpan={4} className="py-10 text-center text-xs text-[#94a3b8]">
+                <td colSpan={4} className="py-10 text-center text-sm text-[#94a3b8]">
                   Memuat jadwal...
                 </td>
               </tr>
             )}
             {!loading && rows.length === 0 && (
               <tr>
-                <td colSpan={4} className="py-10 text-center text-xs text-[#94a3b8]">
+                <td colSpan={4} className="py-10 text-center text-sm text-[#94a3b8]">
                   Belum ada karyawan Kasir/Driver aktif.
                 </td>
               </tr>
@@ -190,17 +190,17 @@ export default function ShiftScreen() {
             {!loading &&
               rows.map((row) => (
                 <tr key={row.employeeId} className="border-t border-[#f1f5f9]">
-                  <td className="px-4 py-3.5 text-xs font-bold text-[#0f172a]">{row.fullName}</td>
-                  <td className="px-3 py-3.5 font-mono text-xs text-[#64748b]">@{row.username}</td>
+                  <td className="px-4 py-3.5 text-sm font-bold text-[#0f172a]">{row.fullName}</td>
+                  <td className="px-3 py-3.5 font-mono text-sm text-[#64748b]">@{row.username}</td>
                   <td className="px-3 py-3.5">
                     <div className="flex flex-wrap items-center gap-1.5">
                       {!row.hasSchedule && (
-                        <span className="rounded-full border border-dashed border-[#f43f5e] px-2.5 py-0.5 text-[10px] font-bold text-[#e11d48]">
+                        <span className="rounded-full border border-dashed border-[#f43f5e] px-2.5 py-0.5 text-xs font-bold text-[#e11d48]">
                           Belum diatur
                         </span>
                       )}
                       {row.hasSchedule && row.isLibur && (
-                        <span className="rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-2.5 py-0.5 text-[10px] font-bold text-[#475569]">
+                        <span className="rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-2.5 py-0.5 text-xs font-bold text-[#475569]">
                           Libur
                         </span>
                       )}
@@ -208,7 +208,7 @@ export default function ShiftScreen() {
                         <span
                           key={slot.shiftPatternId}
                           title={slot.isChanged ? 'Hasil tukar/gantikan/tambah, bukan dari jadwal mingguan' : undefined}
-                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${
                             slot.isSpecialHours
                               ? 'border border-[#f59e0b] bg-[#fffbeb] text-[#92400e]'
                               : i === 0
@@ -222,12 +222,12 @@ export default function ShiftScreen() {
                         </span>
                       ))}
                       {row.isSwap && (
-                        <span className="rounded-full border border-[#fbbf24] bg-[#fffbeb] px-2.5 py-0.5 text-[10px] font-bold text-[#92400e]">
+                        <span className="rounded-full border border-[#fbbf24] bg-[#fffbeb] px-2.5 py-0.5 text-xs font-bold text-[#92400e]">
                           Tukar dgn {row.swapWithName}
                         </span>
                       )}
                       {!row.isSwap && row.slots.some((s) => s.isChanged) && (
-                        <span className="rounded-full border border-[#cbd5e1] bg-[#f1f5f9] px-2 py-0.5 text-[10px] font-medium text-[#475569]">
+                        <span className="rounded-full border border-[#cbd5e1] bg-[#f1f5f9] px-2 py-0.5 text-xs font-medium text-[#475569]">
                           Diubah
                         </span>
                       )}

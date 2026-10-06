@@ -286,7 +286,7 @@ export default function DiscountDetailModal({ promotion: p, onClose }: Props) {
               {claims.length > 0 && (
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="text-[10px] font-bold uppercase tracking-[0.4px] text-[#64748b]">
+                    <tr className="text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]">
                       <th className="pb-2 text-left">Tanggal Klaim</th>
                       <th className="pb-2 text-left">Pelanggan</th>
                       <th className="pb-2 text-left">Status Pemakaian</th>
@@ -295,16 +295,16 @@ export default function DiscountDetailModal({ promotion: p, onClose }: Props) {
                   <tbody>
                     {claims.map((c) => (
                       <tr key={c.id} className="border-t border-[#f1f5f9]">
-                        <td className="py-2 text-xs text-[#475569]">
+                        <td className="py-2 text-sm text-[#475569]">
                           {formatDateTime(c.claimedAt)}
                         </td>
-                        <td className="py-2 text-xs font-semibold text-[#0f172a]">
+                        <td className="py-2 text-sm font-semibold text-[#0f172a]">
                           {c.customerName}
                           <span className="block font-mono font-normal text-[#94a3b8]">
                             {c.phoneNumber}
                           </span>
                         </td>
-                        <td className="py-2 text-xs">
+                        <td className="py-2 text-sm">
                           {c.usedAt ? (
                             <span className="font-semibold text-[#059669]">Sudah dipakai</span>
                           ) : (

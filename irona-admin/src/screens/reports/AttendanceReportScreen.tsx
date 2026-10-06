@@ -205,7 +205,7 @@ export default function AttendanceReportScreen() {
   const filterClass =
     'rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]';
   const thClass =
-    'whitespace-nowrap py-[14px] pr-3 text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'whitespace-nowrap py-[14px] pr-3 text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
 
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
@@ -312,14 +312,14 @@ export default function AttendanceReportScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat...
                   </td>
                 </tr>
               )}
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     {q || roleName ? 'Karyawan tidak ditemukan.' : 'Belum ada karyawan aktif.'}
                   </td>
                 </tr>
@@ -330,7 +330,7 @@ export default function AttendanceReportScreen() {
                   return (
                     <tr
                       key={r.employeeId}
-                      className="border-t border-[#f1f5f9] first:border-t-0 text-xs"
+                      className="border-t border-[#f1f5f9] first:border-t-0 text-sm"
                     >
                       <td className="py-3 pl-6 pr-3 font-semibold text-[#0f172a]">{r.fullName}</td>
                       <td className="py-3 pr-3 text-[#475569]">{r.roleName}</td>
@@ -476,9 +476,9 @@ function AttendanceDetailModal({
             </p>
           )}
           {days && days.length > 0 && (
-            <table className="w-full border-collapse text-xs">
+            <table className="w-full border-collapse text-sm">
               <thead className="sticky top-0 bg-white">
-                <tr className="border-b border-[#e2e8f0] text-left text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+                <tr className="border-b border-[#e2e8f0] text-left text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
                   <th className="py-2.5 pl-6 pr-3">Tanggal</th>
                   <th className="py-2.5 pr-3">Shift</th>
                   <th className="py-2.5 pr-3 text-right">Jam Masuk</th>
@@ -493,7 +493,7 @@ function AttendanceDetailModal({
                       {formatDay(d.day)}
                       {d.source === 'manual' && (
                         <span
-                          className="ml-1.5 rounded bg-[#f1f5f9] px-1 py-0.5 text-[10px] text-[#64748b]"
+                          className="ml-1.5 rounded bg-[#f1f5f9] px-1 py-0.5 text-xs text-[#64748b]"
                           title={d.notes ?? undefined}
                         >
                           manual
@@ -511,7 +511,7 @@ function AttendanceDetailModal({
                     <td className="py-2.5 pr-6 text-right">
                       <StatusBadge status={d.status} />
                       {d.status === 'telat' && d.lateMinutes > 0 && (
-                        <span className="ml-1.5 font-mono text-[11px] text-[#92400e]">
+                        <span className="ml-1.5 font-mono text-xs text-[#92400e]">
                           +{formatLate(d.lateMinutes)}
                         </span>
                       )}

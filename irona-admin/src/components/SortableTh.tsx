@@ -19,7 +19,7 @@ export function SortableTh({ label, sortKey, activeKey, dir, onSort, align = 'le
     <th className={`py-[14px] ${align === 'center' ? 'text-center' : 'text-left'} ${className}`}>
       <button
         onClick={() => onSort(sortKey)}
-        className={`inline-flex items-center gap-1.5 text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] transition-colors hover:text-[#0f172a] ${
+        className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase leading-4 tracking-[0.55px] transition-colors hover:text-[#0f172a] ${
           isActive ? 'text-[#0f172a]' : 'text-[#64748b]'
         }`}
       >

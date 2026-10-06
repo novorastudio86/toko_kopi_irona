@@ -167,7 +167,7 @@ export default function ProductSalesReportScreen() {
   const filterClass =
     'rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]';
   const thClass =
-    'whitespace-nowrap py-[14px] pr-3 text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'whitespace-nowrap py-[14px] pr-3 text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
   const resetPage = () => setPage(1);
 
   return (
@@ -372,14 +372,14 @@ export default function ProductSalesReportScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat...
                   </td>
                 </tr>
               )}
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     Tidak ada produk terjual di periode ini.
                   </td>
                 </tr>
@@ -388,7 +388,7 @@ export default function ProductSalesReportScreen() {
                 paged.map((r) => (
                   <tr
                     key={r.productId}
-                    className="border-t border-[#f1f5f9] first:border-t-0 text-xs"
+                    className="border-t border-[#f1f5f9] first:border-t-0 text-sm"
                   >
                     <td className="py-3 pl-6 pr-3 font-semibold text-[#0f172a]">{r.name}</td>
                     <td className="py-3 pr-3 text-[#475569]">{r.categoryName}</td>

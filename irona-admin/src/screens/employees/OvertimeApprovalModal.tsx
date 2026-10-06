@@ -140,8 +140,8 @@ export default function OvertimeApprovalModal({ single, onClose, onSaved }: Prop
           )}
 
           <div className="overflow-x-auto rounded-xl border border-[#e2e8f0]">
-            <table className="w-full min-w-[640px] text-xs">
-              <thead className="bg-[#f8fafc] text-[10px] font-bold uppercase tracking-[0.5px] text-[#64748b]">
+            <table className="w-full min-w-[640px] text-sm">
+              <thead className="bg-[#f8fafc] text-xs font-bold uppercase tracking-[0.5px] text-[#64748b]">
                 <tr>
                   {!single && (
                     <th className="w-10 px-3 py-2">
@@ -192,7 +192,7 @@ export default function OvertimeApprovalModal({ single, onClose, onSaved }: Prop
                     <td className="px-3 py-2 text-[#475569]">{formatDayLabel(i.attendanceDate)}</td>
                     <td className="px-3 py-2">
                       <span className="font-semibold text-[#0f172a]">{i.employeeName}</span>
-                      <span className="block text-[10px] capitalize text-[#94a3b8]">
+                      <span className="block text-xs capitalize text-[#94a3b8]">
                         {i.shift ?? '—'}
                       </span>
                     </td>

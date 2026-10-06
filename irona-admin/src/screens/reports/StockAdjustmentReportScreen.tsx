@@ -130,7 +130,7 @@ export default function StockAdjustmentReportScreen() {
   const filterClass =
     'rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]';
   const thClass =
-    'whitespace-nowrap py-[14px] pr-3 text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'whitespace-nowrap py-[14px] pr-3 text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
 
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
@@ -247,14 +247,14 @@ export default function StockAdjustmentReportScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat...
                   </td>
                 </tr>
               )}
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     {rows.length
                       ? 'Penyesuaian tidak ditemukan.'
                       : 'Belum ada penyesuaian stok di periode ini.'}
@@ -265,13 +265,13 @@ export default function StockAdjustmentReportScreen() {
                 paged.map((r) => (
                   <tr
                     key={r.movementId}
-                    className="border-t border-[#f1f5f9] text-xs first:border-t-0"
+                    className="border-t border-[#f1f5f9] text-sm first:border-t-0"
                   >
                     <td className="py-3 pl-6 pr-3 text-[#0f172a]">{formatDay(r.movementDate)}</td>
                     <td className="py-3 pr-3">
                       <span className="font-semibold text-[#0f172a]">{r.name}</span>
                       {r.itemType === 'racikan' && (
-                        <span className="ml-1.5 text-[11px] text-[#6d28d9]">Racikan</span>
+                        <span className="ml-1.5 text-xs text-[#6d28d9]">Racikan</span>
                       )}
                     </td>
                     <td className="py-3 pr-3">

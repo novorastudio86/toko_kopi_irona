@@ -346,7 +346,7 @@ export default function ProductListScreen() {
                 <SortableTh label="Total Cost" sortKey="totalCost" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Harga Jual" sortKey="sellingPrice" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Margin" sortKey="margin" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
-                <th className="py-[14px] pr-6 text-right text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]">
+                <th className="py-[14px] pr-6 text-right text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                   Aksi
                 </th>
               </tr>
@@ -354,7 +354,7 @@ export default function ProductListScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={6} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat produk...
                   </td>
                 </tr>
@@ -362,7 +362,7 @@ export default function ProductListScreen() {
 
               {!loading && error && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-xs text-red-600">
+                  <td colSpan={6} className="py-10 text-center text-sm text-red-600">
                     {error}
                   </td>
                 </tr>
@@ -370,7 +370,7 @@ export default function ProductListScreen() {
 
               {!loading && !error && paged.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={6} className="py-10 text-center text-sm text-[#94a3b8]">
                     {search || categoryFilter
                       ? 'Tidak ada produk yang cocok dengan pencarian/filter.'
                       : 'Belum ada produk.'}
@@ -401,14 +401,14 @@ export default function ProductListScreen() {
                         <div className="flex flex-col gap-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <p
-                              className={`text-[13px] font-semibold leading-4 ${
+                              className={`text-sm font-semibold leading-5 ${
                                 dimmed ? 'text-[#94a3b8]' : 'text-[#0f172a]'
                               }`}
                             >
                               {row.name}
                             </p>
                             {incomplete && (
-                              <span className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-[10px] font-medium leading-4 text-[#e11d48]">
+                              <span className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-xs font-medium leading-4 text-[#e11d48]">
                                 <AlertTriangle className="size-3" />
                                 Resep Belum Diisi
                               </span>
@@ -421,7 +421,7 @@ export default function ProductListScreen() {
                               />
                             )}
                             {dimmed && (
-                              <span className="inline-flex items-center gap-1 rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-2 py-px text-[10px] font-medium leading-4 text-[#475569]">
+                              <span className="inline-flex items-center gap-1 rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-2 py-px text-xs font-medium leading-4 text-[#475569]">
                                 <span className="size-1.5 rounded-full border border-[#64748b]" />
                                 Nonaktif
                               </span>
@@ -435,7 +435,7 @@ export default function ProductListScreen() {
                       </td>
 
                       {/* Kategori */}
-                      <td className="py-4 text-xs font-medium leading-4 text-[#64748b]">{row.categoryName}</td>
+                      <td className="py-4 text-sm font-medium leading-5 text-[#64748b]">{row.categoryName}</td>
 
                       {/* Harga: diganti keterangan kalau resep belum diisi */}
                       {incomplete ? (
@@ -447,11 +447,11 @@ export default function ProductListScreen() {
                         </td>
                       ) : (
                         <>
-                          <td className="py-4 font-mono text-xs leading-4 text-[#64748b]">
+                          <td className="py-4 font-mono text-sm leading-5 text-[#64748b]">
                             {row.totalCost !== null ? formatRupiah(row.totalCost) : '—'}
                           </td>
                           <td
-                            className={`py-4 font-mono text-xs font-bold leading-4 ${
+                            className={`py-4 font-mono text-sm font-bold leading-5 ${
                               dimmed ? 'text-[#64748b]' : 'text-[#0f172a]'
                             }`}
                           >
@@ -461,14 +461,14 @@ export default function ProductListScreen() {
                             {row.margin !== null && row.marginPct !== null ? (
                               <div className="flex items-center gap-2">
                                 <span
-                                  className={`font-mono text-xs font-bold leading-4 ${
+                                  className={`font-mono text-sm font-bold leading-5 ${
                                     dimmed ? 'text-[#64748b]' : 'text-[#0f172a]'
                                   }`}
                                 >
                                   {formatRupiah(row.margin)}
                                 </span>
                                 <span
-                                  className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold leading-4 text-white ${
+                                  className={`rounded-full px-2 py-0.5 font-mono text-xs font-bold leading-4 text-white ${
                                     dimmed ? 'bg-[#64748b]' : 'bg-[#0f172a]'
                                   }`}
                                 >
@@ -476,7 +476,7 @@ export default function ProductListScreen() {
                                 </span>
                               </div>
                             ) : (
-                              <span className="font-mono text-xs text-[#94a3b8]">—</span>
+                              <span className="font-mono text-sm text-[#94a3b8]">—</span>
                             )}
                           </td>
                         </>

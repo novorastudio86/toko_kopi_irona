@@ -14,27 +14,25 @@ import { TablePagination } from '../../components/TablePagination';
 import { fetchCategories } from '../../services/categories';
 import { getCategoryIconSrc } from '../../constants/categoryIcons';
 import type { Category } from '../../types/category';
+import CategoryProductsModal from './CategoryProductsModal';
 import icPlus from '../../assets/ui/plus.svg';
 import icChevronRight from '../../assets/ui/chevron-right.svg';
 import icMore from '../../assets/ui/more.svg';
 
 type SortKey = 'name' | 'displayOrder' | 'productCount';
 
-/** Nama tab di Web Customer: nama online kalau ada, kalau tidak nama kategori */
-function onlineLabelOf(c: Category): string {
-  return (c.onlineName ?? c.name).trim();
-}
-
-function StatusBadge({ label, active }: { label: string; active: boolean }) {
-  const color = active ? 'text-[#1e293b]' : 'text-[#94a3b8]';
+// Aktif = background gelap tebal, tidak aktif = abu-abu pudar
+function ChannelBadge({ label, active }: { label: string; active: boolean }) {
   return (
-    <span className="inline-flex items-center gap-2.5 rounded-full border border-[#e2e8f0] bg-[#f1f5f9] py-[5px] pl-[11px] pr-4">
-      <span className={`size-1.5 shrink-0 rounded-full ${active ? 'bg-[#1e293b]' : 'bg-[#94a3b8]'}`} />
-      <span className={`text-center text-[11px] font-semibold leading-4 ${color}`}>
-        Tampil di
-        <br />
-        {label}
-      </span>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs leading-5 ${
+        active
+          ? 'border-[#0f172a] bg-[#0f172a] font-semibold text-white'
+          : 'border-[#e2e8f0] bg-[#f1f5f9] font-medium text-[#94a3b8]'
+      }`}
+    >
+      <span className={`size-1.5 shrink-0 rounded-full ${active ? 'bg-white' : 'bg-[#cbd5e1]'}`} />
+      {label}
     </span>
   );
 }
@@ -48,6 +46,7 @@ export default function CategoryListScreen() {
   const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'displayOrder', dir: 'asc' });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [productsOf, setProductsOf] = useState<Category | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -82,13 +81,10 @@ export default function CategoryListScreen() {
     );
   }
 
-  // Cari berdasarkan nama kategori maupun nama tab di Web Customer
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return categories;
-    return categories.filter(
-      (c) => c.name.toLowerCase().includes(q) || (c.onlineName ?? '').toLowerCase().includes(q)
-    );
+    return categories.filter((c) => c.name.toLowerCase().includes(q));
   }, [categories, search]);
 
   const sorted = useMemo(() => {
@@ -111,7 +107,7 @@ export default function CategoryListScreen() {
     <div className="flex max-w-[1600px] flex-col gap-6 p-8">
       <PageHeader
         title="Daftar Kategori"
-        info="Kelola kategori produk: urutan tampil, visibilitas di menu kasir, dan tab kategori di web customer."
+        info="Modul ini mengatur pengelompokan menu kopi, makanan, dan minuman di Toko Kopi Irona serta tata letak tab kasir POS dan katalog pesanan online."
         action={
           <button
             onClick={() => navigate('/product/category/new')}
@@ -136,7 +132,7 @@ export default function CategoryListScreen() {
           setSearch(v);
           setPage(1);
         }}
-        placeholder="Cari kategori atau tab web..."
+        placeholder="Cari kategori..."
       />
 
       <div className="overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
@@ -168,10 +164,10 @@ export default function CategoryListScreen() {
                   onSort={handleSort}
                   align="center"
                 />
-                <th className="py-[14px] text-center text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]">
+                <th className="py-[14px] text-center text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                   Status
                 </th>
-                <th className="py-[14px] pr-6 text-right text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]">
+                <th className="py-[14px] pr-6 text-right text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                   Aksi
                 </th>
               </tr>
@@ -179,7 +175,7 @@ export default function CategoryListScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={5} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat kategori...
                   </td>
                 </tr>
@@ -187,7 +183,7 @@ export default function CategoryListScreen() {
 
               {!loading && error && (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center text-xs text-red-600">
+                  <td colSpan={5} className="py-10 text-center text-sm text-red-600">
                     {error}
                   </td>
                 </tr>
@@ -195,7 +191,7 @@ export default function CategoryListScreen() {
 
               {!loading && !error && paged.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={5} className="py-10 text-center text-sm text-[#94a3b8]">
                     {search ? 'Tidak ada kategori yang cocok dengan pencarian.' : 'Belum ada kategori.'}
                   </td>
                 </tr>
@@ -215,38 +211,27 @@ export default function CategoryListScreen() {
                         <img src={getCategoryIconSrc(cat.icon)} alt="" className="size-6 shrink-0" />
                         <div>
                           <p className="text-sm font-bold leading-5 text-[#0f172a]">{cat.name}</p>
-                          <p className="font-mono text-[11px] leading-4 text-[#94a3b8]">ID: {cat.code}</p>
+                          <p className="font-mono text-xs leading-4 text-[#94a3b8]">ID: {cat.code}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="py-4 text-center">
-                      <span className="inline-flex min-w-7 justify-center rounded-lg bg-[#f1f5f9] px-2 py-1 font-mono text-sm font-bold leading-5 text-[#334155]">
-                        {cat.displayOrder}
-                      </span>
+                    <td className="py-4 text-center font-mono text-sm leading-5 text-[#334155]">
+                      {cat.displayOrder}
                     </td>
                     <td className="py-4 text-center">
                       <button
-                        disabled
-                        className="inline-flex items-center gap-1.5 rounded-full border border-[#e2e8f0] bg-[#f1f5f9] px-[13px] py-[5px] text-xs font-semibold leading-4 text-[#1e293b]"
+                        type="button"
+                        onClick={() => setProductsOf(cat)}
+                        className="inline-flex items-center gap-1 font-mono text-sm leading-5 text-[#334155] hover:text-[#0f172a] hover:underline"
                       >
                         {cat.productCount} Produk
                         <img src={icChevronRight} alt="" className="size-3" />
                       </button>
                     </td>
                     <td className="py-4">
-                      <div className="flex flex-col items-center gap-1.5">
-                        <div className="flex items-center justify-center gap-2">
-                          <StatusBadge label="Menu" active={cat.showInMenu} />
-                          <StatusBadge label="Online" active={cat.showOnline} />
-                        </div>
-                        {cat.showOnline && (
-                          <p className="text-[11px] leading-4 text-[#64748b]">
-                            Tab web:{' '}
-                            <span className="font-['Bitcheese',cursive] text-[12px] text-[#2e2c2c]">
-                              {onlineLabelOf(cat)}
-                            </span>
-                          </p>
-                        )}
+                      <div className="flex items-center justify-center gap-2">
+                        <ChannelBadge label="POS" active={cat.showInMenu} />
+                        <ChannelBadge label="Online" active={cat.showOnline} />
                       </div>
                     </td>
                     <td className="py-4 pr-6 text-right">
@@ -281,6 +266,8 @@ export default function CategoryListScreen() {
           }}
         />
       </div>
+
+      <CategoryProductsModal category={productsOf} onClose={() => setProductsOf(null)} />
     </div>
   );
 }

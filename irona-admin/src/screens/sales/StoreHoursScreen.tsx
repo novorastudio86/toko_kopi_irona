@@ -111,7 +111,7 @@ function HoursSection({
 
       <table className="w-full border-collapse">
         <thead>
-          <tr className="text-[10px] font-bold uppercase tracking-[0.4px] text-[#64748b]">
+          <tr className="text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]">
             <th className="px-5 py-2.5 text-left">Hari</th>
             <th className="px-3 py-2.5 text-left">{openLabel}</th>
             <th className="px-3 py-2.5 text-left">
@@ -132,7 +132,7 @@ function HoursSection({
                 className={`border-t border-[#f1f5f9] ${d.isOpen ? '' : 'bg-[#fcfcfd]'}`}
               >
                 <td
-                  className={`px-5 py-2.5 text-xs font-semibold ${d.isOpen ? 'text-[#0f172a]' : 'text-[#94a3b8]'}`}
+                  className={`px-5 py-2.5 text-sm font-semibold ${d.isOpen ? 'text-[#0f172a]' : 'text-[#94a3b8]'}`}
                 >
                   {DAY_NAMES[dow]}
                 </td>
@@ -148,7 +148,7 @@ function HoursSection({
                       className={`absolute top-0.5 size-4 rounded-full bg-white transition-all ${d.isOpen ? 'left-[18px]' : 'left-0.5'}`}
                     />
                   </button>
-                  {!d.isOpen && <span className="ml-2 text-[11px] text-[#94a3b8]">Tutup</span>}
+                  {!d.isOpen && <span className="ml-2 text-xs text-[#94a3b8]">Tutup</span>}
                 </td>
                 <td className="px-3 py-2.5">
                   <input

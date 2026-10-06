@@ -1,5 +1,7 @@
 import { Fragment, type ReactNode } from 'react';
 import { useLocation, useOutletContext } from 'react-router';
+import { Popover } from '@base-ui/react/popover';
+import { X } from 'lucide-react';
 import icInfo from '../assets/ui/info.svg';
 import { getNavTrail, resolveActiveNavId } from '../constants/navigation';
 
@@ -40,12 +42,42 @@ export function PageHeader({ title, info, badge, action }: Props) {
             {title}
           </h2>
           {info && (
-            <span
-              title={info}
-              className="flex size-5 cursor-help items-center justify-center rounded-full border border-[#e2e8f0] bg-[#f1f5f9]"
-            >
-              <img src={icInfo} alt="Info" className="size-3" />
-            </span>
+            <Popover.Root>
+              <Popover.Trigger
+                aria-label={`Tentang ${title}`}
+                className="flex size-5 cursor-pointer items-center justify-center rounded-full border border-[#e2e8f0] bg-[#f1f5f9] hover:bg-[#e2e8f0]"
+              >
+                <img src={icInfo} alt="" className="size-3" />
+              </Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Positioner side="bottom" align="start" alignOffset={-12} sideOffset={10} className="z-50">
+                  <Popover.Popup className="w-[min(560px,calc(100vw-32px))] rounded-xl border border-[#e2e8f0] bg-white p-5 shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.1),0px_8px_10px_-6px_rgba(0,0,0,0.1)] outline-none">
+                    <Popover.Arrow className="-top-[9px] data-[side=top]:hidden">
+                      <span className="block size-4 translate-y-1 rotate-45 border-l border-t border-[#e2e8f0] bg-white" />
+                    </Popover.Arrow>
+                    <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-3">
+                      <div className="flex items-center gap-2.5">
+                        <span className="flex size-6 items-center justify-center rounded-full bg-[#f1f5f9]">
+                          <img src={icInfo} alt="" className="size-3.5" />
+                        </span>
+                        <Popover.Title className="text-sm font-bold leading-5 text-[#0f172a]">
+                          Tentang {title}
+                        </Popover.Title>
+                      </div>
+                      <Popover.Close
+                        aria-label="Tutup"
+                        className="flex size-6 items-center justify-center rounded-md text-[#64748b] hover:bg-[#f1f5f9] hover:text-[#0f172a]"
+                      >
+                        <X className="size-4" />
+                      </Popover.Close>
+                    </div>
+                    <Popover.Description className="pt-3 text-xs leading-[19.5px] text-[#475569]">
+                      {info}
+                    </Popover.Description>
+                  </Popover.Popup>
+                </Popover.Positioner>
+              </Popover.Portal>
+            </Popover.Root>
           )}
           {badge && (
             <span className="rounded-full border border-[#e2e8f0] bg-[#f1f5f9] px-2.5 py-0.5 text-[11px] font-semibold leading-4 text-[#475569]">

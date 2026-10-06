@@ -194,7 +194,7 @@ export default function AttendanceScreen() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] border-collapse">
             <thead className="border-b border-[#e2e8f0] bg-[rgba(248,250,252,0.75)]">
-              <tr className="text-[11px] font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
+              <tr className="text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                 <th className="px-4 py-3 text-left">Karyawan</th>
                 <th className="px-3 py-3 text-left">Shift</th>
                 <th className="px-3 py-3 text-left">Jam Masuk</th>
@@ -209,7 +209,7 @@ export default function AttendanceScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={9} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={9} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat presensi...
                   </td>
                 </tr>
@@ -217,7 +217,7 @@ export default function AttendanceScreen() {
 
               {!loading && rows.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={9} className="py-10 text-center text-sm text-[#94a3b8]">
                     Belum ada presensi tercatat di tanggal ini.
                   </td>
                 </tr>
@@ -227,40 +227,40 @@ export default function AttendanceScreen() {
                 rows.map((row) => (
                   <tr key={row.id} className="border-t border-[#f1f5f9]">
                     <td className="px-4 py-3.5">
-                      <p className="text-xs font-bold text-[#0f172a]">{row.employeeName}</p>
-                      <p className="text-[11px] text-[#94a3b8]">{row.roleName}</p>
+                      <p className="text-sm font-bold text-[#0f172a]">{row.employeeName}</p>
+                      <p className="text-xs text-[#94a3b8]">{row.roleName}</p>
                     </td>
                     <td className="px-3 py-3.5">
-                      <p className="text-xs font-semibold capitalize text-[#334155]">
+                      <p className="text-sm font-semibold capitalize text-[#334155]">
                         {row.shift ?? '—'}
                       </p>
                       {shiftSlots(row).length > 0 && (
-                        <p className="font-mono text-[11px] text-[#94a3b8]">
+                        <p className="font-mono text-xs text-[#94a3b8]">
                           {formatClock(shiftSlots(row)[0].startTime)}–
                           {formatClock(shiftSlots(row)[shiftSlots(row).length - 1].endTime)}
                           {shiftSlots(row).some((s) => s.isSpecialHours) && (
-                            <span className="ml-1 rounded bg-[#fef3c7] px-1 font-sans text-[10px] font-bold text-[#92400e]">
+                            <span className="ml-1 rounded bg-[#fef3c7] px-1 font-sans text-xs font-bold text-[#92400e]">
                               Jam Khusus
                             </span>
                           )}
                         </p>
                       )}
                     </td>
-                    <td className="px-3 py-3.5 font-mono text-xs text-[#0f172a]">
+                    <td className="px-3 py-3.5 font-mono text-sm text-[#0f172a]">
                       {formatTime(row.checkIn)}
                     </td>
-                    <td className="px-3 py-3.5 font-mono text-xs text-[#0f172a]">
+                    <td className="px-3 py-3.5 font-mono text-sm text-[#0f172a]">
                       {formatTime(row.checkOut)}
                     </td>
-                    <td className="px-3 py-3.5 font-mono text-xs text-[#dc2626]">
+                    <td className="px-3 py-3.5 font-mono text-sm text-[#dc2626]">
                       {formatMinutes(row.lateMinutes)}
                     </td>
                     <td className="px-3 py-3.5">
-                      <p className="font-mono text-xs text-[#059669]">
+                      <p className="font-mono text-sm text-[#059669]">
                         {formatMinutes(row.overtimeMinutes)}
                       </p>
                       {row.overtimeMorningMinutes > 0 && (
-                        <p className="text-[10px] text-[#64748b]">
+                        <p className="text-xs text-[#64748b]">
                           Pagi {formatMinutes(row.overtimeMorningMinutes)} (Jam Khusus)
                         </p>
                       )}
@@ -281,7 +281,7 @@ export default function AttendanceScreen() {
                             })
                           }
                           title={row.overtimeReviewNote ?? 'Putuskan lembur'}
-                          className={`mt-0.5 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                          className={`mt-0.5 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${
                             row.overtimeStatus === 'pending'
                               ? 'bg-[#fef3c7] text-[#92400e]'
                               : row.overtimeStatus === 'approved'
@@ -300,23 +300,23 @@ export default function AttendanceScreen() {
                         </button>
                       )}
                     </td>
-                    <td className="px-3 py-3.5 font-mono text-xs text-[#2563eb]">
+                    <td className="px-3 py-3.5 font-mono text-sm text-[#2563eb]">
                       {formatMinutes(row.extraShiftMinutes)}
                     </td>
                     <td className="px-3 py-3.5">
                       <div className="flex flex-wrap items-center gap-1.5">
                         {row.status === 'hadir' ? (
-                          <span className="inline-flex items-center rounded-full bg-[#0f172a] px-2.5 py-0.5 text-[10px] font-bold text-white">
+                          <span className="inline-flex items-center rounded-full bg-[#0f172a] px-2.5 py-0.5 text-xs font-bold text-white">
                             Hadir
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-dashed border-[#f43f5e] bg-white px-2.5 py-0.5 text-[10px] font-bold text-[#e11d48]">
+                          <span className="inline-flex items-center gap-1 rounded-full border border-dashed border-[#f43f5e] bg-white px-2.5 py-0.5 text-xs font-bold text-[#e11d48]">
                             <AlertTriangle className="size-2.5" />
                             Telat {formatMinutes(row.lateMinutes)}
                           </span>
                         )}
                         {row.source === 'manual' && (
-                          <span className="inline-flex items-center rounded-full border border-[#cbd5e1] bg-[#f1f5f9] px-2 py-0.5 text-[10px] font-medium text-[#475569]">
+                          <span className="inline-flex items-center rounded-full border border-[#cbd5e1] bg-[#f1f5f9] px-2 py-0.5 text-xs font-medium text-[#475569]">
                             Dikoreksi Admin
                           </span>
                         )}

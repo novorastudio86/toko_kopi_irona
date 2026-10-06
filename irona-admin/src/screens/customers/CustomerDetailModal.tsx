@@ -213,7 +213,7 @@ export default function CustomerDetailModal({ customer, onClose }: Props) {
           {!loading && tab === 'poin' && (
             <table className="w-full border-collapse">
               <thead>
-                <tr className="text-[10px] font-bold uppercase tracking-[0.4px] text-[#64748b]">
+                <tr className="text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]">
                   <th className="pb-2 text-left">Tanggal</th>
                   <th className="pb-2 text-left">Sumber</th>
                   <th className="pb-2 text-left">Keterangan</th>
@@ -224,20 +224,20 @@ export default function CustomerDetailModal({ customer, onClose }: Props) {
               <tbody>
                 {points.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="py-6 text-center text-xs text-[#94a3b8]">
+                    <td colSpan={5} className="py-6 text-center text-sm text-[#94a3b8]">
                       Belum ada riwayat poin.
                     </td>
                   </tr>
                 )}
                 {points.map((p) => (
                   <tr key={p.id} className="border-t border-[#f1f5f9] align-top">
-                    <td className="py-2.5 pr-3 text-[11px] text-[#475569]">
+                    <td className="py-2.5 pr-3 text-sm text-[#475569]">
                       {formatDateTime(p.date)}
                     </td>
-                    <td className="py-2.5 pr-3 text-[11px] font-semibold text-[#0f172a]">
+                    <td className="py-2.5 pr-3 text-sm font-semibold text-[#0f172a]">
                       {POINT_LABELS[p.type]}
                     </td>
-                    <td className="py-2.5 pr-3 text-[11px] text-[#64748b]">
+                    <td className="py-2.5 pr-3 text-sm text-[#64748b]">
                       {p.notes ?? '—'}
                       {p.transactionNumber && (
                         <span className="block font-mono text-[#94a3b8]">
@@ -253,7 +253,7 @@ export default function CustomerDetailModal({ customer, onClose }: Props) {
                     >
                       {p.change > 0 ? `+${p.change}` : p.change}
                     </td>
-                    <td className="py-2.5 text-right font-mono text-xs text-[#475569]">
+                    <td className="py-2.5 text-right font-mono text-sm text-[#475569]">
                       {p.balanceAfter ?? '—'}
                     </td>
                   </tr>

@@ -201,7 +201,7 @@ export default function RacikanProductionModal({ onClose, onSaved }: Props) {
                   ) : (
                     <table className="w-full border-collapse">
                       <thead>
-                        <tr className="text-[10px] font-bold uppercase text-[#64748b]">
+                        <tr className="text-xs font-bold uppercase text-[#64748b]">
                           <th className="py-1.5 text-left">Bahan</th>
                           <th className="py-1.5 text-right">Dibutuhkan</th>
                           <th className="py-1.5 text-right">Stok Tersedia</th>
@@ -210,13 +210,13 @@ export default function RacikanProductionModal({ onClose, onSaved }: Props) {
                       <tbody>
                         {needs.map((n) => (
                           <tr key={n.key} className="border-t border-[#e2e8f0]">
-                            <td className="py-2 text-xs text-[#1e293b]">{n.name}</td>
-                            <td className="py-2 text-right font-mono text-xs text-[#0f172a]">
+                            <td className="py-2 text-sm text-[#1e293b]">{n.name}</td>
+                            <td className="py-2 text-right font-mono text-sm text-[#0f172a]">
                               {formatQty(n.needed)} {n.unitName}
                             </td>
                             <td className="py-2 text-right">
                               <span
-                                className={`inline-flex items-center gap-1 font-mono text-xs ${
+                                className={`inline-flex items-center gap-1 font-mono text-sm ${
                                   n.enough ? 'text-[#475569]' : 'font-bold text-[#dc2626]'
                                 }`}
                               >

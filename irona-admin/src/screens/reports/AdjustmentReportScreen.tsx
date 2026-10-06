@@ -92,7 +92,7 @@ export default function AdjustmentReportScreen() {
   }
 
   const thClass =
-    'whitespace-nowrap py-[14px] pr-3 text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'whitespace-nowrap py-[14px] pr-3 text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
 
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
@@ -187,14 +187,14 @@ export default function AdjustmentReportScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat...
                   </td>
                 </tr>
               )}
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     Tidak ada penyesuaian di periode ini.
                   </td>
                 </tr>
@@ -203,7 +203,7 @@ export default function AdjustmentReportScreen() {
                 paged.map((a) => (
                   <tr
                     key={a.id}
-                    className="border-t border-[#f1f5f9] first:border-t-0 text-xs text-[#475569]"
+                    className="border-t border-[#f1f5f9] first:border-t-0 text-sm text-[#475569]"
                   >
                     <td className="whitespace-nowrap py-3 pl-6 pr-3">
                       {formatDateTime(a.createdAt)}

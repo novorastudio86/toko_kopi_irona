@@ -158,7 +158,7 @@ export default function OnlineBalanceReportScreen() {
   }
 
   const thClass =
-    'py-[14px] text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'py-[14px] text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
 
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
@@ -260,14 +260,14 @@ export default function OnlineBalanceReportScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat laporan...
                   </td>
                 </tr>
               )}
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     Belum ada transaksi online di periode ini.
                   </td>
                 </tr>
@@ -300,29 +300,29 @@ export default function OnlineBalanceReportScreen() {
                             {r.transactionNumber}
                           </button>
                         </td>
-                        <td className="py-3 pr-3 text-xs text-[#475569]">
+                        <td className="py-3 pr-3 text-sm text-[#475569]">
                           {formatDateTime(r.transactionDate)}
                         </td>
-                        <td className="py-3 pr-3 text-right font-mono text-xs">
+                        <td className="py-3 pr-3 text-right font-mono text-sm">
                           {formatRupiah(r.grossAmount)}
                         </td>
-                        <td className="py-3 pr-3 text-right font-mono text-xs text-[#be123c]">
+                        <td className="py-3 pr-3 text-right font-mono text-sm text-[#be123c]">
                           {formatRupiahDetail(r.gatewayMdr)}
                         </td>
-                        <td className="py-3 pr-3 text-right font-mono text-xs text-[#be123c]">
+                        <td className="py-3 pr-3 text-right font-mono text-sm text-[#be123c]">
                           {formatRupiahDetail(r.gatewayTax)}
                         </td>
-                        <td className="py-3 pr-3 text-right font-mono text-xs font-semibold">
+                        <td className="py-3 pr-3 text-right font-mono text-sm font-semibold">
                           {formatRupiahDetail(r.netAmount)}
                         </td>
                         <td className="py-3 pl-4 pr-3">
                           <span
-                            className={`inline-flex rounded-md px-2 py-0.5 text-[10px] font-bold ${BALANCE_STATUS_CLASSES[r.status]}`}
+                            className={`inline-flex rounded-md px-2 py-0.5 text-xs font-bold ${BALANCE_STATUS_CLASSES[r.status]}`}
                           >
                             {BALANCE_STATUS_LABELS[r.status]}
                           </span>
                         </td>
-                        <td className="py-3 pr-6 text-xs text-[#475569]">
+                        <td className="py-3 pr-6 text-sm text-[#475569]">
                           {r.disbursedDate
                             ? `Dicairkan ${formatDate(r.disbursedDate)}`
                             : `Tersedia ${formatDate(r.availableDate)}`}
@@ -349,7 +349,7 @@ export default function OnlineBalanceReportScreen() {
                                 value={formatRupiahDetail(r.netAmount)}
                                 bold
                               />
-                              <p className="pt-2 text-[11px] leading-4 text-[#64748b]">
+                              <p className="pt-2 text-xs leading-4 text-[#64748b]">
                                 Settlement {formatDateTime(r.settledAt)} · Tersedia ditarik{' '}
                                 {formatDate(r.availableDate)} (3 hari kerja)
                                 {r.disbursedDate

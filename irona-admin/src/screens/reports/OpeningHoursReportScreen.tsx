@@ -161,7 +161,7 @@ export default function OpeningHoursReportScreen() {
   }
 
   const thClass =
-    'whitespace-nowrap py-[14px] pr-3 text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'whitespace-nowrap py-[14px] pr-3 text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
 
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
@@ -228,24 +228,24 @@ export default function OpeningHoursReportScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={5} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat...
                   </td>
                 </tr>
               )}
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={5} className="py-10 text-center text-sm text-[#94a3b8]">
                     Belum ada sesi kasir di periode ini.
                   </td>
                 </tr>
               )}
               {!loading &&
                 paged.map((r) => (
-                  <tr key={r.day} className="border-t border-[#f1f5f9] first:border-t-0 text-xs">
+                  <tr key={r.day} className="border-t border-[#f1f5f9] first:border-t-0 text-sm">
                     <td className="py-3 pl-6 pr-3">
                       <p className="font-semibold text-[#0f172a]">{formatDay(r.day)}</p>
-                      <p className="text-[11px] text-[#94a3b8]">
+                      <p className="text-xs text-[#94a3b8]">
                         {r.storeOpen
                           ? `Jadwal ${formatClock(r.scheduledOpen)}–${formatClock(r.scheduledClose)}`
                           : 'Jadwal: tutup'}
@@ -256,7 +256,7 @@ export default function OpeningHoursReportScreen() {
                       <p className="font-mono text-[#0f172a]">
                         {shiftText(r.shift1Login, r.shift1Logout)}
                       </p>
-                      <p className="text-[11px] text-[#94a3b8]">{r.shift1Cashier}</p>
+                      <p className="text-xs text-[#94a3b8]">{r.shift1Cashier}</p>
                     </td>
                     <td className="py-3 pr-3">
                       {r.shift2Login ? (
@@ -264,7 +264,7 @@ export default function OpeningHoursReportScreen() {
                           <p className="font-mono text-[#0f172a]">
                             {shiftText(r.shift2Login, r.shift2Logout)}
                           </p>
-                          <p className="text-[11px] text-[#94a3b8]">{r.shift2Cashier}</p>
+                          <p className="text-xs text-[#94a3b8]">{r.shift2Cashier}</p>
                         </>
                       ) : (
                         <span className="text-[#94a3b8]">—</span>
@@ -275,7 +275,7 @@ export default function OpeningHoursReportScreen() {
                         <span className="text-[#94a3b8]">—</span>
                       ) : (
                         <span
-                          className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
                             r.gapMinutes === 0
                               ? 'bg-[#ecfdf5] text-[#047857]'
                               : 'bg-[#fef3c7] text-[#92400e]'
@@ -292,7 +292,7 @@ export default function OpeningHoursReportScreen() {
                           <DiffBadge kind="close" min={r.closeDiffMinutes} />
                         </div>
                       ) : (
-                        <span className="text-[11px] text-[#92400e]">Buka di luar jadwal</span>
+                        <span className="text-xs text-[#92400e]">Buka di luar jadwal</span>
                       )}
                     </td>
                   </tr>

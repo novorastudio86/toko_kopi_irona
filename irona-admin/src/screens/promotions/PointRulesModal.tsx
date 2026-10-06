@@ -190,13 +190,13 @@ export default function PointRulesModal({ rules, onClose, onSaved }: Props) {
                     const r = calcPoints(amount, tiers, thresholdNum);
                     return (
                       <tr key={amount} className="border-t border-[#e2e8f0]">
-                        <td className="py-1.5 font-mono text-xs text-[#475569]">
+                        <td className="py-1.5 font-mono text-sm text-[#475569]">
                           {formatRupiah(amount)}
                         </td>
-                        <td className="py-1.5 text-[11px] text-[#64748b]">
+                        <td className="py-1.5 text-sm text-[#64748b]">
                           {describeBreakdown(r.breakdown, r.leftover)}
                         </td>
-                        <td className="py-1.5 text-right font-mono text-xs font-bold text-[#0f172a]">
+                        <td className="py-1.5 text-right font-mono text-sm font-bold text-[#0f172a]">
                           {r.points} poin
                         </td>
                       </tr>

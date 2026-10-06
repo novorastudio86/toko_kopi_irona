@@ -130,7 +130,7 @@ export default function DiscountListScreen() {
   }
 
   const thClass =
-    'py-[14px] text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'py-[14px] text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
   const filterClass =
     'w-44 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]';
 
@@ -276,7 +276,7 @@ export default function DiscountListScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat diskon...
                   </td>
                 </tr>
@@ -284,7 +284,7 @@ export default function DiscountListScreen() {
 
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     {search || channelFilter || statusFilter
                       ? 'Tidak ada diskon yang cocok.'
                       : 'Belum ada diskon.'}
@@ -303,11 +303,11 @@ export default function DiscountListScreen() {
                       <td className="py-4 pl-6 pr-3">
                         <button onClick={() => setDetail(p)} className="text-left">
                           <span
-                            className={`text-xs font-semibold hover:underline ${expired ? 'text-[#64748b]' : 'text-[#0f172a]'}`}
+                            className={`text-sm font-semibold hover:underline ${expired ? 'text-[#64748b]' : 'text-[#0f172a]'}`}
                           >
                             {p.name}
                           </span>
-                          <span className="block pt-0.5 text-[11px] text-[#94a3b8]">
+                          <span className="block pt-0.5 text-xs text-[#94a3b8]">
                             {p.targetCustomer === 'member' ? 'Member' : 'Semua'} ·{' '}
                             {formatCriteria(p)}
                           </span>
@@ -315,7 +315,7 @@ export default function DiscountListScreen() {
                       </td>
                       <td className="py-4 pr-3">
                         <span
-                          className={`inline-flex rounded-md px-2 py-0.5 text-[10px] font-bold ${
+                          className={`inline-flex rounded-md px-2 py-0.5 text-xs font-bold ${
                             p.channel === 'online'
                               ? 'bg-[#eff6ff] text-[#1d4ed8]'
                               : 'bg-[#f1f5f9] text-[#334155]'
@@ -325,17 +325,17 @@ export default function DiscountListScreen() {
                         </span>
                       </td>
                       <td className="py-4 pr-3">
-                        <span className="inline-flex rounded-md border border-[#cbd5e1] bg-white px-2 py-0.5 text-[10px] font-bold text-[#334155]">
+                        <span className="inline-flex rounded-md border border-[#cbd5e1] bg-white px-2 py-0.5 text-xs font-bold text-[#334155]">
                           {TYPE_LABELS[p.promoType]}
                           {p.channel === 'online' && p.promoType === 'manual' ? ' · Voucher' : ''}
                         </span>
                       </td>
-                      <td className="py-4 pr-3 font-mono text-xs font-bold text-[#0f172a]">
+                      <td className="py-4 pr-3 font-mono text-sm font-bold text-[#0f172a]">
                         {formatTargetValue(p)}
                       </td>
-                      <td className="py-4 pr-3 text-xs text-[#475569]">
+                      <td className="py-4 pr-3 text-sm text-[#475569]">
                         {formatDate(p.startDate)}
-                        <span className="block text-[11px] text-[#94a3b8]">
+                        <span className="block text-xs text-[#94a3b8]">
                           s/d {formatDate(p.endDate)}
                         </span>
                       </td>

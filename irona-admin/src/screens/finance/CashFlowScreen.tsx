@@ -296,7 +296,7 @@ export default function CashFlowScreen() {
   };
 
   const thClass =
-    'py-[14px] text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'py-[14px] text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
   const filterClass =
     'rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]';
   const pct = settings
@@ -664,14 +664,14 @@ export default function CashFlowScreen() {
               <tbody>
                 {loading && (
                   <tr>
-                    <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                    <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                       Memuat riwayat...
                     </td>
                   </tr>
                 )}
                 {!loading && paged.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                    <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                       Belum ada catatan di periode ini.
                     </td>
                   </tr>
@@ -697,7 +697,7 @@ export default function CashFlowScreen() {
                         <tr
                           className={`border-t border-[#f1f5f9] first:border-t-0 ${open ? 'bg-[rgba(248,250,252,0.7)]' : ''}`}
                         >
-                          <td className="py-3.5 pl-4 pr-3 text-xs text-[#475569]">
+                          <td className="py-3.5 pl-4 pr-3 text-sm text-[#475569]">
                             <button
                               onClick={toggle}
                               className="flex items-center gap-1.5 rounded-lg px-1.5 py-1 hover:bg-[#f1f5f9]"
@@ -713,28 +713,28 @@ export default function CashFlowScreen() {
                           </td>
                           <td className="py-3.5 pr-3">
                             <span
-                              className={`inline-flex whitespace-nowrap rounded-md px-2 py-0.5 text-[10px] font-bold ${ENTRY_TYPE_CLASSES[e.entryType]}`}
+                              className={`inline-flex whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-bold ${ENTRY_TYPE_CLASSES[e.entryType]}`}
                             >
                               {ENTRY_TYPE_LABELS[e.entryType]}
                             </span>
                           </td>
-                          <td className="max-w-[360px] py-3.5 pr-3 text-xs text-[#334155]">
+                          <td className="max-w-[360px] py-3.5 pr-3 text-sm text-[#334155]">
                             {e.description}
                           </td>
-                          <td className="py-3.5 pr-3 text-right font-mono text-xs font-semibold text-[#047857]">
+                          <td className="py-3.5 pr-3 text-right font-mono text-sm font-semibold text-[#047857]">
                             {e.amount > 0 ? formatRupiah(e.amount) : ''}
                           </td>
-                          <td className="py-3.5 pr-3 text-right font-mono text-xs font-semibold text-[#be123c]">
+                          <td className="py-3.5 pr-3 text-right font-mono text-sm font-semibold text-[#be123c]">
                             {e.amount < 0 ? formatRupiah(-e.amount) : ''}
                           </td>
                           <td
-                            className={`py-3.5 pr-3 text-right font-mono text-xs font-bold ${e.balance < 0 ? 'text-[#e11d48]' : 'text-[#0f172a]'}`}
+                            className={`py-3.5 pr-3 text-right font-mono text-sm font-bold ${e.balance < 0 ? 'text-[#e11d48]' : 'text-[#0f172a]'}`}
                           >
                             {formatRupiah(e.balance)}
                           </td>
                           <td className="py-3.5 pr-6">
                             <div className="flex items-center justify-end gap-1">
-                              {!editable && <span className="text-[11px] text-[#cbd5e1]">—</span>}
+                              {!editable && <span className="text-xs text-[#cbd5e1]">—</span>}
                               {editable && e.refId && (
                                 <>
                                   <button
@@ -790,7 +790,7 @@ export default function CashFlowScreen() {
               <tbody>
                 {!loading && paged.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="py-10 text-center text-xs text-[#94a3b8]">
+                    <td colSpan={5} className="py-10 text-center text-sm text-[#94a3b8]">
                       Belum ada catatan di periode ini.
                     </td>
                   </tr>
@@ -799,23 +799,23 @@ export default function CashFlowScreen() {
                   const diff = r.totalIn - r.totalOut;
                   return (
                     <tr key={r.key} className="border-t border-[#f1f5f9] first:border-t-0">
-                      <td className="py-3.5 pl-6 text-xs font-semibold text-[#0f172a]">
+                      <td className="py-3.5 pl-6 text-sm font-semibold text-[#0f172a]">
                         {r.label}
                       </td>
-                      <td className="py-3.5 text-right font-mono text-xs text-[#047857]">
+                      <td className="py-3.5 text-right font-mono text-sm text-[#047857]">
                         {formatRupiah(r.totalIn)}
                       </td>
-                      <td className="py-3.5 text-right font-mono text-xs text-[#be123c]">
+                      <td className="py-3.5 text-right font-mono text-sm text-[#be123c]">
                         {formatRupiah(r.totalOut)}
                       </td>
                       <td
-                        className={`py-3.5 text-right font-mono text-xs font-semibold ${diff < 0 ? 'text-[#e11d48]' : 'text-[#0f172a]'}`}
+                        className={`py-3.5 text-right font-mono text-sm font-semibold ${diff < 0 ? 'text-[#e11d48]' : 'text-[#0f172a]'}`}
                       >
                         {diff < 0 ? '−' : '+'}
                         {formatRupiah(Math.abs(diff))}
                       </td>
                       <td
-                        className={`py-3.5 pr-6 text-right font-mono text-xs font-bold ${r.balance < 0 ? 'text-[#e11d48]' : 'text-[#0f172a]'}`}
+                        className={`py-3.5 pr-6 text-right font-mono text-sm font-bold ${r.balance < 0 ? 'text-[#e11d48]' : 'text-[#0f172a]'}`}
                       >
                         {formatRupiah(r.balance)}
                       </td>

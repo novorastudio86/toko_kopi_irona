@@ -235,7 +235,7 @@ export default function KasbonListScreen() {
                 <SortableTh label="Jumlah Kasbon" sortKey="amount" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Dipotong dari Gaji" sortKey="deductMonth" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Status" sortKey="status" activeKey={sort.key} dir={sort.dir} onSort={handleSort} align="center" />
-                <th className="py-[14px] pr-6 text-right text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]">
+                <th className="py-[14px] pr-6 text-right text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                   Aksi
                 </th>
               </tr>
@@ -243,7 +243,7 @@ export default function KasbonListScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={6} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat data kasbon...
                   </td>
                 </tr>
@@ -251,7 +251,7 @@ export default function KasbonListScreen() {
 
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={6} className="py-10 text-center text-sm text-[#94a3b8]">
                     {search || statusFilter || monthFilter ? 'Tidak ada kasbon yang cocok.' : 'Belum ada kasbon tercatat.'}
                   </td>
                 </tr>
@@ -263,13 +263,13 @@ export default function KasbonListScreen() {
                   return (
                     <tr key={k.id} className={`border-t border-[#f1f5f9] first:border-t-0 ${isOpen ? '' : 'bg-[#fcfcfd]'}`}>
                       <td className="py-4 pl-6">
-                        <p className="text-xs font-semibold text-[#0f172a]">{k.employeeName}</p>
-                        <p className="text-[11px] text-[#94a3b8]">{k.roleName}</p>
+                        <p className="text-sm font-semibold text-[#0f172a]">{k.employeeName}</p>
+                        <p className="text-xs text-[#94a3b8]">{k.roleName}</p>
                       </td>
-                      <td className="py-4 text-xs font-medium text-[#475569]">{formatDate(k.requestDate)}</td>
-                      <td className="py-4 font-mono text-xs font-bold text-[#0f172a]">{formatRupiah(k.amount)}</td>
+                      <td className="py-4 text-sm font-medium text-[#475569]">{formatDate(k.requestDate)}</td>
+                      <td className="py-4 font-mono text-sm font-bold text-[#0f172a]">{formatRupiah(k.amount)}</td>
                       <td
-                        className={`py-4 text-xs font-medium ${
+                        className={`py-4 text-sm font-medium ${
                           k.status === 'lunas_tunai' ? 'text-[#94a3b8] line-through' : 'text-[#475569]'
                         }`}
                       >

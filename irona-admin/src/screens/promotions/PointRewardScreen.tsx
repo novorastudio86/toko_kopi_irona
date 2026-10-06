@@ -212,7 +212,7 @@ export default function PointRewardScreen() {
   }
 
   const thClass =
-    'py-[14px] text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'py-[14px] text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
 
   return (
     <div className="flex max-w-[1400px] flex-col gap-6 p-6 xl:p-8">
@@ -333,14 +333,14 @@ export default function PointRewardScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={6} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat reward...
                   </td>
                 </tr>
               )}
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={6} className="py-10 text-center text-sm text-[#94a3b8]">
                     {search || statusFilter
                       ? 'Tidak ada reward yang cocok.'
                       : 'Belum ada reward di katalog.'}
@@ -355,38 +355,38 @@ export default function PointRewardScreen() {
                   >
                     <td className="py-4 pl-6 pr-3">
                       <p
-                        className={`text-xs font-semibold ${r.isActive ? 'text-[#0f172a]' : 'text-[#64748b]'}`}
+                        className={`text-sm font-semibold ${r.isActive ? 'text-[#0f172a]' : 'text-[#64748b]'}`}
                       >
                         {r.name}
                       </p>
-                      {r.notes && <p className="pt-0.5 text-[11px] text-[#94a3b8]">{r.notes}</p>}
+                      {r.notes && <p className="pt-0.5 text-xs text-[#94a3b8]">{r.notes}</p>}
                     </td>
-                    <td className="py-4 pr-3 text-xs text-[#475569]">{r.productName}</td>
-                    <td className="py-4 text-center font-mono text-xs font-bold text-[#0f172a]">
+                    <td className="py-4 pr-3 text-sm text-[#475569]">{r.productName}</td>
+                    <td className="py-4 text-center font-mono text-sm font-bold text-[#0f172a]">
                       {r.pointsRequired} poin
                     </td>
                     <td className="py-4 text-center">
                       {r.availableStock <= 0 ? (
-                        <span className="inline-flex rounded-full border border-[#fecdd3] bg-[#fff1f2] px-2.5 py-0.5 text-[10px] font-bold text-[#e11d48]">
+                        <span className="inline-flex rounded-full border border-[#fecdd3] bg-[#fff1f2] px-2.5 py-0.5 text-xs font-bold text-[#e11d48]">
                           Habis
                         </span>
                       ) : (
-                        <span className="font-mono text-xs font-bold text-[#0f172a]">
+                        <span className="font-mono text-sm font-bold text-[#0f172a]">
                           {r.availableStock}
                         </span>
                       )}
-                      <p className="pt-0.5 text-[10px] text-[#94a3b8]">
+                      <p className="pt-0.5 text-xs text-[#94a3b8]">
                         stok {r.stock}
                         {r.pendingCount > 0 ? ` · ${r.pendingCount} dicadangkan` : ''}
                       </p>
                     </td>
                     <td className="py-4 text-center">
                       {r.isActive ? (
-                        <span className="inline-flex rounded-full bg-[#0f172a] px-2.5 py-0.5 text-[10px] font-bold text-white">
+                        <span className="inline-flex rounded-full bg-[#0f172a] px-2.5 py-0.5 text-xs font-bold text-white">
                           Aktif
                         </span>
                       ) : (
-                        <span className="inline-flex rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-2.5 py-0.5 text-[10px] font-bold text-[#475569]">
+                        <span className="inline-flex rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-2.5 py-0.5 text-xs font-bold text-[#475569]">
                           Nonaktif
                         </span>
                       )}
@@ -396,7 +396,7 @@ export default function PointRewardScreen() {
                         <button
                           onClick={() => setClaimsFor(r)}
                           title="Riwayat Klaim"
-                          className="flex items-center gap-1 rounded-lg border border-[#e2e8f0] px-2 py-[7px] text-[11px] font-semibold text-[#475569] hover:bg-[#f8fafc]"
+                          className="flex items-center gap-1 rounded-lg border border-[#e2e8f0] px-2 py-[7px] text-xs font-semibold text-[#475569] hover:bg-[#f8fafc]"
                         >
                           <History className="size-3.5" />
                           {r.claimCount}

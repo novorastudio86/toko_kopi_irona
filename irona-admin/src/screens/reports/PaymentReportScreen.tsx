@@ -130,7 +130,7 @@ export default function PaymentReportScreen() {
   }
 
   const thClass =
-    'whitespace-nowrap py-[14px] pr-3 text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'whitespace-nowrap py-[14px] pr-3 text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
 
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
@@ -247,13 +247,13 @@ export default function PaymentReportScreen() {
           <tbody>
             {!loading && methods.length === 0 && (
               <tr>
-                <td colSpan={5} className="py-10 text-center text-xs text-[#94a3b8]">
+                <td colSpan={5} className="py-10 text-center text-sm text-[#94a3b8]">
                   Tidak ada transaksi di periode ini.
                 </td>
               </tr>
             )}
             {methods.map((m) => (
-              <tr key={m.method} className="border-t border-[#f1f5f9] first:border-t-0 text-xs">
+              <tr key={m.method} className="border-t border-[#f1f5f9] first:border-t-0 text-sm">
                 <td className="py-3.5 pl-6 pr-3">
                   <span className="flex items-center gap-2 font-semibold text-[#0f172a]">
                     <span

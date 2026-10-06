@@ -110,7 +110,7 @@ export default function StockSummaryReportScreen() {
   const filterClass =
     'rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]';
   const thClass =
-    'whitespace-nowrap py-[14px] pr-3 text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'whitespace-nowrap py-[14px] pr-3 text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
   const resetPage = () => setPage(1);
 
   return (
@@ -244,14 +244,14 @@ export default function StockSummaryReportScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat...
                   </td>
                 </tr>
               )}
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     {rows.length ? 'Item tidak ditemukan.' : 'Belum ada persediaan.'}
                   </td>
                 </tr>
@@ -260,19 +260,19 @@ export default function StockSummaryReportScreen() {
                 paged.map((r) => (
                   <tr
                     key={`${r.itemType}-${r.itemId}`}
-                    className="border-t border-[#f1f5f9] text-xs first:border-t-0"
+                    className="border-t border-[#f1f5f9] text-sm first:border-t-0"
                   >
                     <td className="py-3 pl-6 pr-3">
                       <span className="font-semibold text-[#0f172a]">{r.name}</span>
                       {!r.isActive && (
-                        <span className="ml-1.5 rounded-full border border-dashed border-[#94a3b8] px-1.5 py-0.5 text-[10px] font-bold text-[#64748b]">
+                        <span className="ml-1.5 rounded-full border border-dashed border-[#94a3b8] px-1.5 py-0.5 text-xs font-bold text-[#64748b]">
                           Nonaktif
                         </span>
                       )}
                     </td>
                     <td className="py-3 pr-3">
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${ITEM_TYPE_CLASSES[r.itemType]}`}
+                        className={`rounded-full px-2 py-0.5 text-xs font-semibold ${ITEM_TYPE_CLASSES[r.itemType]}`}
                       >
                         {ITEM_TYPE_LABELS[r.itemType]}
                       </span>

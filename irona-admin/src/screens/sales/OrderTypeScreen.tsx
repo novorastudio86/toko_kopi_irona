@@ -47,7 +47,7 @@ function RulesTable({
         <tbody>
           {rules.length === 0 && (
             <tr>
-              <td colSpan={5} className="py-8 text-center text-xs text-[#94a3b8]">
+              <td colSpan={5} className="py-8 text-center text-sm text-[#94a3b8]">
                 Belum ada aturan.
               </td>
             </tr>
@@ -57,14 +57,14 @@ function RulesTable({
               <td className="max-w-[220px] py-3 pl-5 pr-3">
                 <div className="flex flex-wrap gap-1">
                   {r.appliesToAllProducts ? (
-                    <span className="rounded-md bg-[#0f172a] px-2 py-0.5 text-[10px] font-bold text-white">
+                    <span className="rounded-md bg-[#0f172a] px-2 py-0.5 text-xs font-bold text-white">
                       Semua Produk
                     </span>
                   ) : (
                     r.productNames.map((n) => (
                       <span
                         key={n}
-                        className="rounded-md bg-[#334155] px-2 py-0.5 text-[10px] font-semibold text-white"
+                        className="rounded-md bg-[#334155] px-2 py-0.5 text-xs font-semibold text-white"
                       >
                         {n}
                       </span>
@@ -77,7 +77,7 @@ function RulesTable({
                   {r.items.map((i) => (
                     <span
                       key={i.rawMaterialId}
-                      className="rounded-md border border-[#cbd5e1] bg-white px-2 py-0.5 text-[10px] font-semibold text-[#334155]"
+                      className="rounded-md border border-[#cbd5e1] bg-white px-2 py-0.5 text-xs font-semibold text-[#334155]"
                     >
                       {i.rawMaterialName} ({formatQty(i.quantity)} {i.unitName})
                     </span>
@@ -86,7 +86,7 @@ function RulesTable({
               </td>
               <td className="py-3 pr-3">
                 <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                  className={`rounded-full px-2 py-0.5 text-xs font-bold ${
                     r.scope === 'keduanya'
                       ? 'bg-[#f5f3ff] text-[#6d28d9]'
                       : r.scope === 'online'
@@ -97,7 +97,7 @@ function RulesTable({
                   {SCOPE_LABELS[r.scope]}
                 </span>
               </td>
-              <td className="py-3 pr-3 text-right font-mono text-xs font-bold text-[#0f172a]">
+              <td className="py-3 pr-3 text-right font-mono text-sm font-bold text-[#0f172a]">
                 {formatRupiah(r.totalCost)}
               </td>
               <td className="py-3 pr-5">

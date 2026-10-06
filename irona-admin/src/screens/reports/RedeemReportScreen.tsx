@@ -131,7 +131,7 @@ export default function RedeemReportScreen() {
   const filterClass =
     'rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]';
   const thClass =
-    'whitespace-nowrap py-[14px] pr-3 text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'whitespace-nowrap py-[14px] pr-3 text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
 
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
@@ -243,38 +243,38 @@ export default function RedeemReportScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={6} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat...
                   </td>
                 </tr>
               )}
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={6} className="py-10 text-center text-sm text-[#94a3b8]">
                     {rows.length ? 'Klaim tidak ditemukan.' : 'Belum ada redeem di periode ini.'}
                   </td>
                 </tr>
               )}
               {!loading &&
                 paged.map((r) => (
-                  <tr key={r.id} className="border-t border-[#f1f5f9] text-xs first:border-t-0">
+                  <tr key={r.id} className="border-t border-[#f1f5f9] text-sm first:border-t-0">
                     <td className="py-3 pl-6 pr-3">
                       <p className="text-[#0f172a]">{formatDateTime(r.claimedAt)}</p>
-                      <p className="font-mono text-[11px] text-[#94a3b8]">{r.code}</p>
+                      <p className="font-mono text-xs text-[#94a3b8]">{r.code}</p>
                     </td>
                     <td className="py-3 pr-3">
                       <p className="font-semibold text-[#0f172a]">{r.customerName}</p>
-                      <p className="font-mono text-[11px] text-[#94a3b8]">{r.phoneNumber}</p>
+                      <p className="font-mono text-xs text-[#94a3b8]">{r.phoneNumber}</p>
                     </td>
                     <td className="py-3 pr-3 text-[#475569]">{r.rewardName}</td>
                     <td className="py-3 pr-3 text-right font-mono">{r.pointsUsed}</td>
                     <td className="py-3 pr-3">
                       <ClaimStatusBadge status={r.status} />
                       {r.status === 'dibatalkan' && r.cancelReason && (
-                        <p className="mt-1 text-[11px] text-[#94a3b8]">{r.cancelReason}</p>
+                        <p className="mt-1 text-xs text-[#94a3b8]">{r.cancelReason}</p>
                       )}
                       {r.status === 'sudah_ditukar' && r.redeemedAt && (
-                        <p className="mt-1 text-[11px] text-[#94a3b8]">
+                        <p className="mt-1 text-xs text-[#94a3b8]">
                           {formatDateTime(r.redeemedAt)}
                         </p>
                       )}
@@ -284,7 +284,7 @@ export default function RedeemReportScreen() {
                         <button
                           onClick={() => handleCancel(r)}
                           disabled={cancellingId !== null}
-                          className="inline-flex items-center gap-1 rounded-lg border border-[#e2e8f0] px-2 py-1 text-[11px] font-semibold text-[#475569] hover:border-[#fecdd3] hover:text-[#e11d48] disabled:opacity-50"
+                          className="inline-flex items-center gap-1 rounded-lg border border-[#e2e8f0] px-2 py-1 text-xs font-semibold text-[#475569] hover:border-[#fecdd3] hover:text-[#e11d48] disabled:opacity-50"
                         >
                           <Undo2 className="size-3" />
                           {cancellingId === r.id ? 'Membatalkan...' : 'Batalkan'}

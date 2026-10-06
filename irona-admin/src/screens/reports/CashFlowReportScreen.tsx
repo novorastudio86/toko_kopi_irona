@@ -226,7 +226,7 @@ export default function CashFlowReportScreen({ bucket }: { bucket: Bucket }) {
   }
 
   const thClass =
-    'py-[14px] text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]';
+    'py-[14px] text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]';
 
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
@@ -394,14 +394,14 @@ export default function CashFlowReportScreen({ bucket }: { bucket: Bucket }) {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={6} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat laporan...
                   </td>
                 </tr>
               )}
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={6} className="py-10 text-center text-sm text-[#94a3b8]">
                     Belum ada catatan di periode ini.
                   </td>
                 </tr>
@@ -414,7 +414,7 @@ export default function CashFlowReportScreen({ bucket }: { bucket: Bucket }) {
                       <tr
                         className={`border-t border-[#f1f5f9] first:border-t-0 ${isOpen ? 'bg-[rgba(248,250,252,0.7)]' : ''}`}
                       >
-                        <td className="py-3.5 pl-4 pr-3 text-xs text-[#475569]">
+                        <td className="py-3.5 pl-4 pr-3 text-sm text-[#475569]">
                           <button
                             onClick={() =>
                               setOpen((prev) => {
@@ -437,22 +437,22 @@ export default function CashFlowReportScreen({ bucket }: { bucket: Bucket }) {
                         </td>
                         <td className="py-3.5 pr-3">
                           <span
-                            className={`inline-flex whitespace-nowrap rounded-md px-2 py-0.5 text-[10px] font-bold ${ENTRY_TYPE_CLASSES[e.entryType]}`}
+                            className={`inline-flex whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-bold ${ENTRY_TYPE_CLASSES[e.entryType]}`}
                           >
                             {ENTRY_TYPE_LABELS[e.entryType]}
                           </span>
                         </td>
-                        <td className="max-w-[380px] py-3.5 pr-3 text-xs text-[#334155]">
+                        <td className="max-w-[380px] py-3.5 pr-3 text-sm text-[#334155]">
                           {e.description}
                         </td>
-                        <td className="py-3.5 pr-3 text-right font-mono text-xs font-semibold text-[#047857]">
+                        <td className="py-3.5 pr-3 text-right font-mono text-sm font-semibold text-[#047857]">
                           {e.amount > 0 ? formatRupiah(e.amount) : ''}
                         </td>
-                        <td className="py-3.5 pr-3 text-right font-mono text-xs font-semibold text-[#be123c]">
+                        <td className="py-3.5 pr-3 text-right font-mono text-sm font-semibold text-[#be123c]">
                           {e.amount < 0 ? formatRupiah(-e.amount) : ''}
                         </td>
                         <td
-                          className={`py-3.5 pr-6 text-right font-mono text-xs font-bold ${e.balance < 0 ? 'text-[#e11d48]' : 'text-[#0f172a]'}`}
+                          className={`py-3.5 pr-6 text-right font-mono text-sm font-bold ${e.balance < 0 ? 'text-[#e11d48]' : 'text-[#0f172a]'}`}
                         >
                           {formatRupiah(e.balance)}
                         </td>

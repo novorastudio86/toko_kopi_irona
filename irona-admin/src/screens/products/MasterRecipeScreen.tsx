@@ -394,7 +394,7 @@ export default function MasterRecipeScreen() {
               <tr>
                 <th className="w-12" />
                 <SortableTh label="Nama" sortKey="name" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
-                <th className="py-[14px] text-center text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]">
+                <th className="py-[14px] text-center text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                   Tipe
                 </th>
                 <SortableTh
@@ -406,7 +406,7 @@ export default function MasterRecipeScreen() {
                   align="center"
                 />
                 <SortableTh label="Cost" sortKey="cost" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
-                <th className="py-[14px] text-left text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]">
+                <th className="py-[14px] text-left text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                   Add Cost
                 </th>
                 <SortableTh
@@ -416,7 +416,7 @@ export default function MasterRecipeScreen() {
                   dir={sort.dir}
                   onSort={handleSort}
                 />
-                <th className="py-[14px] pr-6 text-right text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]">
+                <th className="py-[14px] pr-6 text-right text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                   Aksi
                 </th>
               </tr>
@@ -424,7 +424,7 @@ export default function MasterRecipeScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat master resep...
                   </td>
                 </tr>
@@ -432,7 +432,7 @@ export default function MasterRecipeScreen() {
 
               {!loading && error && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-red-600">
+                  <td colSpan={8} className="py-10 text-center text-sm text-red-600">
                     {error}
                   </td>
                 </tr>
@@ -440,7 +440,7 @@ export default function MasterRecipeScreen() {
 
               {!loading && !error && paged.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={8} className="py-10 text-center text-sm text-[#94a3b8]">
                     {search || typeFilter ? 'Tidak ada resep yang cocok.' : 'Belum ada resep.'}
                   </td>
                 </tr>
@@ -470,9 +470,9 @@ export default function MasterRecipeScreen() {
                         </td>
                         <td className="py-4">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-[13px] font-semibold leading-4 text-[#0f172a]">{row.name}</span>
+                            <span className="text-sm font-semibold leading-5 text-[#0f172a]">{row.name}</span>
                             {incomplete && (
-                              <span className="rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-[10px] font-medium leading-4 text-[#e11d48]">
+                              <span className="rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-xs font-medium leading-4 text-[#e11d48]">
                                 Resep Belum Diisi
                               </span>
                             )}
@@ -487,24 +487,24 @@ export default function MasterRecipeScreen() {
                         </td>
                         <td className="py-4 text-center">
                           {isProduct ? (
-                            <span className="rounded bg-[#1e293b] px-2 py-0.5 text-[10px] font-medium leading-4 text-white">
+                            <span className="rounded bg-[#1e293b] px-2 py-0.5 text-xs font-medium leading-4 text-white">
                               Produk
                             </span>
                           ) : (
-                            <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-2 py-0.5 text-[10px] font-medium leading-4 text-[#334155]">
+                            <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]">
                               Racikan
                             </span>
                           )}
                         </td>
-                        <td className="py-4 text-center text-xs text-[#475569]">{row.componentCount} Bahan</td>
-                        <td className="py-4 font-mono text-xs text-[#64748b]">{formatRupiah(row.cost)}</td>
-                        <td className="py-4 text-xs text-[#475569]">
+                        <td className="py-4 text-center text-sm text-[#475569]">{row.componentCount} Bahan</td>
+                        <td className="py-4 font-mono text-sm text-[#64748b]">{formatRupiah(row.cost)}</td>
+                        <td className="py-4 text-sm text-[#475569]">
                           {formatQty(row.addCostPercentage)}%{' '}
                           <span className="font-mono text-[#64748b]">
                             (+{formatRupiah(row.cost * (row.addCostPercentage / 100))})
                           </span>
                         </td>
-                        <td className="py-4 font-mono text-xs font-bold text-[#0f172a]">
+                        <td className="py-4 font-mono text-sm font-bold text-[#0f172a]">
                           {formatRupiah(row.totalCost)}
                         </td>
                         <td className="py-4 pr-6 text-right">
@@ -554,7 +554,7 @@ export default function MasterRecipeScreen() {
                                     ? `Breakdown Komposisi Bahan & Racikan (Porsi per 1 ${row.unit ?? 'Porsi'})`
                                     : 'Breakdown Formula Racikan (In-House)'}
                                 </p>
-                                <span className="font-mono text-[11px] leading-4 text-[#64748b]">
+                                <span className="font-mono text-xs leading-4 text-[#64748b]">
                                   ID {isProduct ? 'Produk' : 'Racikan'}: {row.id.slice(0, 8).toUpperCase()}
                                 </span>
                               </div>
@@ -562,17 +562,17 @@ export default function MasterRecipeScreen() {
                               {/* Meta racikan */}
                               {!isProduct && (
                                 <div className="flex flex-wrap items-center gap-2 rounded border border-[#e2e8f0] bg-[#f8fafc] p-[9px]">
-                                  <span className="rounded bg-[#0f172a] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.25px] text-white">
+                                  <span className="rounded bg-[#0f172a] px-2 py-0.5 text-xs font-bold uppercase tracking-[0.25px] text-white">
                                     {row.productionMode === 'batch' ? 'Batch' : 'Made to Order'}
                                   </span>
-                                  <span className="text-xs text-[#cbd5e1]">•</span>
-                                  <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-[9px] py-[3px] text-[11px] leading-4 text-[#64748b]">
+                                  <span className="text-sm text-[#cbd5e1]">•</span>
+                                  <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-[9px] py-[3px] text-xs leading-4 text-[#64748b]">
                                     Yield:{' '}
                                     <span className="font-bold text-[#0f172a]">
                                       {formatQty(row.yieldQty ?? 0)} Porsi
                                     </span>
                                   </span>
-                                  <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-[9px] py-[3px] text-[11px] leading-4 text-[#64748b]">
+                                  <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-[9px] py-[3px] text-xs leading-4 text-[#64748b]">
                                     Total Produksi:{' '}
                                     <span className="font-bold text-[#0f172a]">
                                       {formatQty(row.totalOutputQty ?? 0)} {row.unit ?? ''}
@@ -583,11 +583,11 @@ export default function MasterRecipeScreen() {
 
                               {/* Tabel komponen */}
                               {loadingComponents === row.id && (
-                                <p className="py-4 text-center text-xs text-[#94a3b8]">Memuat komponen...</p>
+                                <p className="py-4 text-center text-sm text-[#94a3b8]">Memuat komponen...</p>
                               )}
 
                               {components && components.length === 0 && (
-                                <p className="rounded border border-dashed border-[#cbd5e1] bg-[#f8fafc] p-4 text-center text-xs text-[#64748b]">
+                                <p className="rounded border border-dashed border-[#cbd5e1] bg-[#f8fafc] p-4 text-center text-sm text-[#64748b]">
                                   Resep belum diisi.
                                 </p>
                               )}
@@ -595,7 +595,7 @@ export default function MasterRecipeScreen() {
                               {components && components.length > 0 && (
                                 <table className="w-full border-collapse">
                                   <thead className="border-b border-[#e2e8f0]">
-                                    <tr className="text-[10px] font-bold uppercase leading-4 text-[#64748b]">
+                                    <tr className="text-xs font-bold uppercase leading-4 text-[#64748b]">
                                       <th className="px-2 py-1.5 text-left">Nama Bahan</th>
                                       <th className="px-2 py-1.5 text-left">Sumber</th>
                                       <th className="px-2 py-1.5 text-left">Takaran</th>
@@ -606,17 +606,17 @@ export default function MasterRecipeScreen() {
                                   <tbody>
                                     {components.map((c) => (
                                       <tr key={c.key} className="border-t border-[#f1f5f9] first:border-t-0">
-                                        <td className="px-2 py-2.5 text-xs text-[#1e293b]">{c.name}</td>
+                                        <td className="px-2 py-2.5 text-sm text-[#1e293b]">{c.name}</td>
                                         <td className="px-2 py-2">
                                           <SourceBadge type={c.type} />
                                         </td>
-                                        <td className="px-2 py-2.5 text-xs text-[#1e293b]">
+                                        <td className="px-2 py-2.5 text-sm text-[#1e293b]">
                                           {formatQty(c.quantity)} {c.unitName}
                                         </td>
-                                        <td className="px-2 py-2.5 font-mono text-xs text-[#475569]">
+                                        <td className="px-2 py-2.5 font-mono text-sm text-[#475569]">
                                           {formatRupiahDetail(c.unitPrice)} / {c.unitName}
                                         </td>
-                                        <td className="px-2 py-2.5 text-right font-mono text-xs text-[#1e293b]">
+                                        <td className="px-2 py-2.5 text-right font-mono text-sm text-[#1e293b]">
                                           {formatRupiah(c.subtotal)}
                                         </td>
                                       </tr>

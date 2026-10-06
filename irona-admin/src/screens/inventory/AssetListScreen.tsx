@@ -252,7 +252,7 @@ export default function AssetListScreen() {
                   onSort={handleSort}
                   align="center"
                 />
-                <th className="py-[14px] pr-6 text-right text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]">
+                <th className="py-[14px] pr-6 text-right text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                   Aksi
                 </th>
               </tr>
@@ -260,7 +260,7 @@ export default function AssetListScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat data aset...
                   </td>
                 </tr>
@@ -268,7 +268,7 @@ export default function AssetListScreen() {
 
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     {search || statusFilter
                       ? 'Tidak ada aset yang cocok.'
                       : 'Belum ada aset tercatat.'}
@@ -284,19 +284,19 @@ export default function AssetListScreen() {
                       key={asset.id}
                       className={`border-t border-[#f1f5f9] first:border-t-0 ${inactive ? 'bg-[#fcfcfd]' : ''}`}
                     >
-                      <td className="py-4 pl-6 text-xs font-semibold text-[#0f172a]">
+                      <td className="py-4 pl-6 text-sm font-semibold text-[#0f172a]">
                         {asset.name}
                       </td>
-                      <td className="py-4 text-xs font-medium text-[#475569]">
+                      <td className="py-4 text-sm font-medium text-[#475569]">
                         {formatDate(asset.purchaseDate)}
                       </td>
-                      <td className="py-4 font-mono text-xs text-[#475569]">
+                      <td className="py-4 font-mono text-sm text-[#475569]">
                         {formatRupiah(asset.purchasePrice)}
                       </td>
-                      <td className="py-4 text-center text-xs font-medium text-[#0f172a]">
+                      <td className="py-4 text-center text-sm font-medium text-[#0f172a]">
                         {asset.quantity} unit
                       </td>
-                      <td className="py-4 font-mono text-xs font-bold text-[#0f172a]">
+                      <td className="py-4 font-mono text-sm font-bold text-[#0f172a]">
                         {formatRupiah(asset.totalValue)}
                       </td>
                       <td className="py-4 text-center">

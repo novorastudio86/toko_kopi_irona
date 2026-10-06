@@ -282,12 +282,12 @@ export default function EmployeeListScreen() {
                 <SortableTh label="Nama" sortKey="fullName" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="pl-6" />
                 <SortableTh label="No. Telp" sortKey="phoneNumber" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Role" sortKey="roleName" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
-                <th className="py-[14px] text-left text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]">
+                <th className="py-[14px] text-left text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                   Username
                 </th>
                 <SortableTh label="Gaji Pokok" sortKey="baseSalary" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Status" sortKey="isActive" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
-                <th className="py-[14px] pr-6 text-center text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]">
+                <th className="py-[14px] pr-6 text-center text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                   Aksi
                 </th>
               </tr>
@@ -295,7 +295,7 @@ export default function EmployeeListScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat data karyawan...
                   </td>
                 </tr>
@@ -303,7 +303,7 @@ export default function EmployeeListScreen() {
 
               {!loading && paged.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     {search || roleFilter || statusFilter
                       ? 'Tidak ada karyawan yang cocok.'
                       : 'Belum ada karyawan terdaftar.'}
@@ -332,7 +332,7 @@ export default function EmployeeListScreen() {
                             {initials(row.fullName)}
                           </span>
                           <span
-                            className={`text-[13px] font-bold leading-4 ${
+                            className={`text-sm font-bold leading-5 ${
                               inactive ? 'text-[#1e293b]' : 'text-[#0f172a]'
                             }`}
                           >
@@ -340,17 +340,17 @@ export default function EmployeeListScreen() {
                           </span>
                         </div>
                       </td>
-                      <td className={`py-4 font-mono text-xs ${inactive ? 'text-[#64748b]' : 'text-[#334155]'}`}>
+                      <td className={`py-4 font-mono text-sm ${inactive ? 'text-[#64748b]' : 'text-[#334155]'}`}>
                         {row.phoneNumber}
                       </td>
                       <td className="py-4">
                         <RoleBadge type={row.roleType} name={row.roleName} inactive={inactive} />
                       </td>
-                      <td className={`py-4 font-mono text-xs ${inactive ? 'text-[#94a3b8]' : 'text-[#475569]'}`}>
+                      <td className={`py-4 font-mono text-sm ${inactive ? 'text-[#94a3b8]' : 'text-[#475569]'}`}>
                         @{row.username}
                       </td>
                       <td
-                        className={`py-4 font-mono text-[13px] font-bold ${
+                        className={`py-4 font-mono text-sm font-bold ${
                           inactive ? 'text-[#475569]' : 'text-[#0f172a]'
                         }`}
                       >
@@ -358,12 +358,12 @@ export default function EmployeeListScreen() {
                       </td>
                       <td className="py-4">
                         {row.isActive ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#0f172a] px-3 py-1 text-[11px] font-bold text-white">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#0f172a] px-3 py-1 text-xs font-bold text-white">
                             <span className="size-1.5 rounded-full bg-[#34d399]" />
                             Aktif
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-[13px] py-1 text-[11px] font-bold text-[#475569]">
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-[13px] py-1 text-xs font-bold text-[#475569]">
                             <span className="size-1.5 rounded-full bg-[#94a3b8]" />
                             Nonaktif
                           </span>

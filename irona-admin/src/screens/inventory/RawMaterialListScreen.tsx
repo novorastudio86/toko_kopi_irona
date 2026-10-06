@@ -249,7 +249,7 @@ export default function RawMaterialListScreen() {
                 <SortableTh label="Stok Saat Ini" sortKey="currentStock" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Harga per Satuan" sortKey="unitPrice" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Alert Stok Minimum" sortKey="minStockAlert" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
-                <th className="py-[14px] pr-6 text-right text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[#64748b]">
+                <th className="py-[14px] pr-6 text-right text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
                   Aksi
                 </th>
               </tr>
@@ -257,7 +257,7 @@ export default function RawMaterialListScreen() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     Memuat bahan baku...
                   </td>
                 </tr>
@@ -265,7 +265,7 @@ export default function RawMaterialListScreen() {
 
               {!loading && error && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-red-600">
+                  <td colSpan={7} className="py-10 text-center text-sm text-red-600">
                     {error}
                   </td>
                 </tr>
@@ -273,7 +273,7 @@ export default function RawMaterialListScreen() {
 
               {!loading && !error && paged.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-[#94a3b8]">
+                  <td colSpan={7} className="py-10 text-center text-sm text-[#94a3b8]">
                     {search || typeFilter ? 'Tidak ada bahan yang cocok.' : 'Belum ada bahan baku.'}
                   </td>
                 </tr>
@@ -295,12 +295,12 @@ export default function RawMaterialListScreen() {
                       <td className="py-4 pl-6">
                         <div className="flex flex-wrap items-center gap-2">
                           <span
-                            className={`text-xs font-bold leading-4 ${inactive ? 'text-[#94a3b8]' : 'text-[#0f172a]'}`}
+                            className={`text-sm font-bold leading-5 ${inactive ? 'text-[#94a3b8]' : 'text-[#0f172a]'}`}
                           >
                             {row.name}
                           </span>
                           {inactive && (
-                            <span className="rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-2.5 py-[3px] text-[10px] leading-4 text-[#64748b]">
+                            <span className="rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-2.5 py-[3px] text-xs leading-4 text-[#64748b]">
                               Nonaktif
                             </span>
                           )}
@@ -313,7 +313,7 @@ export default function RawMaterialListScreen() {
                         </div>
                       </td>
 
-                      <td className={`py-4 font-mono text-xs ${inactive ? 'text-[#94a3b8]' : 'text-[#64748b]'}`}>
+                      <td className={`py-4 font-mono text-sm ${inactive ? 'text-[#94a3b8]' : 'text-[#64748b]'}`}>
                         {row.unitName}
                       </td>
 
@@ -321,7 +321,7 @@ export default function RawMaterialListScreen() {
                         <div className="flex items-center gap-1.5">
                           {isLow && <AlertTriangle className="size-3.5 shrink-0 text-[#dc2626]" />}
                           <span
-                            className={`text-xs ${
+                            className={`text-sm ${
                               inactive
                                 ? 'text-[#94a3b8]'
                                 : isLow
@@ -334,11 +334,11 @@ export default function RawMaterialListScreen() {
                         </div>
                       </td>
 
-                      <td className={`py-4 text-xs ${inactive ? 'text-[#94a3b8]' : 'text-[#1e293b]'}`}>
+                      <td className={`py-4 text-sm ${inactive ? 'text-[#94a3b8]' : 'text-[#1e293b]'}`}>
                         {row.unitPrice !== null ? `${formatRupiahDetail(row.unitPrice)} / ${row.unitName}` : '—'}
                       </td>
 
-                      <td className={`py-4 text-xs ${inactive ? 'text-[#94a3b8]' : 'text-[#64748b]'}`}>
+                      <td className={`py-4 text-sm ${inactive ? 'text-[#94a3b8]' : 'text-[#64748b]'}`}>
                         {row.minStockAlert > 0 ? `${formatQty(row.minStockAlert)} ${row.unitName}` : '—'}
                       </td>
 
