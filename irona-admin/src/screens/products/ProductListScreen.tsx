@@ -426,8 +426,8 @@ export default function ProductListScreen() {
                             )}
                           </div>
                           <div className="flex gap-1.5">
+                            {row.availableOffline && <ChannelTag label="POS" muted={dimmed} />}
                             {row.availableOnline && <ChannelTag label="Online" muted={dimmed} />}
-                            {row.availableOffline && <ChannelTag label="Offline" muted={dimmed} />}
                           </div>
                         </div>
                       </td>
