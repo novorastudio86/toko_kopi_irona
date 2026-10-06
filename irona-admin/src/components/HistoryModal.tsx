@@ -115,6 +115,11 @@ export function HistoryModal({ title, load, fields, onClose }: Props) {
                     })}
                   </span>
                 </div>
+                {h.reason && (
+                  <p className="pt-1.5 text-[11px] text-[#334155]">
+                    <span className="font-semibold">Alasan:</span> {h.reason}
+                  </p>
+                )}
                 {h.changes && (
                   <ul className="flex flex-col gap-0.5 pt-1.5">
                     {Object.entries(h.changes).map(([k, c]) => {

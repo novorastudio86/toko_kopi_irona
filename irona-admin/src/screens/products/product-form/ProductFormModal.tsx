@@ -290,9 +290,11 @@ export default function ProductFormModal({ productId = null, onClose, onSaved }:
       const recipeStatus =
         method === 'isi_sekarang' ? 'lengkap' : method === 'isi_nanti' ? 'belum_lengkap' : 'tanpa_resep';
 
-      // Status aktif lama dipertahankan; produk "Isi Nanti" yang resepnya dilengkapi otomatis aktif
+      // Status aktif lama dipertahankan; produk yang tadinya belum lengkap (resep "Isi Nanti" / harga
+      // jual kosong) otomatis aktif setelah dilengkapi
       const isActive = original
-        ? original.recipeStatus === 'belum_lengkap' && recipeStatus !== 'belum_lengkap'
+        ? (original.recipeStatus === 'belum_lengkap' || !(Number(original.sellingPrice) > 0)) &&
+          recipeStatus !== 'belum_lengkap'
           ? true
           : original.isActive
         : true;

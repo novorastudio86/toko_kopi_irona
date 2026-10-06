@@ -105,11 +105,16 @@ export async function fetchProductDetail(id: string): Promise<ProductDetail | nu
   };
 }
 
-/** Nonaktif manual ditandai supaya nanti tidak diaktifkan ulang otomatis oleh logika stok */
-export async function setProductActive(id: string, active: boolean): Promise<void> {
+/** Nonaktif manual ditandai supaya nanti tidak diaktifkan ulang otomatis oleh logika stok.
+ *  Alasan wajib saat menonaktifkan (dicek juga oleh trigger) dan tampil di riwayat. */
+export async function setProductActive(id: string, active: boolean, reason?: string): Promise<void> {
   const { error } = await supabase
     .from('products')
-    .update({ is_active: active, deactivated_manually: !active })
+    .update({
+      is_active: active,
+      deactivated_manually: !active,
+      deactivation_reason: active ? null : reason?.trim() || null,
+    })
     .eq('id', id);
   if (error) throw error;
 }
@@ -232,7 +237,7 @@ export async function saveProduct(input: ProductSaveInput, productId: string | n
 export async function fetchProductHistory(): Promise<HistoryEntry[]> {
   const { data, error } = await supabase
     .from('product_history')
-    .select('id, product_name, action, changes, changed_at')
+    .select('id, product_name, action, changes, changed_at, reason')
     .gte('changed_at', historySince())
     .order('changed_at', { ascending: false });
   if (error) throw error;
@@ -242,5 +247,6 @@ export async function fetchProductHistory(): Promise<HistoryEntry[]> {
     action: row.action,
     changes: row.changes,
     changedAt: row.changed_at,
+    reason: row.reason,
   }));
 }

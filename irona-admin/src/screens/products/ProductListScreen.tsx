@@ -26,13 +26,13 @@ import {
   deleteProduct,
   fetchLowStockMap,
   fetchProductList,
-  setProductActive,
 } from '../../services/products';
 import { formatPercent, formatRupiah } from '../../utils/format';
 import type { Category } from '../../types/category';
 import type { LowStockItem, ProductListItem } from '../../types/product';
 import ProductFormModal from './product-form/ProductFormModal';
 import ProductDetailModal from './ProductDetailModal';
+import ProductStatusModal from './ProductStatusModal';
 import { HistoryButton, HistoryModal } from '../../components/HistoryModal';
 import { fetchProductHistory } from '../../services/products';
 import { productHistoryFields } from './historyFields';
@@ -115,6 +115,8 @@ export default function ProductListScreen() {
   const [form, setForm] = useState<FormState>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  // Pop up nonaktifkan (wajib alasan) / aktifkan (konfirmasi)
+  const [statusRow, setStatusRow] = useState<Row | null>(null);
   const [hideRecipeBanner, setHideRecipeBanner] = useState(false);
   const [hideStockBanner, setHideStockBanner] = useState(false);
 
@@ -187,7 +189,8 @@ export default function ProductListScreen() {
   const sorted = useMemo(() => {
     const arr = [...filtered];
     if (sort.key === 'default') {
-      const rank = (r: Row) => (r.recipeStatus === 'belum_lengkap' ? 0 : r.lowStock.length > 0 ? 1 : 2);
+      const rank = (r: Row) =>
+        r.recipeStatus === 'belum_lengkap' ? 0 : !(Number(r.sellingPrice) > 0) ? 1 : r.lowStock.length > 0 ? 2 : 3;
       return arr.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'id'));
     }
     const key = sort.key;
@@ -216,24 +219,9 @@ export default function ProductListScreen() {
     );
   }
 
-  async function handleToggleActive(row: Row) {
-    const next = !row.isActive;
-    if (
-      !next &&
-      !window.confirm(
-        `Nonaktifkan "${row.name}"? Produk tidak akan bisa dipesan di kasir maupun web customer.`
-      )
-    ) {
-      return;
-    }
-    setActionError(null);
-    try {
-      await setProductActive(row.id, next);
-      setProducts((prev) => prev.map((p) => (p.id === row.id ? { ...p, isActive: next } : p)));
-      setFlash(`Produk "${row.name}" berhasil ${next ? 'diaktifkan' : 'dinonaktifkan'}.`);
-    } catch (err: any) {
-      setActionError(err?.message ?? 'Gagal mengubah status produk.');
-    }
+  function markActive(row: Row, active: boolean) {
+    setProducts((prev) => prev.map((p) => (p.id === row.id ? { ...p, isActive: active } : p)));
+    setFlash(`Produk "${row.name}" berhasil ${active ? 'diaktifkan' : 'dinonaktifkan'}.`);
   }
 
   async function handleDelete(row: Row) {
@@ -384,8 +372,10 @@ export default function ProductListScreen() {
                 !error &&
                 paged.map((row, idx) => {
                   const incomplete = row.recipeStatus === 'belum_lengkap';
+                  // Harga jual belum diisi → produk belum boleh aktif (dicek juga oleh constraint database)
+                  const noPrice = !incomplete && !(Number(row.sellingPrice) > 0);
                   const inactive = !row.isActive;
-                  const dimmed = inactive && !incomplete;
+                  const dimmed = inactive && !incomplete && !noPrice;
 
                   return (
                     <tr
@@ -410,9 +400,15 @@ export default function ProductListScreen() {
                               {row.name}
                             </p>
                             {incomplete && (
-                              <span className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-xs font-medium leading-4 text-[#e11d48]">
+                              <span className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-[10px] font-medium leading-4 text-[#e11d48]">
                                 <AlertTriangle className="size-3" />
                                 Resep Belum Diisi
+                              </span>
+                            )}
+                            {noPrice && (
+                              <span className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-[10px] font-medium leading-4 text-[#e11d48]">
+                                <AlertTriangle className="size-3" />
+                                Harga Belum Lengkap
                               </span>
                             )}
                             {row.lowStock.length > 0 && (
@@ -452,6 +448,18 @@ export default function ProductListScreen() {
                           <td className="py-4 font-mono text-sm leading-5 text-[#64748b]">
                             {row.totalCost !== null ? formatRupiah(row.totalCost) : '—'}
                           </td>
+                          {noPrice ? (
+                            <td colSpan={2} className="py-4">
+                              <button
+                                onClick={() => setForm({ mode: 'edit', id: row.id })}
+                                className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-[#cbd5e1] bg-[#f8fafc] px-[13px] py-[5px] text-xs font-medium leading-4 text-[#64748b] hover:border-[#94a3b8] hover:text-[#0f172a]"
+                              >
+                                <Info className="size-3.5" />
+                                Isi harga jual agar produk bisa aktif
+                              </button>
+                            </td>
+                          ) : (
+                          <>
                           <td
                             className={`py-4 font-mono text-sm font-bold leading-5 ${
                               dimmed ? 'text-[#64748b]' : 'text-[#0f172a]'
@@ -481,6 +489,8 @@ export default function ProductListScreen() {
                               <span className="font-mono text-sm text-[#94a3b8]">—</span>
                             )}
                           </td>
+                          </>
+                          )}
                         </>
                       )}
 
@@ -499,7 +509,7 @@ export default function ProductListScreen() {
                               <Pencil className="mr-2 size-3.5" />
                               Ubah Data
                             </DropdownMenuItem>
-                            <DropdownMenuItem disabled={incomplete} onClick={() => handleToggleActive(row)}>
+                            <DropdownMenuItem disabled={incomplete || noPrice} onClick={() => setStatusRow(row)}>
                               {row.isActive ? (
                                 <>
                                   <Ban className="mr-2 size-3.5" />
@@ -564,6 +574,17 @@ export default function ProductListScreen() {
             const id = detailId;
             setDetailId(null);
             setForm({ mode: 'edit', id });
+          }}
+        />
+      )}
+
+      {statusRow && (
+        <ProductStatusModal
+          product={statusRow}
+          onClose={() => setStatusRow(null)}
+          onSaved={() => {
+            markActive(statusRow, !statusRow.isActive);
+            setStatusRow(null);
           }}
         />
       )}

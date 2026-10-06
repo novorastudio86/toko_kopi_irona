@@ -187,8 +187,9 @@ export async function saveProductRecipe(
       availableOffline: detail.availableOffline,
       availableOnline: detail.availableOnline,
       recipeStatus: 'lengkap',
-      // Produk yang tadinya "Isi Nanti" otomatis aktif setelah resepnya lengkap
-      isActive: detail.recipeStatus === 'belum_lengkap' ? true : detail.isActive,
+      // Produk yang tadinya belum lengkap (resep "Isi Nanti" / harga kosong) otomatis aktif setelah dilengkapi
+      isActive:
+        detail.recipeStatus === 'belum_lengkap' || !(Number(detail.sellingPrice) > 0) ? true : detail.isActive,
       baseCost: null,
       addCostPercentage: payload.addCostPercentage,
       desiredCostPercentage: payload.desiredCostPercentage,

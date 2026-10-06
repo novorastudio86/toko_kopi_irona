@@ -5,4 +5,5 @@ export interface HistoryEntry {
   action: 'dibuat' | 'diubah' | 'dinonaktifkan' | 'diaktifkan' | 'dihapus';
   changes: Record<string, { from: unknown; to: unknown }> | null;
   changedAt: string;
+  reason?: string | null; // mis. alasan produk dinonaktifkan
 }

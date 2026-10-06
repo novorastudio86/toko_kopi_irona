@@ -462,7 +462,7 @@ export default function MasterRecipeScreen() {
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="text-sm font-semibold leading-5 text-[#0f172a]">{row.name}</span>
                             {incomplete && (
-                              <span className="rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-xs font-medium leading-4 text-[#e11d48]">
+                              <span className="rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-[10px] font-medium leading-4 text-[#e11d48]">
                                 Resep Belum Diisi
                               </span>
                             )}
