@@ -92,7 +92,6 @@ export default function OnlineOrderHistoryModal({ onClose }: Props) {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
-                    {h.changedByName && ` · oleh ${h.changedByName}`}
                   </span>
                 </div>
                 <p className="pt-1.5 text-xs text-[#334155]">{h.description}</p>

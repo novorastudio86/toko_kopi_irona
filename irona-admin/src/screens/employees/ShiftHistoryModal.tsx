@@ -102,7 +102,6 @@ export default function ShiftHistoryModal({ onClose, onChanged }: Props) {
                         hour: '2-digit',
                         minute: '2-digit',
                       })}
-                      {event.createdByName && ` · oleh ${event.createdByName}`}
                     </span>
                   </div>
                   <button

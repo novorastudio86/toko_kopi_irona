@@ -108,7 +108,6 @@ export default function OrderTypeHistoryModal({ onClose }: Props) {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
-                    {h.changedByName && ` · oleh ${h.changedByName}`}
                   </span>
                 </div>
                 <ul className="flex flex-col gap-1 pt-2">

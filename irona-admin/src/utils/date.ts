@@ -38,3 +38,8 @@ export function formatMonthLabel(iso: string): string {
     year: 'numeric',
   });
 }
+
+/** Batas awal riwayat perubahan: 14 hari terakhir (ISO, untuk filter changed_at) */
+export function historySince(days = 14): string {
+  return new Date(Date.now() - days * 86_400_000).toISOString();
+}

@@ -6,6 +6,8 @@ import type {
   ProductSaveInput,
   RecipeSource,
 } from '../types/product';
+import type { HistoryEntry } from '../types/history';
+import { historySince } from '../utils/date';
 
 function toNumber(value: unknown): number | null {
   return value === null || value === undefined ? null : Number(value);
@@ -224,4 +226,21 @@ export async function saveProduct(input: ProductSaveInput, productId: string | n
 
   if (error) throw error;
   return data as string;
+}
+
+/** Riwayat perubahan produk 14 hari terakhir (diisi otomatis oleh trigger `log_product_history`) */
+export async function fetchProductHistory(): Promise<HistoryEntry[]> {
+  const { data, error } = await supabase
+    .from('product_history')
+    .select('id, product_name, action, changes, changed_at')
+    .gte('changed_at', historySince())
+    .order('changed_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((row: any) => ({
+    id: row.id,
+    subject: row.product_name,
+    action: row.action,
+    changes: row.changes,
+    changedAt: row.changed_at,
+  }));
 }

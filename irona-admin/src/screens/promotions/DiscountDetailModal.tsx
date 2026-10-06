@@ -253,7 +253,6 @@ export default function DiscountDetailModal({ promotion: p, onClose }: Props) {
                       </span>
                       <span className="text-[11px] text-[#64748b]">
                         {formatDateTime(h.createdAt)}
-                        {h.changedByName && ` · oleh ${h.changedByName}`}
                       </span>
                     </div>
                     {h.action === 'diubah' && (

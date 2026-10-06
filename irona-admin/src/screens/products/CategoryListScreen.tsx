@@ -10,7 +10,9 @@ import { PageHeader } from '../../components/PageHeader';
 import { SearchToolbar } from '../../components/SearchToolbar';
 import { SortableTh, type SortDir } from '../../components/SortableTh';
 import { TablePagination } from '../../components/TablePagination';
-import { fetchCategories } from '../../services/categories';
+import { fetchCategories, fetchCategoryHistory } from '../../services/categories';
+import { HistoryButton, HistoryModal } from '../../components/HistoryModal';
+import { CATEGORY_HISTORY_FIELDS } from './historyFields';
 import { getCategoryIconSrc } from '../../constants/categoryIcons';
 import type { Category } from '../../types/category';
 import CategoryProductsModal from './CategoryProductsModal';
@@ -52,6 +54,7 @@ export default function CategoryListScreen() {
   const [reloadKey, setReloadKey] = useState(0);
 
   const [flash, setFlash] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -106,13 +109,16 @@ export default function CategoryListScreen() {
         title="Daftar Kategori"
         info="Modul ini mengatur pengelompokan menu kopi, makanan, dan minuman di Toko Kopi Irona serta tata letak tab kasir POS dan katalog pesanan online."
         action={
-          <button
-            onClick={() => setFormTarget({})}
-            className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-4 py-2.5 text-xs font-semibold leading-4 tracking-[0.3px] text-white drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#1e293b]"
-          >
-            <img src={icPlus} alt="" className="size-4" />
-            Tambah Kategori
-          </button>
+          <div className="flex items-center gap-3">
+            <HistoryButton onClick={() => setHistoryOpen(true)} />
+            <button
+              onClick={() => setFormTarget({})}
+              className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-4 py-2.5 text-xs font-semibold leading-4 tracking-[0.3px] text-white drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#1e293b]"
+            >
+              <img src={icPlus} alt="" className="size-4" />
+              Tambah Kategori
+            </button>
+          </div>
         }
       />
 
@@ -275,6 +281,15 @@ export default function CategoryListScreen() {
             setFlash(message);
             setReloadKey((k) => k + 1);
           }}
+        />
+      )}
+
+      {historyOpen && (
+        <HistoryModal
+          title="Riwayat Perubahan Kategori"
+          load={fetchCategoryHistory}
+          fields={CATEGORY_HISTORY_FIELDS}
+          onClose={() => setHistoryOpen(false)}
         />
       )}
     </div>

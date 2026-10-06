@@ -5,7 +5,6 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronRight,
-  History,
   Info,
   Package,
   Pencil,
@@ -29,8 +28,11 @@ import {
   deleteRacikan,
   fetchRacikanLowStockMap,
   fetchRecipeComponents,
+  fetchRecipeHistory,
   fetchRecipeList,
 } from '../../services/recipes';
+import { HistoryButton, HistoryModal } from '../../components/HistoryModal';
+import { RECIPE_HISTORY_FIELDS } from './historyFields';
 import { formatPercent, formatQty, formatRupiah, formatRupiahDetail } from '../../utils/format';
 import type { LowStockItem, RecipeSource } from '../../types/product';
 import type { RecipeComponentRow, RecipeListItem } from '../../types/recipe';
@@ -131,6 +133,7 @@ export default function MasterRecipeScreen() {
   const [racikanModal, setRacikanModal] = useState<{ racikanId: string | null } | null>(null);
   const [hideRecipeBanner, setHideRecipeBanner] = useState(false);
   const [hideStockBanner, setHideStockBanner] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -270,13 +273,7 @@ export default function MasterRecipeScreen() {
         }
         action={
           <div className="flex items-center gap-3">
-            <button
-              disabled
-              title="History Perubahan (segera hadir)"
-              className="rounded-lg border border-[#e2e8f0] bg-white p-2 text-[#475569] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <History className="size-5" />
-            </button>
+            <HistoryButton onClick={() => setHistoryOpen(true)} />
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-4 py-2.5 text-xs font-semibold leading-4 tracking-[0.3px] text-white drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#1e293b]">
                 <Plus className="size-4" />
@@ -734,6 +731,15 @@ export default function MasterRecipeScreen() {
             setFlash(`Racikan "${name}" berhasil disimpan.`);
             loadData();
           }}
+        />
+      )}
+
+      {historyOpen && (
+        <HistoryModal
+          title="Riwayat Perubahan Resep"
+          load={fetchRecipeHistory}
+          fields={RECIPE_HISTORY_FIELDS}
+          onClose={() => setHistoryOpen(false)}
         />
       )}
     </div>

@@ -1,8 +1,7 @@
 import { Fragment, type ReactNode } from 'react';
 import { useLocation, useOutletContext } from 'react-router';
 import { Popover } from '@base-ui/react/popover';
-import { X } from 'lucide-react';
-import icInfo from '../assets/ui/info.svg';
+import { Info, X } from 'lucide-react';
 import { getNavTrail, resolveActiveNavId } from '../constants/navigation';
 
 type Props = {
@@ -45,9 +44,9 @@ export function PageHeader({ title, info, badge, action }: Props) {
             <Popover.Root>
               <Popover.Trigger
                 aria-label={`Tentang ${title}`}
-                className="flex size-5 cursor-pointer items-center justify-center rounded-full border border-[#e2e8f0] bg-[#f1f5f9] hover:bg-[#e2e8f0]"
+                className="flex size-7 cursor-pointer items-center justify-center rounded-full border border-[#cbd5e1] bg-[#f1f5f9] text-[#475569] hover:bg-[#e2e8f0] hover:text-[#0f172a]"
               >
-                <img src={icInfo} alt="" className="size-3" />
+                <Info className="size-[18px]" strokeWidth={2.25} />
               </Popover.Trigger>
               <Popover.Portal>
                 <Popover.Positioner side="bottom" align="start" alignOffset={-12} sideOffset={10} className="z-50">
@@ -57,8 +56,8 @@ export function PageHeader({ title, info, badge, action }: Props) {
                     </Popover.Arrow>
                     <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-3">
                       <div className="flex items-center gap-2.5">
-                        <span className="flex size-6 items-center justify-center rounded-full bg-[#f1f5f9]">
-                          <img src={icInfo} alt="" className="size-3.5" />
+                        <span className="flex size-7 items-center justify-center rounded-full bg-[#f1f5f9] text-[#475569]">
+                          <Info className="size-4" strokeWidth={2.25} />
                         </span>
                         <Popover.Title className="text-sm font-bold leading-5 text-[#0f172a]">
                           Tentang {title}

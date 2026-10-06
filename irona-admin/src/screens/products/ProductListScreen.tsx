@@ -5,7 +5,6 @@ import {
   Ban,
   CheckCircle2,
   CircleCheck,
-  History,
   Info,
   Pencil,
   Trash2,
@@ -34,6 +33,9 @@ import type { Category } from '../../types/category';
 import type { LowStockItem, ProductListItem } from '../../types/product';
 import ProductFormModal from './product-form/ProductFormModal';
 import ProductDetailModal from './ProductDetailModal';
+import { HistoryButton, HistoryModal } from '../../components/HistoryModal';
+import { fetchProductHistory } from '../../services/products';
+import { productHistoryFields } from './historyFields';
 import { LowStockBadge } from './LowStockBadge';
 import icPlus from '../../assets/ui/plus.svg';
 import icMore from '../../assets/ui/more.svg';
@@ -111,6 +113,7 @@ export default function ProductListScreen() {
 
   const [form, setForm] = useState<FormState>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [hideRecipeBanner, setHideRecipeBanner] = useState(false);
   const [hideStockBanner, setHideStockBanner] = useState(false);
 
@@ -257,13 +260,7 @@ export default function ProductListScreen() {
         badge={loading ? undefined : `${products.length} Produk`}
         action={
           <div className="flex items-center gap-3">
-            <button
-              disabled
-              title="History Perubahan (segera hadir)"
-              className="rounded-lg border border-[#e2e8f0] bg-white p-2 text-[#475569] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <History className="size-5" />
-            </button>
+            <HistoryButton onClick={() => setHistoryOpen(true)} />
             <button
               onClick={() => setForm({ mode: 'create' })}
               className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-4 py-2.5 text-xs font-semibold leading-4 tracking-[0.3px] text-white drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#1e293b]"
@@ -563,6 +560,15 @@ export default function ProductListScreen() {
             setDetailId(null);
             setForm({ mode: 'edit', id });
           }}
+        />
+      )}
+
+      {historyOpen && (
+        <HistoryModal
+          title="Riwayat Perubahan Produk"
+          load={fetchProductHistory}
+          fields={productHistoryFields(categoryNames)}
+          onClose={() => setHistoryOpen(false)}
         />
       )}
     </div>

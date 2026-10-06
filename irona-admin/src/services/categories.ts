@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 import type { Category, CategoryInput } from '../types/category';
+import type { HistoryEntry } from '../types/history';
+import { historySince } from '../utils/date';
 
 const CATEGORY_SELECT =
   'id, code, name, icon, display_order, show_in_menu, show_online, products(count)';
@@ -71,4 +73,21 @@ export async function createCategory(input: CategoryInput): Promise<string> {
 export async function updateCategory(id: string, input: CategoryInput): Promise<void> {
   const { error } = await supabase.from('categories').update(toRow(input)).eq('id', id);
   if (error) throw error;
+}
+
+/** Riwayat perubahan kategori 14 hari terakhir (diisi otomatis oleh trigger `log_category_history`) */
+export async function fetchCategoryHistory(): Promise<HistoryEntry[]> {
+  const { data, error } = await supabase
+    .from('category_history')
+    .select('id, category_name, action, changes, changed_at')
+    .gte('changed_at', historySince())
+    .order('changed_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((row: any) => ({
+    id: row.id,
+    subject: row.category_name,
+    action: row.action,
+    changes: row.changes,
+    changedAt: row.changed_at,
+  }));
 }

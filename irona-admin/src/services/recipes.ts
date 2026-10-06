@@ -3,6 +3,8 @@ import type { LowStockItem } from '../types/product';
 import type { RecipeListItem, RecipeType } from '../types/recipe';
 import { fetchProductDetail, saveProduct } from './products';
 import type { RacikanDetail, RacikanSaveInput, UnitOption } from '../types/recipe';
+import type { HistoryEntry } from '../types/history';
+import { historySince } from '../utils/date';
 
 function toNumber(value: unknown): number | null {
   return value === null || value === undefined ? null : Number(value);
@@ -201,4 +203,22 @@ export async function saveProductRecipe(
     },
     productId
   );
+}
+
+/** Riwayat perubahan resep produk & racikan 14 hari terakhir (trigger `log_recipe_history`) */
+export async function fetchRecipeHistory(): Promise<HistoryEntry[]> {
+  const { data, error } = await supabase
+    .from('recipe_history')
+    .select('id, recipe_type, recipe_name, action, changes, changed_at')
+    .gte('changed_at', historySince())
+    .order('seq', { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((row: any) => ({
+    id: row.id,
+    subject: row.recipe_name,
+    tag: row.recipe_type === 'produk' ? 'Produk' : 'Racikan',
+    action: row.action,
+    changes: row.changes,
+    changedAt: row.changed_at,
+  }));
 }
