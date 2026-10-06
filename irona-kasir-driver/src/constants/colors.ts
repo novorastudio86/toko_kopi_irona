@@ -27,6 +27,8 @@ export const colors = {
   successBg: '#ecfdf5',
   warning: '#92400e',
   warningBg: '#fef3c7',
+  info: '#1d4ed8',
+  infoBg: '#eff6ff',
 
     // Sidebar gelap (sama dengan sidebar Web Admin)
   sidebar: '#12151a',

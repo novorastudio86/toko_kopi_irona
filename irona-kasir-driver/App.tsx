@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/PrimaryButton';
 import { colors } from '@/constants/colors';
-import DriverHomeScreen from '@/driver/screens/DriverHomeScreen';
+import DriverShell from '@/driver/screens/DriverShell';
 import KasirShell from '@/kasir/screens/KasirShell';
 import EmployeeLoginScreen from '@/screens/EmployeeLoginScreen';
 import OwnerLoginScreen from '@/screens/OwnerLoginScreen';
@@ -21,7 +21,7 @@ import type { AppRole } from '@/types/role';
  * - ownerLogin    : belum ada Owner → tampilkan login Owner
  * - roleSelect    : Owner sudah login → pilih Kasir / Driver
  * - employeeLogin : pilih nama karyawan + PIN
- * - home          : karyawan sudah masuk (Kasir → KasirShell, Driver → DriverHomeScreen)
+ * - home          : karyawan sudah masuk (Kasir → KasirShell, Driver → DriverShell)
  */
 type Stage =
   | { name: 'checking' }
@@ -111,7 +111,7 @@ export default function App() {
       )}
 
       {stage.name === 'home' && stage.employee.role === 'driver' && (
-        <DriverHomeScreen
+        <DriverShell
           employee={stage.employee}
           onSwitchEmployee={() =>
             setStage({ name: 'employeeLogin', owner: stage.owner, role: 'driver' })

@@ -12,6 +12,12 @@ export const RECEIPT_CHARS: Record<58 | 80, number> = { 58: 32, 80: 48 };
 
 const rp = (n: number) => Math.round(n).toLocaleString('id-ID');
 
+const ORDER_TYPE_LABELS: Record<OrderReceipt['orderType'], string> = {
+  dine_in: 'Dine In',
+  take_away: 'Take Away',
+  online: 'Online',
+};
+
 /** Pecah teks panjang ke beberapa baris sesuai lebar kertas */
 function wrap(text: string, width: number): string[] {
   const words = text.split(/\s+/).filter(Boolean);
@@ -73,14 +79,15 @@ export function buildReceiptLines(
   const info: [boolean, string, string][] = [
     [s.showReceiptNumber, 'No. Nota', receipt.transactionNumber],
     [s.showTransactionTime, 'Waktu', formatTime(receipt.transactionDate)],
-    [s.showQueueNumber, 'No. Urut', String(receipt.queueNumber).padStart(2, '0')],
+    // Pesanan online tidak punya No. Urut
+    [s.showQueueNumber && receipt.queueNumber > 0, 'No. Urut', String(receipt.queueNumber).padStart(2, '0')],
     [s.showCashierName, 'Kasir', receipt.cashierName],
     [
       s.showCustomer,
       'Pelanggan',
       receipt.isMember ? `${receipt.customerName} (Member)` : receipt.customerName,
     ],
-    [s.showOrderType, 'Jenis Order', receipt.orderType === 'dine_in' ? 'Dine In' : 'Take Away'],
+    [s.showOrderType, 'Jenis Order', ORDER_TYPE_LABELS[receipt.orderType]],
   ];
   const shownInfo = info.filter(([show]) => show);
   shownInfo.forEach(([, label, value]) => push(...leftRight(label, value, width)));
@@ -99,12 +106,17 @@ export function buildReceiptLines(
   push(...leftRight('Subtotal', rp(receipt.subtotal), width));
   const discount = receipt.subtotal - receipt.total;
   if (discount > 0) push(...leftRight('Diskon', `-${rp(discount)}`, width));
-  push(...leftRight('TOTAL', rp(receipt.total), width));
+  const deliveryFee = receipt.deliveryFee ?? 0;
+  const serviceFee = receipt.serviceFee ?? 0;
+  if (deliveryFee > 0) push(...leftRight('Ongkir', rp(deliveryFee), width));
+  if (serviceFee > 0) push(...leftRight('Biaya Layanan', rp(serviceFee), width));
+  const grandTotal = receipt.total + deliveryFee + serviceFee;
+  push(...leftRight('TOTAL', rp(grandTotal), width));
   if (receipt.paymentMethod === 'tunai') {
     push(...leftRight('Tunai', rp(receipt.cashReceived ?? 0), width));
     push(...leftRight('Kembalian', rp(receipt.change ?? 0), width));
   } else {
-    push(...leftRight('QRIS', rp(receipt.total), width));
+    push(...leftRight('QRIS', rp(grandTotal), width));
   }
   push(dash);
 

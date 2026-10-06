@@ -1,13 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
-import { ImagePlus, Trash2, X } from 'lucide-react';
+import { ExternalLink, ImagePlus, Trash2, X } from 'lucide-react';
 import { saveStoreProfile, uploadStoreLogo } from '../../services/receipt';
 import type { StoreProfile } from '../../types/receipt';
 import { FieldError, FieldLabel, inputClass } from '../products/product-form/formUi';
 
 type Props = { profile: StoreProfile; onClose: () => void; onSaved: (p: StoreProfile) => void };
 
+/** "-8.2655, 113.5515" (salinan dari Google Maps) → angka; null kalau formatnya salah */
+function parseCoordinates(text: string): { latitude: number; longitude: number } | null {
+  const m = text.trim().match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);
+  if (!m) return null;
+  const latitude = Number(m[1]);
+  const longitude = Number(m[2]);
+  if (Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return null;
+  return { latitude, longitude };
+}
+
 export default function StoreProfileModal({ profile, onClose, onSaved }: Props) {
   const [form, setForm] = useState<StoreProfile>(profile);
+  const [coordText, setCoordText] = useState(
+    profile.latitude !== null && profile.longitude !== null ? `${profile.latitude}, ${profile.longitude}` : ''
+  );
+  const coords = parseCoordinates(coordText);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,11 +60,16 @@ export default function StoreProfileModal({ profile, onClose, onSaved }: Props) 
       setError('Nama toko wajib diisi.');
       return;
     }
+    if (coordText.trim() && !coords) {
+      setError('Format titik lokasi salah. Contoh: -8.2655, 113.5515');
+      return;
+    }
+    const next = { ...form, latitude: coords?.latitude ?? null, longitude: coords?.longitude ?? null };
     setSaving(true);
     setError(null);
     try {
-      await saveStoreProfile(form);
-      onSaved(form);
+      await saveStoreProfile(next);
+      onSaved(next);
     } catch (err: any) {
       setError(err?.message ?? 'Gagal menyimpan data toko.');
     } finally {
@@ -164,6 +183,33 @@ export default function StoreProfileModal({ profile, onClose, onSaved }: Props) 
                 className={inputClass()}
               />
             </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <FieldLabel>Titik Lokasi Toko (Latitude, Longitude)</FieldLabel>
+            <div className="flex gap-2">
+              <input
+                value={coordText}
+                onChange={(e) => setCoordText(e.target.value)}
+                placeholder="-8.2655, 113.5515"
+                className={inputClass()}
+              />
+              {coords && (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${coords.latitude},${coords.longitude}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex shrink-0 items-center gap-1.5 rounded-lg border border-[#e2e8f0] px-3 text-xs font-semibold text-[#334155] hover:bg-[#f8fafc]"
+                >
+                  <ExternalLink className="size-3.5" />
+                  Cek di Maps
+                </a>
+              )}
+            </div>
+            <p className="text-[11px] leading-4 text-[#94a3b8]">
+              Buka Google Maps, tekan lama titik toko, lalu salin angka yang muncul. Dipakai untuk peta
+              di Driver App dan menghitung jarak antar.
+            </p>
           </div>
 
           <p className="pt-1 text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">

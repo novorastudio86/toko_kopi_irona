@@ -8,6 +8,9 @@ export interface StoreProfile {
   socialInstagram: string;
   socialTwitter: string;
   socialYoutube: string;
+  /** Titik lokasi toko untuk peta Driver App & jarak antar */
+  latitude: number | null;
+  longitude: number | null;
 }
 
 /** Nama kolom = nama di tabel receipt_settings (disimpan otomatis per kolom) */

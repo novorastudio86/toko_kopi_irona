@@ -9,6 +9,8 @@ interface KasirSidebarProps {
   active: KasirSection;
   onChange: (section: KasirSection) => void;
   employeeName: string;
+  /** Jumlah pesanan online baru (belum diterima) */
+  onlineBadge: number;
   onSwitchEmployee: () => void;
 }
 
@@ -25,6 +27,7 @@ export default function KasirSidebar({
   active,
   onChange,
   employeeName,
+  onlineBadge,
   onSwitchEmployee,
 }: KasirSidebarProps) {
   const firstName = employeeName.split(' ')[0];
@@ -46,6 +49,7 @@ export default function KasirSidebar({
             icon={s.icon}
             label={s.label}
             active={active === s.key}
+            badge={s.key === 'online' ? onlineBadge : undefined}
             onPress={() => onChange(s.key)}
           />
         ))}
