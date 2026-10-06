@@ -47,27 +47,27 @@ function avatarClass(name: string, inactive: boolean) {
 function RoleBadge({ type, name, inactive }: { type: RoleType; name: string; inactive: boolean }) {
   if (inactive) {
     return (
-      <span className="inline-flex items-center rounded-md border border-[#e2e8f0] bg-[#f1f5f9] px-[11px] py-[5px] text-[11px] font-semibold text-[#475569]">
+      <span className="inline-flex items-center rounded-md border border-[#e2e8f0] bg-[#f1f5f9] px-[11px] py-[5px] text-xs font-semibold text-[#475569]">
         {name}
       </span>
     );
   }
   if (type === 'admin') {
     return (
-      <span className="inline-flex items-center rounded-md bg-[#1a1c20] px-2.5 py-1 text-[11px] font-bold text-white">
+      <span className="inline-flex items-center rounded-md bg-[#1a1c20] px-2.5 py-1 text-xs font-bold text-white">
         {name}
       </span>
     );
   }
   if (type === 'driver') {
     return (
-      <span className="inline-flex items-center rounded-md border-2 border-dashed border-[#94a3b8] bg-[#f8fafc] px-3 py-1.5 text-[11px] font-bold text-[#334155]">
+      <span className="inline-flex items-center rounded-md border-2 border-dashed border-[#94a3b8] bg-[#f8fafc] px-3 py-1.5 text-xs font-bold text-[#334155]">
         {name}
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-md border border-[#cbd5e1] bg-white px-[11px] py-[5px] text-[11px] font-bold text-[#334155]">
+    <span className="inline-flex items-center rounded-md border border-[#cbd5e1] bg-white px-[11px] py-[5px] text-xs font-bold text-[#334155]">
       {name}
     </span>
   );

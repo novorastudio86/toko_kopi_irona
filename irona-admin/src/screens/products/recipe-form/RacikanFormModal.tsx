@@ -144,7 +144,7 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
       >
         <div className="flex shrink-0 items-start justify-between border-b border-[#e2e8f0] px-6 pb-5 pt-5">
           <div>
-            <h2 className="text-lg font-bold leading-7 text-[#0f172a]">
+            <h2 className="text-base font-bold leading-6 text-[#0f172a]">
               {isEdit ? 'Ubah Resep Racikan' : 'Tambah Resep Racikan'}
             </h2>
             <p className="text-xs leading-4 text-[#64748b]">
@@ -256,7 +256,7 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
                       />
                       <span className="text-xs font-medium text-[#64748b]">porsi</span>
                     </div>
-                    <p className="text-[11px] leading-[14px] text-[#64748b]">
+                    <p className="text-xs leading-4 text-[#64748b]">
                       Dipakai untuk kalkulasi cost per porsi saji
                     </p>
                     <FieldError message={errors.yield} />
@@ -277,7 +277,7 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
                         {unitName || '-'}
                       </span>
                     </div>
-                    <p className="text-[11px] leading-[14px] text-[#64748b]">
+                    <p className="text-xs leading-4 text-[#64748b]">
                       Satuan hasil produksi yang jadi acuan stok
                     </p>
                     <FieldError message={errors.output} />
@@ -299,7 +299,7 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
                           {unitName || '-'}
                         </span>
                       </div>
-                      <p className="text-[11px] leading-[14px] text-[#64748b]">
+                      <p className="text-xs leading-4 text-[#64748b]">
                         Peringatan restock jika sisa racikan di bawah batas ini
                       </p>
                       <FieldError message={errors.minStock} />
@@ -313,28 +313,28 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
                 <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-3">
                   <div>
                     <p className="text-xs font-semibold text-[#1e293b]">Persentase Add Cost</p>
-                    <p className="text-[11px] leading-5 text-[#64748b]">(Penyusutan / Biaya Masak)</p>
+                    <p className="text-xs leading-5 text-[#64748b]">(Penyusutan / Biaya Masak)</p>
                   </div>
                   <PercentChips options={[10, 20, 30]} value={addCostPct} onChange={setAddCostPct} />
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
                   <div className="flex flex-col rounded-lg border border-[#e2e8f0] bg-white p-[11px]">
-                    <span className="text-[11px] leading-4 text-[#64748b]">Cost per Batch (Bahan)</span>
+                    <span className="text-xs leading-4 text-[#64748b]">Cost per Batch (Bahan)</span>
                     <span className="font-mono text-sm font-bold text-[#0f172a]">{formatRupiah(costPerBatch)}</span>
                   </div>
                   <div className="flex flex-col rounded-lg border border-[#e2e8f0] bg-white p-[11px]">
-                    <span className="text-[11px] leading-4 text-[#64748b]">Add Cost ({addCostPct ?? 0}%)</span>
+                    <span className="text-xs leading-4 text-[#64748b]">Add Cost ({addCostPct ?? 0}%)</span>
                     <span className="font-mono text-sm font-bold text-[#047857]">+{formatRupiah(addCostValue)}</span>
                   </div>
                   <div className="flex flex-col rounded-lg border border-[#cbd5e1] bg-white p-[11px]">
-                    <span className="text-[11px] leading-4 text-[#64748b]">Total Cost per Batch</span>
+                    <span className="text-xs leading-4 text-[#64748b]">Total Cost per Batch</span>
                     <span className="font-mono text-sm font-extrabold text-[#0f172a]">
                       {formatRupiah(totalCostPerBatch)}
                     </span>
                   </div>
                   <div className="flex flex-col rounded-lg border border-[#e2e8f0] bg-white p-[11px]">
-                    <span className="text-[11px] leading-4 text-[#64748b]">Cost per Porsi</span>
+                    <span className="text-xs leading-4 text-[#64748b]">Cost per Porsi</span>
                     <span className="font-mono text-sm font-bold text-[#0f172a]">
                       {costPerPorsi !== null ? formatRupiah(costPerPorsi) : '-'}{' '}
                       <span className="text-xs font-normal text-[#64748b]">/ porsi</span>
@@ -342,7 +342,7 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
                   </div>
                   <div className="col-span-2 flex flex-col justify-between rounded-lg border border-[#e2e8f0] bg-white p-[11px]">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.55px] text-[#334155]">
+                      <span className="text-xs font-semibold uppercase tracking-[0.55px] text-[#334155]">
                         Harga per Satuan (HPP):
                       </span>
                       <span className="font-mono text-sm font-extrabold text-[#0f172a]">
@@ -350,14 +350,14 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
                         <span className="text-xs font-semibold text-[#64748b]">/ {unitName || '-'}</span>
                       </span>
                     </div>
-                    <p className="pt-0.5 text-[10px] leading-4 text-[#64748b]">
+                    <p className="pt-0.5 text-xs leading-4 text-[#64748b]">
                       (Total Cost ÷ {totalOutput || '0'} {unitName} — acuan harga saat dipakai di resep lain)
                     </p>
                   </div>
                 </div>
               </div>
 
-              <p className="flex items-center gap-2.5 rounded-md bg-[#f1f5f9] p-3 text-[11px] leading-4 text-[#475569]">
+              <p className="flex items-center gap-2.5 rounded-md bg-[#f1f5f9] p-3 text-xs leading-4 text-[#475569]">
                 <Info className="size-4 shrink-0" />
                 Alert stok otomatis mengikuti ketersediaan bahan baku asli di modul Inventory Toko Kopi Irona.
               </p>

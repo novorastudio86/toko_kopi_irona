@@ -56,7 +56,7 @@ function formatLate(min: number): string {
 function StatusBadge({ status }: { status: AttendanceDayStatus }) {
   return (
     <span
-      className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${STATUS_CLASSES[status]}`}
+      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_CLASSES[status]}`}
     >
       {STATUS_LABELS[status]}
     </span>
@@ -280,11 +280,11 @@ export default function AttendanceReportScreen() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard label="Total Karyawan Aktif" value={filtered.length} format="number" />
         <div className="flex flex-col gap-1 rounded-2xl border border-[#e2e8f0] bg-white p-4">
-          <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+          <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
             Rata-rata Kehadiran
           </p>
           <p className="font-mono text-lg font-bold text-[#0f172a]">{pctText(avgRate)}</p>
-          <p className="text-[11px] text-[#94a3b8]">{totalWorkDays} hari kerja terjadwal</p>
+          <p className="text-xs text-[#94a3b8]">{totalWorkDays} hari kerja terjadwal</p>
         </div>
         <StatCard
           label="Total Keterlambatan"
@@ -462,7 +462,7 @@ function AttendanceDetailModal({
           ).map(([label, value, tone]) => (
             <div key={label}>
               <p className={`font-mono text-lg font-bold ${tone}`}>{value}</p>
-              <p className="text-[11px] text-[#64748b]">{label}</p>
+              <p className="text-xs text-[#64748b]">{label}</p>
             </div>
           ))}
         </div>

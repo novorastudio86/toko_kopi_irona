@@ -31,11 +31,11 @@ function AutoCard({ label, value, note }: { label: string; value: ReactNode; not
   return (
     <div className="flex flex-1 flex-col gap-0.5 rounded-lg border border-[#e2e8f0] bg-[#f1f5f9] p-[11px]">
       <div className="flex items-start justify-between">
-        <span className="text-[10px] font-bold uppercase leading-4 text-[#64748b]">{label}</span>
+        <span className="text-xs font-bold uppercase leading-4 text-[#64748b]">{label}</span>
         <Info className="size-3.5 text-[#94a3b8]" />
       </div>
       <span className="font-mono text-sm font-bold leading-5 text-[#1e293b]">{value}</span>
-      <span className="text-[10px] leading-[12.5px] text-[#64748b]">{note}</span>
+      <span className="text-xs leading-4 text-[#64748b]">{note}</span>
     </div>
   );
 }
@@ -236,7 +236,7 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
                         />
                         <span className="flex flex-col gap-0.5">
                           <span className="text-xs font-bold leading-4 text-[#0f172a]">{card.title}</span>
-                          <span className="text-[11px] leading-[14px] text-[#64748b]">{card.description}</span>
+                          <span className="text-xs leading-4 text-[#64748b]">{card.description}</span>
                         </span>
                       </button>
                     );
@@ -298,7 +298,7 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
                     <button
                       type="button"
                       onClick={() => setNewUnitOpen(true)}
-                      className="self-start text-[11px] leading-4 text-[#475569] underline hover:text-[#0f172a]"
+                      className="self-start text-xs leading-4 text-[#475569] underline hover:text-[#0f172a]"
                     >
                       + Tambah Satuan Baru
                     </button>
@@ -319,7 +319,7 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
                       </option>
                     ))}
                   </select>
-                  <p className="text-[11px] leading-4 text-[#94a3b8]">
+                  <p className="text-xs leading-4 text-[#94a3b8]">
                     Satuan saat membeli (mis. karton, jerigen, dus).
                   </p>
                 </div>
@@ -347,7 +347,7 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
                       {baseUnitName || '-'}
                     </span>
                   </div>
-                  <p className="text-[11px] leading-4 text-[#94a3b8]">
+                  <p className="text-xs leading-4 text-[#94a3b8]">
                     Jumlah satuan dasar dalam 1 kemasan pembelian.
                   </p>
                   <FieldError message={errors.qty} />
@@ -373,7 +373,7 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
                       {baseUnitName || '-'}
                     </span>
                   </div>
-                  <p className="text-[11px] leading-4 text-[#94a3b8]">
+                  <p className="text-xs leading-4 text-[#94a3b8]">
                     Peringatan muncul jika stok turun sampai batas ini. Isi 0 untuk mematikan.
                   </p>
                   <FieldError message={errors.minStock} />
@@ -382,7 +382,7 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
 
               {/* Status otomatis */}
               <div className="flex flex-col gap-2 border-t border-[#e2e8f0] pt-3">
-                <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#334155]">
+                <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#334155]">
                   Status Kalkulasi Otomatis Sistem
                 </p>
                 <div className="flex gap-2.5">

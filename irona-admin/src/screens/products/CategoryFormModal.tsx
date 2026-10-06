@@ -48,7 +48,7 @@ function ChannelCheckbox({
       </span>
       <span className="flex flex-col gap-0.5">
         <span className="text-xs font-semibold leading-4 text-[#0f172a]">{title}</span>
-        <span className="text-[11px] leading-[16.5px] text-[#64748b]">{description}</span>
+        <span className="text-xs leading-[16.5px] text-[#64748b]">{description}</span>
       </span>
     </button>
   );
@@ -137,7 +137,7 @@ export default function CategoryFormModal({ categoryId, onClose, onSaved }: Prop
     <ModalShell open onBackdropClick={saving ? undefined : onClose} panelClassName="max-w-3xl" labelledBy="category-form-title">
       <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
         <div className="flex shrink-0 items-start justify-between border-b border-[#e2e8f0] px-6 pb-5 pt-5">
-          <h2 id="category-form-title" className="text-lg font-bold leading-7 text-[#0f172a]">
+          <h2 id="category-form-title" className="text-base font-bold leading-6 text-[#0f172a]">
             {isEdit ? 'Ubah Kategori' : 'Tambah Kategori'}
           </h2>
           <button type="button" onClick={onClose} aria-label="Tutup" className="rounded p-1 text-[#64748b] hover:text-[#0f172a]">

@@ -40,20 +40,20 @@ function formatDuration(minutes: number): string {
 function TypeBadge({ type }: { type: RoleType }) {
   if (type === 'admin') {
     return (
-      <span className="inline-flex items-center rounded-md bg-[#1a1c20] px-2.5 py-1 text-[11px] font-bold text-white">
+      <span className="inline-flex items-center rounded-md bg-[#1a1c20] px-2.5 py-1 text-xs font-bold text-white">
         {TYPE_LABELS[type]}
       </span>
     );
   }
   if (type === 'driver') {
     return (
-      <span className="inline-flex items-center rounded-md border-2 border-dashed border-[#94a3b8] bg-[#f8fafc] px-3 py-1 text-[11px] font-bold text-[#334155]">
+      <span className="inline-flex items-center rounded-md border-2 border-dashed border-[#94a3b8] bg-[#f8fafc] px-3 py-1 text-xs font-bold text-[#334155]">
         {TYPE_LABELS[type]}
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-md border border-[#cbd5e1] bg-white px-[11px] py-1 text-[11px] font-bold text-[#334155]">
+    <span className="inline-flex items-center rounded-md border border-[#cbd5e1] bg-white px-[11px] py-1 text-xs font-bold text-[#334155]">
       {TYPE_LABELS[type]}
     </span>
   );
@@ -230,10 +230,10 @@ export default function RoleListScreen() {
                     ) : (
                       <>
                         <div className="flex items-center justify-between pb-2">
-                          <p className="text-[11px] font-bold uppercase tracking-[0.5px] text-[#64748b]">
+                          <p className="text-xs font-bold uppercase tracking-[0.5px] text-[#64748b]">
                             Rincian Gaji Bulan Ini
                           </p>
-                          <p className="text-[11px] text-[#94a3b8]">
+                          <p className="text-xs text-[#94a3b8]">
                             Total:{' '}
                             {formatRupiah(
                               role.employees.reduce(
@@ -245,119 +245,121 @@ export default function RoleListScreen() {
                         </div>
 
                         <div className="overflow-hidden rounded-xl border border-[#e2e8f0] bg-white">
-                          <table className="w-full border-collapse">
-                            <thead className="border-b border-[#f1f5f9] bg-[#f8fafc]">
-                              <tr className="text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]">
-                                <th className="px-4 py-2 text-left">Karyawan</th>
-                                <th className="px-3 py-2 text-right">Gaji Pokok</th>
-                                {role.type === 'driver' && <th className="px-3 py-2 text-right">Bonus Antar</th>}
-                                <th className="px-3 py-2 text-right">Bonus Lembur</th>
-                                <th className="px-3 py-2 text-right">Bonus Shift 2</th>
-                                <th className="px-3 py-2 text-right">Kasbon</th>
-                                <th className="px-4 py-2 text-right">Total Diterima</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {role.employees.map((employee) => {
-                                const pay = payroll.get(employee.id);
-                                const deliveryBonus = pay?.deliveryBonusTotal ?? 0;
-                                const overtimeMinutes = pay?.overtimeMinutes ?? 0;
-                                const overtimeBonus = pay?.overtimeBonusTotal ?? 0;
-                                const extraShiftMinutes = pay?.extraShiftMinutes ?? 0;
-                                const extraShiftBonus = pay?.extraShiftBonusTotal ?? 0;
-                                const kasbonTotal = pay?.kasbonTotal ?? 0;
-                                const total = pay?.totalSalary ?? employee.baseSalary;
+                          <div className="overflow-x-auto">
+                            <table className="w-full min-w-[640px] border-collapse">
+                              <thead className="border-b border-[#f1f5f9] bg-[#f8fafc]">
+                                <tr className="text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]">
+                                  <th className="px-4 py-2 text-left">Karyawan</th>
+                                  <th className="px-3 py-2 text-right">Gaji Pokok</th>
+                                  {role.type === 'driver' && <th className="px-3 py-2 text-right">Bonus Antar</th>}
+                                  <th className="px-3 py-2 text-right">Bonus Lembur</th>
+                                  <th className="px-3 py-2 text-right">Bonus Shift 2</th>
+                                  <th className="px-3 py-2 text-right">Kasbon</th>
+                                  <th className="px-4 py-2 text-right">Total Diterima</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {role.employees.map((employee) => {
+                                  const pay = payroll.get(employee.id);
+                                  const deliveryBonus = pay?.deliveryBonusTotal ?? 0;
+                                  const overtimeMinutes = pay?.overtimeMinutes ?? 0;
+                                  const overtimeBonus = pay?.overtimeBonusTotal ?? 0;
+                                  const extraShiftMinutes = pay?.extraShiftMinutes ?? 0;
+                                  const extraShiftBonus = pay?.extraShiftBonusTotal ?? 0;
+                                  const kasbonTotal = pay?.kasbonTotal ?? 0;
+                                  const total = pay?.totalSalary ?? employee.baseSalary;
 
-                                return (
-                                  <tr key={employee.id} className="border-t border-[#f1f5f9] first:border-t-0">
-                                    <td className="px-4 py-2.5">
-                                      <button
-                                        onClick={() => setDetailId(employee.id)}
-                                        className="flex items-center gap-2.5 text-left"
-                                      >
-                                        <span
-                                          className={`flex size-8 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold ${
-                                            employee.isActive
-                                              ? 'bg-[#0f172a] text-white'
-                                              : 'bg-[#e2e8f0] text-[#475569]'
-                                          }`}
+                                  return (
+                                    <tr key={employee.id} className="border-t border-[#f1f5f9] first:border-t-0">
+                                      <td className="px-4 py-2.5">
+                                        <button
+                                          onClick={() => setDetailId(employee.id)}
+                                          className="flex items-center gap-2.5 text-left"
                                         >
-                                          {initials(employee.fullName)}
-                                        </span>
-                                        <span className="flex flex-col">
-                                          <span className="text-sm font-bold text-[#0f172a]">
-                                            {employee.fullName}
+                                          <span
+                                            className={`flex size-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                                              employee.isActive
+                                                ? 'bg-[#0f172a] text-white'
+                                                : 'bg-[#e2e8f0] text-[#475569]'
+                                            }`}
+                                          >
+                                            {initials(employee.fullName)}
                                           </span>
-                                          <span className="font-mono text-xs text-[#64748b]">
-                                            @{employee.username}
-                                            {!employee.isActive && ' · nonaktif'}
+                                          <span className="flex flex-col">
+                                            <span className="text-sm font-bold text-[#0f172a]">
+                                              {employee.fullName}
+                                            </span>
+                                            <span className="font-mono text-xs text-[#64748b]">
+                                              @{employee.username}
+                                              {!employee.isActive && ' · nonaktif'}
+                                            </span>
                                           </span>
-                                        </span>
-                                      </button>
-                                    </td>
+                                        </button>
+                                      </td>
 
-                                    <td className="px-3 py-2.5 text-right font-mono text-sm text-[#475569]">
-                                      {formatRupiah(employee.baseSalary)}
-                                    </td>
+                                      <td className="px-3 py-2.5 text-right font-mono text-sm text-[#475569]">
+                                        {formatRupiah(employee.baseSalary)}
+                                      </td>
 
-                                    {role.type === 'driver' && (
+                                      {role.type === 'driver' && (
+                                        <td className="px-3 py-2.5 text-right">
+                                          <span className="font-mono text-sm text-[#475569]">
+                                            {formatRupiah(deliveryBonus)}
+                                          </span>
+                                          <span className="block text-xs text-[#94a3b8]">
+                                            {pay?.deliveryCount ?? 0} antar ×{' '}
+                                            {employee.deliveryBonus > 0
+                                              ? formatRupiah(employee.deliveryBonus)
+                                              : 'belum diatur'}
+                                          </span>
+                                        </td>
+                                      )}
+
                                       <td className="px-3 py-2.5 text-right">
                                         <span className="font-mono text-sm text-[#475569]">
-                                          {formatRupiah(deliveryBonus)}
+                                          {formatRupiah(overtimeBonus)}
                                         </span>
                                         <span className="block text-xs text-[#94a3b8]">
-                                          {pay?.deliveryCount ?? 0} antar ×{' '}
-                                          {employee.deliveryBonus > 0
-                                            ? formatRupiah(employee.deliveryBonus)
-                                            : 'belum diatur'}
+                                          {overtimeMinutes > 0
+                                            ? `${formatDuration(overtimeMinutes)} × ${formatRupiah(pay?.hourlyRate ?? 0)}/jam`
+                                            : 'Tidak ada lembur'}
                                         </span>
                                       </td>
-                                    )}
 
-                                    <td className="px-3 py-2.5 text-right">
-                                      <span className="font-mono text-sm text-[#475569]">
-                                        {formatRupiah(overtimeBonus)}
-                                      </span>
-                                      <span className="block text-xs text-[#94a3b8]">
-                                        {overtimeMinutes > 0
-                                          ? `${formatDuration(overtimeMinutes)} × ${formatRupiah(pay?.hourlyRate ?? 0)}/jam`
-                                          : 'Tidak ada lembur'}
-                                      </span>
-                                    </td>
+                                      <td className="px-3 py-2.5 text-right">
+                                        <span className="font-mono text-sm text-[#475569]">
+                                          {formatRupiah(extraShiftBonus)}
+                                        </span>
+                                        <span className="block text-xs text-[#94a3b8]">
+                                          {extraShiftMinutes > 0
+                                            ? `${formatDuration(extraShiftMinutes)} × ${formatRupiah(pay?.hourlyRate ?? 0)}/jam`
+                                            : 'Tidak ada shift 2'}
+                                        </span>
+                                      </td>
 
-                                    <td className="px-3 py-2.5 text-right">
-                                      <span className="font-mono text-sm text-[#475569]">
-                                        {formatRupiah(extraShiftBonus)}
-                                      </span>
-                                      <span className="block text-xs text-[#94a3b8]">
-                                        {extraShiftMinutes > 0
-                                          ? `${formatDuration(extraShiftMinutes)} × ${formatRupiah(pay?.hourlyRate ?? 0)}/jam`
-                                          : 'Tidak ada shift 2'}
-                                      </span>
-                                    </td>
+                                      <td className="px-3 py-2.5 text-right">
+                                        <span
+                                          className={`font-mono text-sm ${kasbonTotal > 0 ? 'font-semibold text-[#e11d48]' : 'text-[#475569]'}`}
+                                        >
+                                          {kasbonTotal > 0 ? `− ${formatRupiah(kasbonTotal)}` : formatRupiah(0)}
+                                        </span>
+                                        <span className="block text-xs text-[#94a3b8]">
+                                          {kasbonTotal > 0 ? `${pay?.kasbonCount ?? 0} kasbon` : 'Tidak ada kasbon'}
+                                        </span>
+                                      </td>
 
-                                    <td className="px-3 py-2.5 text-right">
-                                      <span
-                                        className={`font-mono text-sm ${kasbonTotal > 0 ? 'font-semibold text-[#e11d48]' : 'text-[#475569]'}`}
-                                      >
-                                        {kasbonTotal > 0 ? `− ${formatRupiah(kasbonTotal)}` : formatRupiah(0)}
-                                      </span>
-                                      <span className="block text-xs text-[#94a3b8]">
-                                        {kasbonTotal > 0 ? `${pay?.kasbonCount ?? 0} kasbon` : 'Tidak ada kasbon'}
-                                      </span>
-                                    </td>
-
-                                    <td className="px-4 py-2.5 text-right font-mono text-sm font-bold text-[#0f172a]">
-                                      {formatRupiah(total)}
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
+                                      <td className="px-4 py-2.5 text-right font-mono text-sm font-bold text-[#0f172a]">
+                                        {formatRupiah(total)}
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
 
-                        <p className="pt-2 text-[11px] leading-4 text-[#94a3b8]">
+                        <p className="pt-2 text-xs leading-4 text-[#94a3b8]">
                           Bonus lembur & shift 2 = (gaji pokok ÷ jam shift utama terjadwal sebulan) × durasinya. Total
                           Diterima = gaji pokok + semua bonus − kasbon bulan ini.
                           {role.type === 'driver' &&

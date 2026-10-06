@@ -192,7 +192,7 @@ export default function ShiftChangeModal({ employee, date, allEmployees, onClose
       >
         <div className="flex shrink-0 items-start justify-between border-b border-[#e2e8f0] px-6 pb-5 pt-5">
           <div>
-            <h2 className="text-lg font-bold leading-7 text-[#0f172a]">{employee.fullName}</h2>
+            <h2 className="text-base font-bold leading-6 text-[#0f172a]">{employee.fullName}</h2>
             <p className="text-xs leading-4 text-[#64748b]">
               {formatDayLabel(date)} ·{' '}
               {hasSlots ? employee.slots.map(slotLabel).join(' + ') : employee.hasSchedule ? 'Libur' : 'Belum diatur'}
@@ -211,7 +211,7 @@ export default function ShiftChangeModal({ employee, date, allEmployees, onClose
                 setTab(t.id);
                 setError(null);
               }}
-              className={`rounded-lg py-2 text-[11px] font-bold ${
+              className={`rounded-lg py-2 text-xs font-bold ${
                 tab === t.id ? 'bg-[#0f172a] text-white' : 'border border-[#cbd5e1] text-[#334155] hover:bg-[#f8fafc]'
               }`}
             >
@@ -324,7 +324,7 @@ export default function ShiftChangeModal({ employee, date, allEmployees, onClose
                   </option>
                 ))}
               </select>
-              <p className="text-[11px] leading-4 text-[#94a3b8]">
+              <p className="text-xs leading-4 text-[#94a3b8]">
                 {employee.fullName} dilepas dari shift ini; pengganti mendapat shift tersebut khusus tanggal ini. Kalau
                 pengganti sudah punya shift lain hari itu, shift ini jadi Shift 2-nya (dibayar sebagai bonus).
               </p>
@@ -349,7 +349,7 @@ export default function ShiftChangeModal({ employee, date, allEmployees, onClose
                   ))}
                 </select>
               )}
-              <p className="text-[11px] leading-4 text-[#94a3b8]">
+              <p className="text-xs leading-4 text-[#94a3b8]">
                 {hasSlots
                   ? 'Karyawan ini sudah punya shift hari itu — shift tambahan jadi Shift 2 dan dibayar sebagai bonus.'
                   : 'Khusus tanggal ini saja. Jadwal mingguan tidak berubah.'}

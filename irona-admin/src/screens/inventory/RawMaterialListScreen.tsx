@@ -40,7 +40,7 @@ function TypeBadge({ type, muted }: { type: 'tetap' | 'menyusut'; muted: boolean
   if (type === 'menyusut') {
     return (
       <span
-        className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase leading-4 tracking-[0.25px] ${
+        className={`rounded px-2 py-0.5 text-xs font-bold uppercase leading-4 tracking-[0.25px] ${
           muted ? 'border border-[#cbd5e1] bg-[#f1f5f9] text-[#64748b]' : 'bg-[#0f172a] text-white'
         }`}
       >
@@ -50,7 +50,7 @@ function TypeBadge({ type, muted }: { type: 'tetap' | 'menyusut'; muted: boolean
   }
   return (
     <span
-      className={`rounded border px-2.5 py-[3px] text-[10px] font-bold uppercase leading-4 ${
+      className={`rounded border px-2.5 py-[3px] text-xs font-bold uppercase leading-4 ${
         muted ? 'border-[#cbd5e1] bg-[#f1f5f9] text-[#94a3b8]' : 'border-[#94a3b8] bg-white text-[#1e293b]'
       }`}
     >

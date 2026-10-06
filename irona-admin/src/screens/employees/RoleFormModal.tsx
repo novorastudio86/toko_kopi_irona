@@ -61,7 +61,7 @@ export default function RoleFormModal({ role, onClose, onSaved }: Props) {
       >
         <div className="flex shrink-0 items-start justify-between border-b border-[#e2e8f0] px-6 pb-5 pt-5">
           <div>
-            <h2 className="text-lg font-bold leading-7 text-[#0f172a]">{isEdit ? 'Ubah Role' : 'Tambah Role'}</h2>
+            <h2 className="text-base font-bold leading-6 text-[#0f172a]">{isEdit ? 'Ubah Role' : 'Tambah Role'}</h2>
             <p className="text-xs leading-4 text-[#64748b]">
               Role dipakai untuk mengelompokkan karyawan di Daftar Karyawan.
             </p>
@@ -109,13 +109,13 @@ export default function RoleFormModal({ role, onClose, onSaved }: Props) {
                     />
                     <span className="flex flex-col gap-0.5">
                       <span className="text-xs font-bold text-[#0f172a]">{option.title}</span>
-                      <span className="text-[11px] leading-4 text-[#64748b]">{option.description}</span>
+                      <span className="text-xs leading-4 text-[#64748b]">{option.description}</span>
                     </span>
                   </button>
                 );
               })}
             </div>
-            <p className="flex items-start gap-2 text-[11px] leading-4 text-[#94a3b8]">
+            <p className="flex items-start gap-2 text-xs leading-4 text-[#94a3b8]">
               <Info className="mt-px size-3.5 shrink-0" />
               Tipe menentukan aplikasi mana yang terbuka setelah karyawan login. Nama role bebas, boleh lebih dari satu
               role dengan tipe yang sama.

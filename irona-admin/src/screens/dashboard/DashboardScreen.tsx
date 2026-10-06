@@ -48,7 +48,7 @@ function ChangeBadge({ cur, prev }: { cur: number; prev: number }) {
 
 function Chip({ children }: { children: string }) {
   return (
-    <span className="rounded border border-[#e2e8f0] bg-[#f1f5f9] px-[7px] py-[3px] text-[10px] font-semibold leading-[15px] text-[#334155]">
+    <span className="rounded border border-[#e2e8f0] bg-[#f1f5f9] px-[7px] py-[3px] text-xs font-semibold leading-4 text-[#334155]">
       {children}
     </span>
   );
@@ -71,9 +71,9 @@ function Metric({
     <div className="flex flex-col gap-1">
       <div className="flex flex-wrap items-center gap-x-1.5">
         <span className="text-xs font-medium text-[#64748b]">{label}</span>
-        <span className="text-[11px] font-bold text-[#475569]">{changeText(cur, prev)}</span>
+        <span className="text-xs font-bold text-[#475569]">{changeText(cur, prev)}</span>
       </div>
-      <span className="text-xl font-bold leading-7 text-[#0f172a]">{value}</span>
+      <span className="text-lg font-bold leading-7 text-[#0f172a]">{value}</span>
       {chips && (
         <div className="flex gap-1.5 pt-0.5">
           <Chip>{chips[0]}</Chip>
@@ -322,7 +322,7 @@ export default function DashboardScreen() {
                 <span className="text-sm font-medium text-[#64748b]">Total Penjualan</span>
                 {cur && prev && <ChangeBadge cur={cur.sales} prev={prev.sales} />}
               </div>
-              <span className="truncate text-[30px] font-extrabold leading-9 tracking-[-0.75px] text-[#0f172a]">
+              <span className="truncate text-2xl font-extrabold leading-8 tracking-[-0.75px] text-[#0f172a]">
                 {cur ? rp(cur.sales) : '—'}
               </span>
             </div>
@@ -343,7 +343,7 @@ export default function DashboardScreen() {
                   style={{ width: `${Math.min(100, targetPct)}%` }}
                 />
               </div>
-              <span className="text-right text-[10px] font-medium text-[#64748b]">
+              <span className="text-right text-xs font-medium text-[#64748b]">
                 {target > 0 ? `${targetPct.toFixed(1)}% tercapai` : 'Target belum diatur'}
               </span>
             </div>
@@ -410,7 +410,7 @@ export default function DashboardScreen() {
       <section className="flex flex-col gap-4 rounded-2xl border border-[#e2e8f0] bg-white p-[25px] shadow-[0px_1px_1px_rgba(0,0,0,0.05)]">
         <div className="flex items-center gap-2 border-b border-[#f1f5f9] pb-[17px]">
           <h3 className="text-base font-bold leading-6 text-[#0f172a]">Penjualan</h3>
-          <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-[9px] py-[3px] text-[10px] font-bold leading-[15px] text-[#1e293b]">
+          <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-[9px] py-[3px] text-xs font-bold leading-4 text-[#1e293b]">
             {chartBadge(period)}
           </span>
         </div>

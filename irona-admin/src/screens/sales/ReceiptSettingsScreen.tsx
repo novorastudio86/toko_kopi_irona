@@ -47,7 +47,7 @@ function ToggleRow({
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-xs font-semibold text-[#0f172a]">{label}</p>
-          {hint && <p className="text-[11px] text-[#94a3b8]">{hint}</p>}
+          {hint && <p className="text-xs text-[#94a3b8]">{hint}</p>}
         </div>
         <Switch checked={checked} onChange={onChange} />
       </div>
@@ -59,7 +59,7 @@ function ToggleRow({
 function Group({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="flex flex-col">
-      <p className="pb-1 text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+      <p className="pb-1 text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
         {title}
       </p>
       {children}
@@ -129,7 +129,7 @@ export default function ReceiptSettingsScreen() {
         info="Atur tampilan struk yang dicetak di Kasir App. Semua perubahan tersimpan otomatis. Koneksi printer Bluetooth diatur di Kasir App."
         action={
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 text-[11px] text-[#64748b]">
+            <span className="flex items-center gap-1.5 text-xs text-[#64748b]">
               {saveState === 'saving' && (
                 <>
                   <Loader2 className="size-3.5 animate-spin" /> Menyimpan...
@@ -178,7 +178,7 @@ export default function ReceiptSettingsScreen() {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold text-[#0f172a]">Ukuran Kertas Printer</p>
-                <p className="text-[11px] text-[#94a3b8]">
+                <p className="text-xs text-[#94a3b8]">
                   58 mm ≈ 32 karakter/baris · 80 mm ≈ 48 karakter/baris
                 </p>
               </div>
@@ -202,7 +202,7 @@ export default function ReceiptSettingsScreen() {
             <div className="flex items-center justify-between gap-4 border-t border-[#f1f5f9] pt-4">
               <div>
                 <p className="text-xs font-semibold text-[#0f172a]">Batasan Jumlah Cetak Struk</p>
-                <p className="text-[11px] text-[#94a3b8]">
+                <p className="text-xs text-[#94a3b8]">
                   Maksimal berapa kali 1 transaksi boleh dicetak (anti cetak ulang berlebihan).
                 </p>
               </div>
@@ -268,7 +268,7 @@ export default function ReceiptSettingsScreen() {
                           <button
                             key={m}
                             onClick={() => change('logo_mode', m)}
-                            className={`rounded-md px-3 py-1 text-[11px] font-bold capitalize ${
+                            className={`rounded-md px-3 py-1 text-xs font-bold capitalize ${
                               s.logo_mode === m ? 'bg-[#0f172a] text-white' : 'text-[#475569]'
                             }`}
                           >
@@ -368,7 +368,7 @@ export default function ReceiptSettingsScreen() {
                     checked={s.show_extras}
                     onChange={(v) => change('show_extras', v)}
                   />
-                  <p className="pt-3 text-[11px] leading-4 text-[#94a3b8]">
+                  <p className="pt-3 text-xs leading-4 text-[#94a3b8]">
                     Ringkasan tagihan (Subtotal, Diskon, Pembulatan, Total, metode bayar) selalu
                     tampil — informasi wajib di setiap struk.
                   </p>
@@ -410,7 +410,7 @@ export default function ReceiptSettingsScreen() {
         {/* Live preview */}
         <div className="lg:sticky lg:top-6 lg:self-start">
           <div className="rounded-2xl border border-[#e2e8f0] bg-[#f1f5f9] p-5">
-            <p className="pb-3 text-center text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+            <p className="pb-3 text-center text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
               Live Preview
             </p>
             <div className="mb-3 flex justify-center">
@@ -419,7 +419,7 @@ export default function ReceiptSettingsScreen() {
                   <button
                     key={m}
                     onClick={() => setSamplePayment(m)}
-                    className={`rounded-md px-3 py-1 text-[11px] font-bold ${
+                    className={`rounded-md px-3 py-1 text-xs font-bold ${
                       samplePayment === m ? 'bg-[#0f172a] text-white' : 'text-[#475569]'
                     }`}
                   >

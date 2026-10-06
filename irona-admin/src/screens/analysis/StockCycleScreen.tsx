@@ -166,30 +166,30 @@ export default function StockCycleScreen() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="flex flex-col gap-1 rounded-2xl border border-[#0f172a] bg-[#0f172a] p-4">
-          <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#94a3b8]">
+          <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#94a3b8]">
             Rata-rata Rasio Perputaran
           </p>
           <p className="font-mono text-lg font-bold text-white">{ratioText(avgTurnover)}</p>
-          <p className="text-[11px] text-[#94a3b8]">{rated.length} bahan aktif</p>
+          <p className="text-xs text-[#94a3b8]">{rated.length} bahan aktif</p>
         </div>
         <div className="flex flex-col gap-1 rounded-2xl border border-[#e2e8f0] bg-white p-4">
-          <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+          <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
             Tercepat Perputarannya
           </p>
           <p className="truncate text-base font-bold text-[#0f172a]">{fastest?.name ?? '—'}</p>
           {fastest && (
-            <p className="font-mono text-[11px] text-[#047857]">
+            <p className="font-mono text-xs text-[#047857]">
               {ratioText(fastest.turnover)} · {daysText(fastest.daysCover)}
             </p>
           )}
         </div>
         <div className="flex flex-col gap-1 rounded-2xl border border-[#e2e8f0] bg-white p-4">
-          <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+          <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
             Terlambat Perputarannya
           </p>
           <p className="truncate text-base font-bold text-[#0f172a]">{slowest?.name ?? '—'}</p>
           {slowest && (
-            <p className="font-mono text-[11px] text-[#92400e]">
+            <p className="font-mono text-xs text-[#92400e]">
               {ratioText(slowest.turnover)} · {daysText(slowest.daysCover)}
             </p>
           )}

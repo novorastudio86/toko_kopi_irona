@@ -162,14 +162,14 @@ export default function PointRulesModal({ rules, onClose, onSaved }: Props) {
               />
             </div>
             <FieldError message={errors.threshold} />
-            <p className="text-[11px] leading-4 text-[#94a3b8]">
+            <p className="text-xs leading-4 text-[#94a3b8]">
               Sisa setelah dipecah ≥ batas ini dihitung 1 tingkat terkecil lagi; di bawahnya
               dibuang. Kosongkan untuk tanpa pembulatan.
             </p>
           </div>
 
           <div className="flex flex-col gap-3 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
-            <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+            <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
               Simulasi
             </p>
             <div className="flex items-center gap-3">
@@ -207,7 +207,7 @@ export default function PointRulesModal({ rules, onClose, onSaved }: Props) {
             )}
           </div>
 
-          <p className="flex items-start gap-2 text-[11px] leading-4 text-[#94a3b8]">
+          <p className="flex items-start gap-2 text-xs leading-4 text-[#94a3b8]">
             <Info className="mt-px size-3.5 shrink-0" />
             Dasar hitung: nilai produk setelah diskon, tanpa ongkir & biaya layanan. Berlaku online
             & offline, hanya untuk member aktif.

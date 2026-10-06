@@ -231,7 +231,7 @@ export default function OnlineBalanceReportScreen() {
             className="flex items-center justify-between rounded-xl border border-[#e2e8f0] bg-white px-4 py-3"
           >
             <span
-              className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${BALANCE_STATUS_CLASSES[s]}`}
+              className={`rounded-md px-2 py-0.5 text-xs font-bold ${BALANCE_STATUS_CLASSES[s]}`}
             >
               {BALANCE_STATUS_LABELS[s]}
             </span>

@@ -120,7 +120,7 @@ export default function AdjustmentDetailModal({ adjustment: a, onClose }: Props)
 
           {a.adjustmentType === 'refund' && tx && (
             <div className="flex flex-col gap-1 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
-              <p className="pb-1 text-[11px] font-bold uppercase tracking-[0.5px] text-[#64748b]">
+              <p className="pb-1 text-xs font-bold uppercase tracking-[0.5px] text-[#64748b]">
                 Produk Transaksi
               </p>
               {tx.items.map((item, i) => (
@@ -146,7 +146,7 @@ export default function AdjustmentDetailModal({ adjustment: a, onClose }: Props)
 
           {a.adjustmentType === 'try_error' && tne && (
             <div className="flex flex-col gap-1 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
-              <p className="pb-1 text-[11px] font-bold uppercase tracking-[0.5px] text-[#64748b]">
+              <p className="pb-1 text-xs font-bold uppercase tracking-[0.5px] text-[#64748b]">
                 Bahan Terpotong
               </p>
               {tne.lines.map((l, i) => (
@@ -175,7 +175,7 @@ export default function AdjustmentDetailModal({ adjustment: a, onClose }: Props)
             </div>
           )}
 
-          <p className="text-[11px] leading-4 text-[#94a3b8]">
+          <p className="text-xs leading-4 text-[#94a3b8]">
             Catatan penyesuaian bersifat final dan tidak bisa diubah atau dihapus.
           </p>
         </div>

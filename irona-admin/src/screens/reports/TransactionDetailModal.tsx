@@ -121,7 +121,7 @@ export default function TransactionDetailModal({
           </div>
 
           <div className="flex flex-col gap-1.5 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
-            <p className="pb-1 text-[11px] font-bold uppercase tracking-[0.5px] text-[#64748b]">
+            <p className="pb-1 text-xs font-bold uppercase tracking-[0.5px] text-[#64748b]">
               Item
             </p>
             {!items && !error && <p className="text-xs text-[#94a3b8]">Memuat item...</p>}
@@ -167,9 +167,9 @@ export default function TransactionDetailModal({
           </div>
 
           {online && row.balanceStatus && (
-            <p className="flex flex-wrap items-center gap-2 text-[11px] text-[#64748b]">
+            <p className="flex flex-wrap items-center gap-2 text-xs text-[#64748b]">
               <span
-                className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${BALANCE_STATUS_CLASSES[row.balanceStatus]}`}
+                className={`rounded-md px-2 py-0.5 text-xs font-bold ${BALANCE_STATUS_CLASSES[row.balanceStatus]}`}
               >
                 {BALANCE_STATUS_LABELS[row.balanceStatus]}
               </span>

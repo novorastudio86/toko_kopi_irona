@@ -51,7 +51,7 @@ export function AttendanceShiftPicker({ patterns, value, onChange, hasError }: P
 
       {first && second && (
         <div className="flex items-center gap-2">
-          <span className="shrink-0 text-[11px] font-bold uppercase text-[#94a3b8]">Shift 2</span>
+          <span className="shrink-0 text-xs font-bold uppercase text-[#94a3b8]">Shift 2</span>
           <select
             value={second}
             onChange={(e) => onChange([first, e.target.value])}
@@ -79,7 +79,7 @@ export function AttendanceShiftPicker({ patterns, value, onChange, hasError }: P
           type="button"
           onClick={() => onChange([first, secondOptions[0].id])}
           disabled={secondOptions.length === 0}
-          className="flex w-fit items-center gap-1 rounded-lg border border-dashed border-[#cbd5e1] px-2.5 py-1.5 text-[11px] font-semibold text-[#475569] hover:bg-[#f8fafc] disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex w-fit items-center gap-1 rounded-lg border border-dashed border-[#cbd5e1] px-2.5 py-1.5 text-xs font-semibold text-[#475569] hover:bg-[#f8fafc] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus className="size-3" />
           Shift 2 (double shift)

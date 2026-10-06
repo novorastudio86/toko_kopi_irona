@@ -161,7 +161,7 @@ export default function OrderTypeRuleFormModal({ rule, defaultScope, onClose, on
                 </button>
               ))}
             </div>
-            <p className="text-[11px] text-[#94a3b8]">
+            <p className="text-xs text-[#94a3b8]">
               "Keduanya" otomatis tampil di kartu Take Away dan Online.
             </p>
           </div>
@@ -219,7 +219,7 @@ export default function OrderTypeRuleFormModal({ rule, defaultScope, onClose, on
                     </label>
                   ))}
                 </div>
-                <p className="text-[11px] text-[#94a3b8]">
+                <p className="text-xs text-[#94a3b8]">
                   Produk boleh kena lebih dari 1 aturan — biayanya dijumlahkan.
                 </p>
               </>
@@ -269,7 +269,7 @@ export default function OrderTypeRuleFormModal({ rule, defaultScope, onClose, on
                         }
                         className="w-full bg-transparent px-3 py-2 text-xs font-semibold text-[#0f172a] outline-none"
                       />
-                      <span className="text-[11px] text-[#64748b]">{m?.unitName ?? ''}</span>
+                      <span className="text-xs text-[#64748b]">{m?.unitName ?? ''}</span>
                     </div>
                     <button
                       type="button"
@@ -282,7 +282,7 @@ export default function OrderTypeRuleFormModal({ rule, defaultScope, onClose, on
                     </button>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <label className="flex cursor-pointer items-center gap-2 text-[11px] font-semibold text-[#475569]">
+                    <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-[#475569]">
                       <input
                         type="checkbox"
                         checked={r.customOn}
@@ -300,7 +300,7 @@ export default function OrderTypeRuleFormModal({ rule, defaultScope, onClose, on
                         />
                       </div>
                     ) : (
-                      <span className="text-[11px] text-[#64748b]">
+                      <span className="text-xs text-[#64748b]">
                         {m
                           ? `${formatRupiah(m.unitPrice)} × ${r.quantity || 0} ${m.unitName} = `
                           : 'Biaya: '}

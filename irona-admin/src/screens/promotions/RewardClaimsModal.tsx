@@ -20,7 +20,7 @@ export function ClaimStatusBadge({ status }: { status: ClaimStatus }) {
           ? 'border border-[#fecdd3] bg-[#fff1f2] text-[#e11d48]'
           : 'border border-dashed border-[#94a3b8] bg-[#f1f5f9] text-[#64748b]';
   return (
-    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${cls}`}>
+    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${cls}`}>
       {CLAIM_STATUS_LABELS[status]}
     </span>
   );

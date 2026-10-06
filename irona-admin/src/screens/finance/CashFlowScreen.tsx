@@ -545,7 +545,7 @@ export default function CashFlowScreen() {
                 focus: selectedPeriod?.status === 'tertutup' ? selectedMonthISO : null,
               })
             }
-            className="rounded-lg border border-current/20 bg-white/70 px-3 py-1 text-[11px] font-semibold hover:bg-white"
+            className="rounded-lg border border-current/20 bg-white/70 px-3 py-1 text-xs font-semibold hover:bg-white"
           >
             {selectedPeriod?.status === 'tertutup'
               ? 'Buka Kembali'
@@ -575,9 +575,9 @@ export default function CashFlowScreen() {
             >
               <span className="text-sm font-bold">
                 {BUCKET_LABELS[b]}
-                {pct && <span className="pl-1.5 text-[11px] font-medium">{pct[b]}%</span>}
+                {pct && <span className="pl-1.5 text-xs font-medium">{pct[b]}%</span>}
               </span>
-              <span className={`font-mono text-[11px] ${saldo < 0 ? 'text-[#e11d48]' : ''}`}>
+              <span className={`font-mono text-xs ${saldo < 0 ? 'text-[#e11d48]' : ''}`}>
                 {loading ? '—' : formatRupiah(saldo)}
               </span>
             </button>
@@ -586,17 +586,17 @@ export default function CashFlowScreen() {
         {/* Total gabungan ketiga bucket (informasi, bukan tab) */}
         <div className="-mb-px ml-auto flex flex-col items-end border-b-2 border-transparent border-l border-l-[#e2e8f0] px-4 pb-2.5 pt-1 text-right">
           <span className="text-sm font-bold text-[#0f172a]">
-            Total<span className="pl-1.5 text-[11px] font-medium text-[#64748b]">100%</span>
+            Total<span className="pl-1.5 text-xs font-medium text-[#64748b]">100%</span>
           </span>
           <span
-            className={`font-mono text-[11px] font-semibold ${periodTotal < 0 ? 'text-[#e11d48]' : 'text-[#0f172a]'}`}
+            className={`font-mono text-xs font-semibold ${periodTotal < 0 ? 'text-[#e11d48]' : 'text-[#0f172a]'}`}
           >
             {loading ? '—' : formatRupiah(periodTotal)}
           </span>
         </div>
       </div>
       {summary.length > 0 && (
-        <p className="-mt-3 text-[11px] text-[#94a3b8]">
+        <p className="-mt-3 text-xs text-[#94a3b8]">
           Saldo keseluruhan sejak awal —{' '}
           {BUCKETS.map((b, i) => {
             const all = summary.find((x) => x.bucket === b)?.currentBalance ?? 0;
@@ -839,7 +839,7 @@ export default function CashFlowScreen() {
         />
       </div>
 
-      <p className="text-[11px] leading-4 text-[#94a3b8]">
+      <p className="text-xs leading-4 text-[#94a3b8]">
         Alokasi otomatis dihitung dari Penjualan Bersih (total setelah diskon; pesanan online
         dikurangi MDR Midtrans). Refund membalik alokasi di ketiga bucket. Pembayaran Gaji &
         Pengeluaran Lain bisa diubah/dihapus selama masih di bulan yang sama; catatan lain mengikuti

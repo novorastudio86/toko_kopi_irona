@@ -261,7 +261,7 @@ export default function OnlineBalanceModal({ initialTab, period, onClose, onChan
 
           {tab === 'cairkan' && (
             <div className="flex flex-col gap-4">
-              <p className="rounded-lg bg-[#f8fafc] px-3 py-2.5 text-[11px] leading-4 text-[#475569]">
+              <p className="rounded-lg bg-[#f8fafc] px-3 py-2.5 text-xs leading-4 text-[#475569]">
                 Midtrans mencairkan seluruh saldo yang tersedia sekaligus (manual atau terjadwal).
                 Catat di sini setelah dana masuk ke rekening: semua transaksi yang sudah tersedia
                 per tanggal pencairan ditandai <b>Sudah Dicairkan</b>. Cocokkan totalnya dengan
@@ -391,7 +391,7 @@ export default function OnlineBalanceModal({ initialTab, period, onClose, onChan
 
           {tab === 'libur' && (
             <div className="flex flex-col gap-4">
-              <p className="text-[11px] leading-4 text-[#64748b]">
+              <p className="text-xs leading-4 text-[#64748b]">
                 Tanggal libur nasional / cuti bersama tidak dihitung sebagai hari kerja saat
                 menentukan kapan saldo online Tersedia.
               </p>

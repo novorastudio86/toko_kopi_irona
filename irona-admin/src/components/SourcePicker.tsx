@@ -85,7 +85,7 @@ export function SourcePicker({ value, onChange, sources, disabledKeys, inputClas
           {options.map((s, i) => (
             <li key={s.key}>
               {(i === 0 || options[i - 1].type !== s.type) && (
-                <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.3px] text-[#64748b]">
+                <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-[0.3px] text-[#64748b]">
                   {GROUP_LABEL[s.type]}
                 </p>
               )}

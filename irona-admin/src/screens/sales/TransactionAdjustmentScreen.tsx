@@ -162,22 +162,22 @@ export default function TransactionAdjustmentScreen() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-[#e2e8f0] bg-white p-5">
-          <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+          <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
             Total Refund {hasFilter ? '(sesuai filter)' : ''}
           </p>
-          <p className="pt-1 font-mono text-xl font-bold text-[#0f172a]">
+          <p className="pt-1 font-mono text-lg font-bold text-[#0f172a]">
             {formatRupiah(refundTotal)}
           </p>
-          <p className="text-[11px] text-[#94a3b8]">Mengurangi pendapatan kotor</p>
+          <p className="text-xs text-[#94a3b8]">Mengurangi pendapatan kotor</p>
         </div>
         <div className="rounded-2xl border border-[#e2e8f0] bg-white p-5">
-          <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+          <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
             Total Biaya Try & Error {hasFilter ? '(sesuai filter)' : ''}
           </p>
-          <p className="pt-1 font-mono text-xl font-bold text-[#0f172a]">
+          <p className="pt-1 font-mono text-lg font-bold text-[#0f172a]">
             {formatRupiah(tneTotal)}
           </p>
-          <p className="text-[11px] text-[#94a3b8]">Dicatat sebagai biaya (Fixed Cost)</p>
+          <p className="text-xs text-[#94a3b8]">Dicatat sebagai biaya (Fixed Cost)</p>
         </div>
       </div>
 
@@ -372,7 +372,7 @@ export default function TransactionAdjustmentScreen() {
         />
       </div>
 
-      <p className="text-[11px] leading-4 text-[#94a3b8]">
+      <p className="text-xs leading-4 text-[#94a3b8]">
         Refund Salah Order mengembalikan stok bahan yang terpotong saat transaksi; Sudah Dibuat
         tidak mengembalikan stok. Refund transaksi member otomatis menarik poin & total belanjanya.
         Try & Error hanya memotong stok bahan, tanpa menambah stok hasil.

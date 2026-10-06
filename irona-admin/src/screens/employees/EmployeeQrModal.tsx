@@ -193,7 +193,7 @@ export default function EmployeeQrModal({ employeeId, onClose }: Props) {
             <button
               onClick={handleRegenerate}
               disabled={regenerating}
-              className="flex items-center gap-1.5 text-[11px] font-medium text-[#94a3b8] hover:text-[#e11d48] disabled:opacity-60"
+              className="flex items-center gap-1.5 text-xs font-medium text-[#94a3b8] hover:text-[#e11d48] disabled:opacity-60"
             >
               <RefreshCcw className="size-3" />
               {regenerating ? 'Membuat ulang...' : 'Buat Ulang QR (kartu lama hangus)'}

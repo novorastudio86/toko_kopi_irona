@@ -261,7 +261,7 @@ export default function StockCardScreen() {
                         <td className="px-3 py-3.5 text-right">
                           <div className="flex items-center justify-end gap-1.5">
                             {isLow && (
-                              <span className="flex size-4 items-center justify-center rounded bg-[#0f172a] font-mono text-[10px] font-bold text-white">
+                              <span className="flex size-4 items-center justify-center rounded bg-[#0f172a] font-mono text-xs font-bold text-white">
                                 !
                               </span>
                             )}

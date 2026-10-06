@@ -85,7 +85,7 @@ export default function AttendanceCorrectionModal({ row, onClose, onSaved }: Pro
       >
         <div className="flex shrink-0 items-start justify-between border-b border-[#e2e8f0] px-6 pb-5 pt-5">
           <div>
-            <h2 className="text-lg font-bold leading-7 text-[#0f172a]">Koreksi Presensi</h2>
+            <h2 className="text-base font-bold leading-6 text-[#0f172a]">Koreksi Presensi</h2>
             <p className="text-xs leading-4 text-[#64748b]">
               {row.employeeName} ·{' '}
               {parseLocalDate(row.attendanceDate).toLocaleDateString('id-ID', {
@@ -115,7 +115,7 @@ export default function AttendanceCorrectionModal({ row, onClose, onSaved }: Pro
             />
             <FieldError message={errors.shift} />
             {scheduleChanged && (
-              <p className="rounded-lg border border-[#fde68a] bg-[#fffbeb] px-3 py-2 text-[11px] leading-4 text-[#92400e]">
+              <p className="rounded-lg border border-[#fde68a] bg-[#fffbeb] px-3 py-2 text-xs leading-4 text-[#92400e]">
                 Jadwal di Shift Kerja sudah berubah sejak absen ({row.shift ?? '—'} →{' '}
                 {scheduled!
                   .map(
@@ -147,7 +147,7 @@ export default function AttendanceCorrectionModal({ row, onClose, onSaved }: Pro
               className={inputClass(!!errors.checkOut)}
             />
             <FieldError message={errors.checkOut} />
-            <p className="text-[11px] leading-4 text-[#94a3b8]">
+            <p className="text-xs leading-4 text-[#94a3b8]">
               Kosongkan jika karyawan belum absen pulang.
             </p>
           </div>
@@ -164,7 +164,7 @@ export default function AttendanceCorrectionModal({ row, onClose, onSaved }: Pro
             <FieldError message={errors.reason} />
           </div>
 
-          <p className="text-[11px] leading-4 text-[#94a3b8]">
+          <p className="text-xs leading-4 text-[#94a3b8]">
             Telat, lembur, dan Shift 2 dihitung ulang otomatis dari shift & jam di atas.
           </p>
 

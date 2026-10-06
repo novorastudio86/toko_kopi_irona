@@ -8,7 +8,7 @@ import type { RawMaterialDetail, RawMaterialUsage } from '../../types/rawMateria
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[11px] font-bold uppercase leading-4 tracking-[0.55px] text-[#94a3b8]">{label}</span>
+      <span className="text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#94a3b8]">{label}</span>
       <div className="text-xs font-semibold leading-4 text-[#334155]">{children}</div>
     </div>
   );
@@ -90,11 +90,11 @@ export default function RawMaterialDetailModal({ materialId, onClose, onEdit }: 
 
                 <Field label="Jenis Bahan">
                   {detail.materialType === 'menyusut' ? (
-                    <span className="inline-block rounded bg-[#0f172a] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.55px] text-white">
+                    <span className="inline-block rounded bg-[#0f172a] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.55px] text-white">
                       Menyusut
                     </span>
                   ) : (
-                    <span className="inline-block rounded border border-[#94a3b8] bg-white px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.55px] text-[#1e293b]">
+                    <span className="inline-block rounded border border-[#94a3b8] bg-white px-2.5 py-1 text-xs font-bold uppercase tracking-[0.55px] text-[#1e293b]">
                       Tetap
                     </span>
                   )}
@@ -126,7 +126,7 @@ export default function RawMaterialDetailModal({ materialId, onClose, onEdit }: 
                       {formatQty(detail.currentStock)} {baseUnit}
                     </span>
                     {isLow && (
-                      <span className="inline-flex items-center gap-1 rounded border border-[rgba(212,212,216,0.6)] bg-[rgba(226,232,240,0.8)] px-2 py-0.5 text-[10px] font-semibold leading-4 text-[#334155]">
+                      <span className="inline-flex items-center gap-1 rounded border border-[rgba(212,212,216,0.6)] bg-[rgba(226,232,240,0.8)] px-2 py-0.5 text-xs font-semibold leading-4 text-[#334155]">
                         <AlertTriangle className="size-3" />
                         Di bawah batas min
                       </span>

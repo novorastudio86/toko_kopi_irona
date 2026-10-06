@@ -188,7 +188,7 @@ export default function ExpenseFormModal({ type, expenseId, onClose, onSaved }: 
 
                 {selected && (
                   <div className="flex flex-col gap-1 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4 text-xs">
-                    <p className="pb-1 text-[11px] font-bold uppercase tracking-[0.5px] text-[#64748b]">
+                    <p className="pb-1 text-xs font-bold uppercase tracking-[0.5px] text-[#64748b]">
                       Hitungan Payroll
                     </p>
                     <div className="flex justify-between text-[#475569]">
@@ -210,14 +210,14 @@ export default function ExpenseFormModal({ type, expenseId, onClose, onSaved }: 
                       <span className="font-mono">{formatRupiah(selected.totalSalary)}</span>
                     </div>
                     {selected.pendingOvertimeMinutes > 0 && (
-                      <p className="mt-1 rounded-lg bg-[#fffbeb] px-3 py-2 text-[11px] leading-4 text-[#92400e]">
+                      <p className="mt-1 rounded-lg bg-[#fffbeb] px-3 py-2 text-xs leading-4 text-[#92400e]">
                         ⚠ Ada lembur {selected.pendingOvertimeMinutes} menit yang belum diputuskan
                         di Presensi. Lembur itu belum termasuk di gaji ini — putuskan dulu kalau mau
                         ikut dibayar.
                       </p>
                     )}
                     {selected.kasbonTotal > 0 && (
-                      <p className="pt-1 text-[11px] text-[#64748b]">
+                      <p className="pt-1 text-xs text-[#64748b]">
                         Kasbon sudah dicatat keluar saat diberikan, jadi yang dibayar sekarang cukup
                         gaji bersih.
                       </p>
@@ -269,7 +269,7 @@ export default function ExpenseFormModal({ type, expenseId, onClose, onSaved }: 
               />
             </div>
 
-            <p className="text-[11px] leading-4 text-[#94a3b8]">
+            <p className="text-xs leading-4 text-[#94a3b8]">
               Bisa diubah atau dihapus selama masih di bulan yang sama dengan tanggalnya. Setelah
               ganti bulan, catatan terkunci.
             </p>

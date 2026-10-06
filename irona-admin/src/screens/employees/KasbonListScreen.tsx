@@ -333,7 +333,7 @@ export default function KasbonListScreen() {
         />
       </div>
 
-      <p className="text-[11px] leading-4 text-[#94a3b8]">
+      <p className="text-xs leading-4 text-[#94a3b8]">
         {(Object.keys(KASBON_STATUS_LABELS) as KasbonStatus[])
           .map((s) =>
             s === 'berjalan'

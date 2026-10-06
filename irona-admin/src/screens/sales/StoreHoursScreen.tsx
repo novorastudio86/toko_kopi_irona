@@ -97,85 +97,87 @@ function HoursSection({
           </span>
           <div>
             <p className="text-sm font-bold text-[#0f172a]">{title}</p>
-            <p className="text-[11px] text-[#64748b]">{description}</p>
+            <p className="text-xs text-[#64748b]">{description}</p>
           </div>
         </div>
         <button
           onClick={copyMonday}
-          className="flex shrink-0 items-center gap-1.5 rounded-lg border border-[#e2e8f0] px-3 py-1.5 text-[11px] font-semibold text-[#475569] hover:bg-[#f8fafc]"
+          className="flex shrink-0 items-center gap-1.5 rounded-lg border border-[#e2e8f0] px-3 py-1.5 text-xs font-semibold text-[#475569] hover:bg-[#f8fafc]"
         >
           <Copy className="size-3" />
           Samakan ke Semua Hari
         </button>
       </div>
 
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]">
-            <th className="px-5 py-2.5 text-left">Hari</th>
-            <th className="px-3 py-2.5 text-left">{openLabel}</th>
-            <th className="px-3 py-2.5 text-left">
-              {channel === 'offline' ? 'Jam Buka' : 'Jam Mulai'}
-            </th>
-            <th className="px-5 py-2.5 text-left">
-              {channel === 'offline' ? 'Jam Tutup' : 'Jam Selesai'}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {DAY_ORDER.map((dow) => {
-            const d = days.find((x) => x.dayOfWeek === dow);
-            if (!d) return null;
-            return (
-              <tr
-                key={dow}
-                className={`border-t border-[#f1f5f9] ${d.isOpen ? '' : 'bg-[#fcfcfd]'}`}
-              >
-                <td
-                  className={`px-5 py-2.5 text-sm font-semibold ${d.isOpen ? 'text-[#0f172a]' : 'text-[#94a3b8]'}`}
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[640px] border-collapse">
+          <thead>
+            <tr className="text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]">
+              <th className="px-5 py-2.5 text-left">Hari</th>
+              <th className="px-3 py-2.5 text-left">{openLabel}</th>
+              <th className="px-3 py-2.5 text-left">
+                {channel === 'offline' ? 'Jam Buka' : 'Jam Mulai'}
+              </th>
+              <th className="px-5 py-2.5 text-left">
+                {channel === 'offline' ? 'Jam Tutup' : 'Jam Selesai'}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {DAY_ORDER.map((dow) => {
+              const d = days.find((x) => x.dayOfWeek === dow);
+              if (!d) return null;
+              return (
+                <tr
+                  key={dow}
+                  className={`border-t border-[#f1f5f9] ${d.isOpen ? '' : 'bg-[#fcfcfd]'}`}
                 >
-                  {DAY_NAMES[dow]}
-                </td>
-                <td className="px-3 py-2.5">
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={d.isOpen}
-                    onClick={() => update(dow, { isOpen: !d.isOpen })}
-                    className={`relative h-5 w-9 rounded-full transition-colors ${d.isOpen ? 'bg-[#0f172a]' : 'bg-[#cbd5e1]'}`}
+                  <td
+                    className={`px-5 py-2.5 text-sm font-semibold ${d.isOpen ? 'text-[#0f172a]' : 'text-[#94a3b8]'}`}
                   >
-                    <span
-                      className={`absolute top-0.5 size-4 rounded-full bg-white transition-all ${d.isOpen ? 'left-[18px]' : 'left-0.5'}`}
+                    {DAY_NAMES[dow]}
+                  </td>
+                  <td className="px-3 py-2.5">
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={d.isOpen}
+                      onClick={() => update(dow, { isOpen: !d.isOpen })}
+                      className={`relative h-5 w-9 rounded-full transition-colors ${d.isOpen ? 'bg-[#0f172a]' : 'bg-[#cbd5e1]'}`}
+                    >
+                      <span
+                        className={`absolute top-0.5 size-4 rounded-full bg-white transition-all ${d.isOpen ? 'left-[18px]' : 'left-0.5'}`}
+                      />
+                    </button>
+                    {!d.isOpen && <span className="ml-2 text-xs text-[#94a3b8]">Tutup</span>}
+                  </td>
+                  <td className="px-3 py-2.5">
+                    <input
+                      type="time"
+                      value={d.openTime}
+                      disabled={!d.isOpen}
+                      onChange={(e) => update(dow, { openTime: e.target.value })}
+                      className={timeClass}
                     />
-                  </button>
-                  {!d.isOpen && <span className="ml-2 text-xs text-[#94a3b8]">Tutup</span>}
-                </td>
-                <td className="px-3 py-2.5">
-                  <input
-                    type="time"
-                    value={d.openTime}
-                    disabled={!d.isOpen}
-                    onChange={(e) => update(dow, { openTime: e.target.value })}
-                    className={timeClass}
-                  />
-                </td>
-                <td className="px-5 py-2.5">
-                  <input
-                    type="time"
-                    value={d.closeTime}
-                    disabled={!d.isOpen}
-                    onChange={(e) => update(dow, { closeTime: e.target.value })}
-                    className={timeClass}
-                  />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  </td>
+                  <td className="px-5 py-2.5">
+                    <input
+                      type="time"
+                      value={d.closeTime}
+                      disabled={!d.isOpen}
+                      onChange={(e) => update(dow, { closeTime: e.target.value })}
+                      className={timeClass}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-[#e2e8f0] bg-[#f8fafc] px-5 py-3">
-        <p className="text-[11px] text-[#e11d48]">{error}</p>
+        <p className="text-xs text-[#e11d48]">{error}</p>
         <div className="flex items-center gap-2">
           {dirty && (
             <button

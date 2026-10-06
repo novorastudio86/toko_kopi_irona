@@ -72,7 +72,7 @@ export default function GatewaySimulationModal({ mdrPercent, ppnPercent, onClose
               </div>
             ))}
           </div>
-          <p className="text-[11px] leading-4 text-[#94a3b8]">
+          <p className="text-xs leading-4 text-[#94a3b8]">
             Rincian settlement aktual per transaksi ada di Laporan › Cash Flow › Saldo Online.
           </p>
         </div>

@@ -360,7 +360,7 @@ export default function AssetListScreen() {
 
       <AssetStatusLegend />
 
-      <p className="text-[11px] leading-4 text-[#94a3b8]">
+      <p className="text-xs leading-4 text-[#94a3b8]">
         Ubah & Hapus hanya tersedia selama bulan Tanggal Beli belum tutup buku (otomatis saat ganti
         bulan; bisa dibuka kembali di Keuangan › Cash Flow). Setelah itu koreksi lewat Ubah Status.
         Pembelian aset otomatis memotong saldo BEP di Keuangan › Cash Flow.

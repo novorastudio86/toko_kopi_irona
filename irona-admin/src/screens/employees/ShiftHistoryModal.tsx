@@ -68,7 +68,7 @@ export default function ShiftHistoryModal({ onClose, onChanged }: Props) {
       >
         <div className="flex shrink-0 items-start justify-between border-b border-[#e2e8f0] px-6 pb-5 pt-5">
           <div>
-            <h2 className="text-lg font-bold leading-7 text-[#0f172a]">Riwayat Perubahan Jadwal</h2>
+            <h2 className="text-base font-bold leading-6 text-[#0f172a]">Riwayat Perubahan Jadwal</h2>
             <p className="text-xs leading-4 text-[#64748b]">
               Tukar, gantikan, tambah shift, dan libur mendadak. Jadwal mingguan tidak ikut berubah.
             </p>
@@ -92,10 +92,10 @@ export default function ShiftHistoryModal({ onClose, onChanged }: Props) {
               <div key={event.id} className="flex flex-col gap-2 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full bg-[#0f172a] px-2.5 py-0.5 text-[10px] font-bold text-white">
+                    <span className="rounded-full bg-[#0f172a] px-2.5 py-0.5 text-xs font-bold text-white">
                       {KIND_LABELS[event.kind]}
                     </span>
-                    <span className="text-[11px] text-[#64748b]">
+                    <span className="text-xs text-[#64748b]">
                       {new Date(event.createdAt).toLocaleString('id-ID', {
                         day: 'numeric',
                         month: 'short',
@@ -107,7 +107,7 @@ export default function ShiftHistoryModal({ onClose, onChanged }: Props) {
                   <button
                     onClick={() => handleUndo(event)}
                     disabled={undoingId !== null}
-                    className="flex shrink-0 items-center gap-1 rounded-lg border border-[#e2e8f0] bg-white px-2.5 py-1 text-[11px] font-semibold text-[#475569] hover:text-[#e11d48] disabled:opacity-50"
+                    className="flex shrink-0 items-center gap-1 rounded-lg border border-[#e2e8f0] bg-white px-2.5 py-1 text-xs font-semibold text-[#475569] hover:text-[#e11d48] disabled:opacity-50"
                   >
                     <Undo2 className="size-3" />
                     {undoingId === event.id ? 'Membatalkan...' : 'Batalkan'}
@@ -131,7 +131,7 @@ export default function ShiftHistoryModal({ onClose, onChanged }: Props) {
                   ))}
                 </ul>
 
-                {event.note && <p className="text-[11px] italic text-[#64748b]">"{event.note}"</p>}
+                {event.note && <p className="text-xs italic text-[#64748b]">"{event.note}"</p>}
               </div>
             ))
           )}

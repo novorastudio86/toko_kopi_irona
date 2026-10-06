@@ -106,7 +106,7 @@ export default function StoreProfileModal({ profile, onClose, onSaved }: Props) 
               {form.logoUrl ? (
                 <img src={form.logoUrl} alt="Logo" className="size-full object-contain" />
               ) : (
-                <span className="text-[10px] text-[#94a3b8]">Belum ada logo</span>
+                <span className="text-xs text-[#94a3b8]">Belum ada logo</span>
               )}
             </div>
             <div className="flex flex-col gap-1.5">
@@ -131,7 +131,7 @@ export default function StoreProfileModal({ profile, onClose, onSaved }: Props) 
                   </button>
                 )}
               </div>
-              <p className="text-[11px] leading-4 text-[#94a3b8]">
+              <p className="text-xs leading-4 text-[#94a3b8]">
                 JPG/PNG/WEBP, maks 2 MB. Printer thermal mencetak hitam-putih — pakai logo yang
                 kontras.
               </p>
@@ -206,13 +206,13 @@ export default function StoreProfileModal({ profile, onClose, onSaved }: Props) 
                 </a>
               )}
             </div>
-            <p className="text-[11px] leading-4 text-[#94a3b8]">
+            <p className="text-xs leading-4 text-[#94a3b8]">
               Buka Google Maps, tekan lama titik toko, lalu salin angka yang muncul. Dipakai untuk peta
               di Driver App dan menghitung jarak antar.
             </p>
           </div>
 
-          <p className="pt-1 text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+          <p className="pt-1 text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
             Media Sosial
           </p>
           <div className="grid grid-cols-2 gap-4">

@@ -254,7 +254,7 @@ export default function EmployeeFormModal({ employeeId = null, onClose, onSaved 
               {/* Pemisah akses login */}
               <div className="relative flex items-center justify-center py-1">
                 <span className="absolute inset-x-0 top-1/2 h-px bg-[#e2e8f0]" />
-                <span className="relative rounded-lg bg-[#f1f5f9] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.55px] text-[#475569]">
+                <span className="relative rounded-lg bg-[#f1f5f9] px-4 py-2 text-xs font-bold uppercase tracking-[0.55px] text-[#475569]">
                   {usesPassword
                     ? 'Akses Login Web Admin & Perangkat Kasir/Driver'
                     : usesPin

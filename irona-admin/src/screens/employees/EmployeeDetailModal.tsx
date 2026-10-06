@@ -76,7 +76,7 @@ export default function EmployeeDetailModal({ employeeId, onClose, onEdit }: Pro
               {detail ? initials(detail.fullName) : '—'}
             </span>
             <div>
-              <h2 className="text-xl font-bold leading-7 text-[#0f172a]">Detail Karyawan</h2>
+              <h2 className="text-base font-bold leading-6 text-[#0f172a]">Detail Karyawan</h2>
               <p className="text-sm text-[#64748b]">
                 {detail ? `${detail.code} • Mulai kerja ${joinedAt}` : ''}
               </p>

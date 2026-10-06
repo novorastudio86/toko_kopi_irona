@@ -16,7 +16,7 @@ function MetricCard({ label, value, tone }: { label: string; value: string; tone
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-[#e2e8f0] bg-white p-4">
       <span className="text-xs font-medium text-[#64748b]">{label}</span>
-      <span className={`text-xl font-bold ${color}`}>{value}</span>
+      <span className={`text-lg font-bold ${color}`}>{value}</span>
     </div>
   );
 }
@@ -41,7 +41,7 @@ export function PricingStep({
         <div className="flex flex-col gap-1">
           <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.5px] text-[#0f172a]">
             Total Cost
-            <span className="rounded border border-[#e2e8f0] bg-white px-1.5 text-[11px] font-semibold normal-case tracking-normal text-[#475569]">
+            <span className="rounded border border-[#e2e8f0] bg-white px-1.5 text-xs font-semibold normal-case tracking-normal text-[#475569]">
               Otomatis
             </span>
           </p>

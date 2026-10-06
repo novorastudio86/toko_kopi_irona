@@ -84,9 +84,9 @@ function SummaryCard({ label, badge, value }: { label: string; badge?: string; v
   return (
     <div className="flex min-w-[130px] flex-1 flex-col justify-between rounded-lg border border-[#e2e8f0] bg-[#f8fafc] p-[11px]">
       <div className="flex items-center gap-1.5">
-        <span className="text-[11px] leading-4 text-[#64748b]">{label}</span>
+        <span className="text-xs leading-4 text-[#64748b]">{label}</span>
         {badge && (
-          <span className="rounded bg-[#e2e8f0] px-1.5 py-0.5 text-[10px] font-bold leading-4 text-[#334155]">
+          <span className="rounded bg-[#e2e8f0] px-1.5 py-0.5 text-xs font-bold leading-4 text-[#334155]">
             {badge}
           </span>
         )}
@@ -98,11 +98,11 @@ function SummaryCard({ label, badge, value }: { label: string; badge?: string; v
 
 function SourceBadge({ type }: { type: 'bahan_baku' | 'racikan' }) {
   return type === 'racikan' ? (
-    <span className="rounded border border-[#94a3b8] bg-[#f8fafc] px-[7px] py-px text-[10px] leading-4 text-[#334155]">
+    <span className="rounded border border-[#94a3b8] bg-[#f8fafc] px-[7px] py-px text-xs leading-4 text-[#334155]">
       Racikan
     </span>
   ) : (
-    <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-[7px] py-px text-[10px] leading-4 text-[#475569]">
+    <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-[7px] py-px text-xs leading-4 text-[#475569]">
       Bahan Baku
     </span>
   );
@@ -121,7 +121,7 @@ export default function MasterRecipeScreen() {
 
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('');
-  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'name', dir: 'asc' });
+  const [sort, setSort] = useState<{ key: SortKey | 'default'; dir: SortDir }>({ key: 'default', dir: 'asc' });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -188,9 +188,14 @@ export default function MasterRecipeScreen() {
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
+    if (sort.key === 'default') {
+      const rank = (r: Row) => (r.recipeStatus === 'belum_lengkap' ? 0 : r.lowStock.length > 0 ? 1 : 2);
+      return arr.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'id'));
+    }
+    const key = sort.key;
     arr.sort((a, b) => {
-      const va = a[sort.key];
-      const vb = b[sort.key];
+      const va = a[key];
+      const vb = b[key];
       const cmp =
         typeof va === 'string' ? va.localeCompare(vb as string, 'id') : (va as number) - (vb as number);
       return sort.dir === 'asc' ? cmp : -cmp;
@@ -286,7 +291,7 @@ export default function MasterRecipeScreen() {
                     <span className="flex items-center justify-between gap-2">
                       <span className="text-sm font-bold text-[#0f172a]">Tambah Resep Produk</span>
                       {incompleteProducts.length === 0 && (
-                        <span className="shrink-0 rounded bg-[#f1f5f9] px-2 py-0.5 text-[10px] font-semibold text-[#475569]">
+                        <span className="shrink-0 rounded bg-[#f1f5f9] px-2 py-0.5 text-xs font-semibold text-[#475569]">
                           ✓ Semua Terisi
                         </span>
                       )}
@@ -445,11 +450,20 @@ export default function MasterRecipeScreen() {
                   const incomplete = row.recipeStatus === 'belum_lengkap';
                   const margin =
                     row.sellingPrice !== null && row.sellingPrice > 0 ? row.sellingPrice - row.totalCost : null;
+                  // Penanda baris yang dibuka: hitam default, merah kalau ada badge alert
+                  const marker = isOpen
+                    ? incomplete || row.lowStock.length > 0
+                      ? 'shadow-[inset_4px_0_0_#e11d48]'
+                      : 'shadow-[inset_4px_0_0_#0f172a]'
+                    : '';
 
                   return (
                     <>
-                      <tr key={row.id} className="border-t border-[#f1f5f9] first:border-t-0">
-                        <td className="py-4 pl-4">
+                      <tr
+                        key={row.id}
+                        className={`border-t border-[#f1f5f9] first:border-t-0 ${isOpen ? 'bg-[rgba(248,250,252,0.7)]' : ''}`}
+                      >
+                        <td className={`py-4 pl-4 ${marker}`}>
                           <button
                             onClick={() => toggleExpand(row)}
                             aria-label={isOpen ? 'Tutup rincian' : 'Lihat rincian'}
@@ -462,7 +476,7 @@ export default function MasterRecipeScreen() {
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="text-sm font-semibold leading-5 text-[#0f172a]">{row.name}</span>
                             {incomplete && (
-                              <span className="rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-[10px] font-medium leading-4 text-[#e11d48]">
+                              <span className="rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-xs font-medium leading-4 text-[#e11d48]">
                                 Resep Belum Diisi
                               </span>
                             )}
@@ -672,7 +686,7 @@ export default function MasterRecipeScreen() {
                                 )}
                               </div>
 
-                              <p className="flex items-center gap-1.5 text-[11px] leading-4 text-[#64748b]">
+                              <p className="flex items-center gap-1.5 text-xs leading-4 text-[#64748b]">
                                 <Info className="size-3.5" />
                                 Biaya bahan otomatis dikalkulasi berdasarkan harga beli stok inventory terkini.
                               </p>

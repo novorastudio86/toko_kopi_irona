@@ -161,7 +161,7 @@ export default function AssetFormModal({ asset, onClose, onSaved }: Props) {
           </div>
 
           {bepShort && (
-            <p className="rounded-lg border border-[#fde68a] bg-[#fffbeb] px-3 py-2.5 text-[11px] leading-4 text-[#92400e]">
+            <p className="rounded-lg border border-[#fde68a] bg-[#fffbeb] px-3 py-2.5 text-xs leading-4 text-[#92400e]">
               ⚠ Saldo BEP tidak mencukupi (sisa {formatRupiah(Math.max(bepRemaining ?? 0, 0))}),
               kekurangan {formatRupiah(total - Math.max(bepRemaining ?? 0, 0))} akan ditanggung saldo
               Owner. Tetap bisa disimpan.
@@ -169,7 +169,7 @@ export default function AssetFormModal({ asset, onClose, onSaved }: Props) {
           )}
 
           {!isEdit && (
-            <p className="flex items-center gap-2 text-[11px] leading-4 text-[#64748b]">
+            <p className="flex items-center gap-2 text-xs leading-4 text-[#64748b]">
               <Info className="size-3.5 shrink-0" />
               Aset baru otomatis berstatus Aktif. Perubahan status dilakukan lewat menu Ubah Status.
             </p>

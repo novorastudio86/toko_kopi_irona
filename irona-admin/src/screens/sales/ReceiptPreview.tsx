@@ -176,7 +176,7 @@ export default function ReceiptPreview({ settings: s, store, samplePayment }: Pr
           {lines.join('\n')}
         </pre>
       </div>
-      <p className="text-[11px] text-[#94a3b8]">
+      <p className="text-xs text-[#94a3b8]">
         Preview kertas {s.paper_width} mm · {width} karakter/baris · data contoh
       </p>
     </div>

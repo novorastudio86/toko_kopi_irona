@@ -94,7 +94,7 @@ export default function AssetStatusModal({ asset, onClose, onSaved }: Props) {
               className={inputClass(!!errors.note)}
             />
             <FieldError message={errors.note} />
-            <p className="text-[11px] leading-4 text-[#94a3b8]">
+            <p className="text-xs leading-4 text-[#94a3b8]">
               Catatan ini tersimpan di riwayat aset agar perubahan bisa ditelusuri.
             </p>
           </div>

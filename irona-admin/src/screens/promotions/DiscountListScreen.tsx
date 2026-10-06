@@ -394,7 +394,7 @@ export default function DiscountListScreen() {
         />
       </div>
 
-      <p className="text-[11px] leading-4 text-[#94a3b8]">
+      <p className="text-xs leading-4 text-[#94a3b8]">
         Diskon Kedaluwarsa jadi arsip permanen — Ubah & Hapus dinonaktifkan. Diskon yang sudah
         pernah dipakai/diklaim tidak bisa dihapus, cukup dinonaktifkan.
       </p>

@@ -30,7 +30,7 @@ function PriceCard({ label, value, note, emphasized }: { label: string; value: s
     >
       <span className="text-xs text-[#64748b]">{label}</span>
       <span className="font-mono text-lg font-bold text-[#0f172a]">{value}</span>
-      {note && <span className="text-[11px] text-[#94a3b8]">{note}</span>}
+      {note && <span className="text-xs text-[#94a3b8]">{note}</span>}
     </div>
   );
 }
@@ -96,17 +96,17 @@ export default function ProductDetailModal({ productId, categoryName, lowStockIt
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between border-b border-[#f1f5f9] px-8 py-5">
           <div className="flex items-center gap-3">
-            <h2 id="product-detail-title" className="text-xl font-bold tracking-[-0.5px] text-[#0f172a]">
+            <h2 id="product-detail-title" className="text-base font-bold tracking-[-0.5px] text-[#0f172a]">
               Detail Produk
             </h2>
             {detail && detail.recipeStatus === 'belum_lengkap' && (
-              <span className="rounded border border-dashed border-[#f43f5e] px-2 py-0.5 text-[11px] font-medium text-[#e11d48]">
+              <span className="rounded border border-dashed border-[#f43f5e] px-2 py-0.5 text-xs font-medium text-[#e11d48]">
                 Resep Belum Diisi
               </span>
             )}
             {detail && detail.recipeStatus !== 'belum_lengkap' && (
               <span
-                className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                   detail.isActive ? 'bg-[#0f172a] text-white' : 'border border-dashed border-[#94a3b8] text-[#475569]'
                 }`}
               >
@@ -149,9 +149,9 @@ export default function ProductDetailModal({ productId, categoryName, lowStockIt
                       <span className="font-mono">SKU: {detail.sku ?? '-'}</span>
                       <span>Satuan: {detail.unit}</span>
                     </div>
-                    <p className="text-xl font-bold text-[#0f172a]">{detail.name}</p>
+                    <p className="text-base font-bold text-[#0f172a]">{detail.name}</p>
                     <div className="flex flex-col gap-1.5">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.3px] text-[#64748b]">
+                      <span className="text-xs font-semibold uppercase tracking-[0.3px] text-[#64748b]">
                         Ketersediaan Saluran
                       </span>
                       <div className="flex gap-2">

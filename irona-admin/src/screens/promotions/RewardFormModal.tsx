@@ -172,7 +172,7 @@ export default function RewardFormModal({ reward, onClose, onSaved }: Props) {
             </div>
           </div>
 
-          <p className="-mt-2 text-[11px] leading-4 text-[#94a3b8]">
+          <p className="-mt-2 text-xs leading-4 text-[#94a3b8]">
             Stok berkurang saat kode ditukar di kasir. Kode yang sudah diklaim tapi belum ditukar
             ikut mencadangkan stok, jadi member tidak bisa klaim kalau stok sudah habis.
             {reward && reward.pendingCount > 0 && (
@@ -194,7 +194,7 @@ export default function RewardFormModal({ reward, onClose, onSaved }: Props) {
             />
           </div>
 
-          <p className="rounded-lg bg-[#f8fafc] px-3 py-2.5 text-[11px] leading-4 text-[#64748b]">
+          <p className="rounded-lg bg-[#f8fafc] px-3 py-2.5 text-xs leading-4 text-[#64748b]">
             Setelah member klaim, poinnya langsung terpotong dan ia mendapat kode unik yang berlaku
             1 hari. Kode ditukar di kasir; lewat 1 hari otomatis hangus dan poin tidak kembali.
           </p>

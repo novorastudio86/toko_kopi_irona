@@ -14,7 +14,7 @@ const HATCHED =
 export function AssetStatusBadge({ status }: { status: AssetStatus }) {
   if (status === 'aktif') {
     return (
-      <span className="inline-flex items-center rounded-full bg-[#0f172a] px-2.5 py-0.5 text-[11px] font-semibold text-white">
+      <span className="inline-flex items-center rounded-full bg-[#0f172a] px-2.5 py-0.5 text-xs font-semibold text-white">
         ● Aktif
       </span>
     );
@@ -23,7 +23,7 @@ export function AssetStatusBadge({ status }: { status: AssetStatus }) {
     return (
       <span
         style={{ backgroundImage: HATCHED }}
-        className="inline-flex items-center rounded-full border-2 border-[#475569] px-2.5 py-1 text-[11px] font-bold text-[#0f172a]"
+        className="inline-flex items-center rounded-full border-2 border-[#475569] px-2.5 py-1 text-xs font-bold text-[#0f172a]"
       >
         ⊘ Rusak
       </span>
@@ -31,13 +31,13 @@ export function AssetStatusBadge({ status }: { status: AssetStatus }) {
   }
   if (status === 'dijual') {
     return (
-      <span className="inline-flex items-center rounded-full border border-[#334155] bg-white px-[11px] py-0.5 text-[11px] font-semibold text-[#334155] shadow-[0px_0px_0px_1px_#94a3b8]">
+      <span className="inline-flex items-center rounded-full border border-[#334155] bg-white px-[11px] py-0.5 text-xs font-semibold text-[#334155] shadow-[0px_0px_0px_1px_#94a3b8]">
         ◈ Dijual
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-full border-2 border-dashed border-[#94a3b8] bg-[#f8fafc] px-2.5 py-1 text-[11px] font-medium text-[#64748b]">
+    <span className="inline-flex items-center rounded-full border-2 border-dashed border-[#94a3b8] bg-[#f8fafc] px-2.5 py-1 text-xs font-medium text-[#64748b]">
       ◌ Hilang
     </span>
   );

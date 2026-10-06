@@ -83,10 +83,10 @@ export default function StoreHoursHistoryModal({ onClose }: Props) {
             return (
               <div key={h.id} className="rounded-xl border border-[#e2e8f0] px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="rounded-full bg-[#0f172a] px-2.5 py-0.5 text-[10px] font-bold text-white">
+                  <span className="rounded-full bg-[#0f172a] px-2.5 py-0.5 text-xs font-bold text-white">
                     {h.channel === 'offline' ? 'Jam Operasional Offline' : 'Jam Layanan Online'}
                   </span>
-                  <span className="text-[11px] text-[#64748b]">
+                  <span className="text-xs text-[#64748b]">
                     {new Date(h.createdAt).toLocaleString('id-ID', {
                       day: 'numeric',
                       month: 'short',
@@ -98,10 +98,10 @@ export default function StoreHoursHistoryModal({ onClose }: Props) {
                 </div>
                 <ul className="flex flex-col gap-1 pt-2">
                   {diff.length === 0 && (
-                    <li className="text-[11px] text-[#94a3b8]">Disimpan tanpa perubahan.</li>
+                    <li className="text-xs text-[#94a3b8]">Disimpan tanpa perubahan.</li>
                   )}
                   {diff.map((c) => (
-                    <li key={c.day} className="text-[11px] text-[#334155]">
+                    <li key={c.day} className="text-xs text-[#334155]">
                       <span className="font-semibold">{DAY_NAMES[c.day]}:</span>{' '}
                       <span className="text-[#94a3b8] line-through">{c.from}</span> → {c.to}
                     </li>

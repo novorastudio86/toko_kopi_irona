@@ -191,7 +191,7 @@ export default function RacikanProductionModal({ onClose, onSaved }: Props) {
               {/* Kebutuhan bahan */}
               {racikanId && (
                 <div className="flex flex-col gap-2 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.5px] text-[#334155]">
+                  <p className="text-xs font-bold uppercase tracking-[0.5px] text-[#334155]">
                     Kebutuhan Bahan untuk {batches > 0 ? formatQty(batches) : '—'} Batch
                   </p>
                   {loadingComponents ? (
@@ -252,7 +252,7 @@ export default function RacikanProductionModal({ onClose, onSaved }: Props) {
                 </div>
               )}
 
-              <p className="flex items-center gap-2 text-[11px] leading-4 text-[#64748b]">
+              <p className="flex items-center gap-2 text-xs leading-4 text-[#64748b]">
                 <Info className="size-3.5 shrink-0" />
                 Jika ada bahan yang stoknya kurang, penyimpanan akan ditolak dan tidak ada stok yang berubah.
               </p>
@@ -267,7 +267,7 @@ export default function RacikanProductionModal({ onClose, onSaved }: Props) {
         </div>
 
         <div className="flex shrink-0 items-center justify-between border-t border-[#e2e8f0] bg-[#f1f5f9] px-6 pb-3.5 pt-[15px]">
-          <span className="text-[11px] text-[#64748b]">
+          <span className="text-xs text-[#64748b]">
             {racikanId && needs.length > 0 && !allEnough ? 'Ada bahan yang stoknya tidak mencukupi.' : ''}
           </span>
           <div className="flex gap-2">

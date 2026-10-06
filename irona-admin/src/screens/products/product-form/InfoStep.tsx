@@ -232,7 +232,7 @@ export function InfoStep({ values, onChange, errors, categories, onCategoryCreat
               </span>
               <p className="pt-3 text-sm font-semibold leading-5 text-[#1e293b]">Unggah Foto Produk</p>
               <p className="pt-1 text-xs leading-4 text-[#64748b]">PNG, JPG, WEBP maks. 2 MB</p>
-              <p className="pt-[3px] text-[11px] font-medium leading-[16.5px] text-[#94a3b8]">(Rasio 1:1 disarankan)</p>
+              <p className="pt-[3px] text-xs font-medium leading-[16.5px] text-[#94a3b8]">(Rasio 1:1 disarankan)</p>
             </div>
           )}
           <FieldError message={photoError} />
@@ -273,7 +273,7 @@ export function InfoStep({ values, onChange, errors, categories, onCategoryCreat
 
             {quickOpen && (
               <div className="flex flex-col gap-2 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3">
-                <p className="text-[11px] font-bold uppercase tracking-[0.3px] text-[#475569]">Kategori Baru</p>
+                <p className="text-xs font-bold uppercase tracking-[0.3px] text-[#475569]">Kategori Baru</p>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -309,7 +309,7 @@ export function InfoStep({ values, onChange, errors, categories, onCategoryCreat
                     {quickSaving ? 'Menyimpan...' : 'Simpan Kategori'}
                   </button>
                 </div>
-                <p className="text-[11px] leading-4 text-[#94a3b8]">
+                <p className="text-xs leading-4 text-[#94a3b8]">
                   Tampil di Menu aktif otomatis. Icon dan tampilan online bisa diatur di Daftar Kategori.
                 </p>
               </div>
@@ -385,7 +385,7 @@ export function InfoStep({ values, onChange, errors, categories, onCategoryCreat
         </div>
       </div>
 
-      <p className="flex items-center gap-2 text-[11px] leading-4 text-[#94a3b8]">
+      <p className="flex items-center gap-2 text-xs leading-4 text-[#94a3b8]">
         <InfoIcon className="size-3.5" />
         Nama produk harus unik. SKU dibuat otomatis dari kategori, tapi bisa diganti.
       </p>

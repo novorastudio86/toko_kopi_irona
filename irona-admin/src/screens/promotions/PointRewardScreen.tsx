@@ -41,7 +41,7 @@ function RulesCard({ rules, onEdit }: { rules: PointRules; onEdit: () => void })
           </span>
           <div>
             <p className="text-sm font-bold text-[#0f172a]">Aturan Dapat Poin</p>
-            <p className="text-[11px] text-[#64748b]">
+            <p className="text-xs text-[#64748b]">
               {rules.updatedAt
                 ? `Terakhir diubah ${new Date(rules.updatedAt).toLocaleString('id-ID', {
                     day: 'numeric',
@@ -80,7 +80,7 @@ function RulesCard({ rules, onEdit }: { rules: PointRules; onEdit: () => void })
         </span>
       </div>
 
-      <div className="flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-[#64748b]">
+      <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-[#64748b]">
         {examples.map((amount) => {
           const r = calcPoints(amount, rules.tiers, rules.roundingThreshold);
           return (
@@ -445,7 +445,7 @@ export default function PointRewardScreen() {
         />
       </div>
 
-      <p className="text-[11px] leading-4 text-[#94a3b8]">
+      <p className="text-xs leading-4 text-[#94a3b8]">
         Stok = sisa yang masih bisa diklaim (stok fisik dikurangi kode yang menunggu ditukar); stok
         fisik berkurang saat kode ditukar di kasir. Kode klaim berlaku 1 hari sejak diklaim; selama
         belum ditukar, admin bisa membatalkannya (poin kembali). Menonaktifkan reward tidak

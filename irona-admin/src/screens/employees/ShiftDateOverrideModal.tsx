@@ -84,7 +84,7 @@ export default function ShiftDateOverrideModal({ onClose, onSaved }: Props) {
       >
         <div className="flex shrink-0 items-start justify-between border-b border-[#e2e8f0] px-6 pb-5 pt-5">
           <div>
-            <h2 className="text-lg font-bold leading-7 text-[#0f172a]">Jam Khusus Toko</h2>
+            <h2 className="text-base font-bold leading-6 text-[#0f172a]">Jam Khusus Toko</h2>
             <p className="text-xs leading-4 text-[#64748b]">
               Ubah jam satu shift di tanggal tertentu (mis. Sabtu buka 05:00). Berlaku untuk semua karyawan di shift
               itu. Jam sebelum 08:00 atau sesudah 23:00 dihitung lembur.
@@ -168,7 +168,7 @@ export default function ShiftDateOverrideModal({ onClose, onSaved }: Props) {
           </button>
 
           <div className="flex flex-col gap-2 border-t border-[#f1f5f9] pt-4">
-            <p className="text-[11px] font-bold uppercase tracking-[0.5px] text-[#64748b]">Jam Khusus Terjadwal</p>
+            <p className="text-xs font-bold uppercase tracking-[0.5px] text-[#64748b]">Jam Khusus Terjadwal</p>
             {loading ? (
               <p className="text-xs text-[#94a3b8]">Memuat...</p>
             ) : overrides.length === 0 ? (

@@ -300,7 +300,7 @@ export default function CashFlowReportScreen({ bucket }: { bucket: Bucket }) {
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         {breakdown.map((b) => (
           <div key={b.type} className="rounded-xl border border-[#e2e8f0] bg-white px-4 py-3">
-            <p className="text-[11px] text-[#64748b]">{ENTRY_TYPE_LABELS[b.type]}</p>
+            <p className="text-xs text-[#64748b]">{ENTRY_TYPE_LABELS[b.type]}</p>
             <p
               className={`font-mono text-sm font-bold ${b.total < 0 ? 'text-[#be123c]' : b.total > 0 ? 'text-[#047857]' : 'text-[#0f172a]'}`}
             >

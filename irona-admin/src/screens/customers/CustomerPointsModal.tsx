@@ -123,7 +123,7 @@ export default function CustomerPointsModal({ customer, onClose, onSaved }: Prop
               <FieldError message={errors.amount} />
               {points > 0 && (
                 <p
-                  className={`text-[11px] ${newBalance < 0 ? 'text-[#e11d48]' : 'text-[#64748b]'}`}
+                  className={`text-xs ${newBalance < 0 ? 'text-[#e11d48]' : 'text-[#64748b]'}`}
                 >
                   Saldo setelahnya: <span className="font-bold">{newBalance} poin</span>
                 </p>

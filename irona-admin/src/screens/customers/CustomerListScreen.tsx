@@ -406,7 +406,7 @@ export default function CustomerListScreen() {
         />
       </div>
 
-      <p className="text-[11px] leading-4 text-[#94a3b8]">
+      <p className="text-xs leading-4 text-[#94a3b8]">
         Total Transaksi & Belanja hanya dari transaksi resmi — transaksi dibatalkan dan refund penuh
         tidak dihitung, refund sebagian mengurangi Total Belanja. Belanja = nilai produk, tanpa
         ongkir/biaya layanan. Member yang sudah punya transaksi tidak bisa dihapus, cukup

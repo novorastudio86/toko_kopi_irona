@@ -129,7 +129,7 @@ export default function ProductRecipeModal({ products, productId = null, onClose
       >
         <div className="flex shrink-0 items-start justify-between border-b border-[#e2e8f0] px-6 pb-5 pt-5">
           <div>
-            <h2 className="text-lg font-bold leading-7 text-[#0f172a]">
+            <h2 className="text-base font-bold leading-6 text-[#0f172a]">
               {isEdit ? 'Ubah Resep Produk' : 'Tambah Resep Produk'}
             </h2>
             <p className="text-xs leading-4 text-[#64748b]">Hubungkan formula bahan ke produk menu penjualan</p>
@@ -166,7 +166,7 @@ export default function ProductRecipeModal({ products, productId = null, onClose
                     ))
                   )}
                 </select>
-                <p className="text-[11px] leading-4 text-[#64748b]">
+                <p className="text-xs leading-4 text-[#64748b]">
                   Hanya menampilkan produk yang belum lengkap formula resepnya.
                 </p>
                 <FieldError message={errors.product} />
@@ -191,7 +191,7 @@ export default function ProductRecipeModal({ products, productId = null, onClose
                   <span className="flex items-center gap-1.5 font-medium text-[#475569]">
                     Add Cost (Penyusutan)
                     {addCostPct !== null && (
-                      <span className="rounded border border-[#cbd5e1] bg-white px-[7px] py-[3px] text-[10px] font-semibold text-[#0f172a]">
+                      <span className="rounded border border-[#cbd5e1] bg-white px-[7px] py-[3px] text-xs font-semibold text-[#0f172a]">
                         {addCostPct}%
                       </span>
                     )}
@@ -212,7 +212,7 @@ export default function ProductRecipeModal({ products, productId = null, onClose
               <div className="flex flex-col gap-2.5 rounded-xl border border-[#e2e8f0] bg-white p-[17px]">
                 <div>
                   <p className="text-xs font-bold text-[#0f172a]">Persentase Desired Cost</p>
-                  <p className="text-[11px] leading-4 text-[#64748b]">
+                  <p className="text-xs leading-4 text-[#64748b]">
                     Target beban modal pokok terhadap harga jual produk
                   </p>
                 </div>
@@ -225,7 +225,7 @@ export default function ProductRecipeModal({ products, productId = null, onClose
                   <p className="text-xs font-bold uppercase tracking-[0.6px] text-[#0f172a]">Harga Jual Rekomendasi</p>
                   <p className="text-xs leading-4 text-[#64748b]">Kalkulasi otomatis target harga jual sehat kafe</p>
                 </div>
-                <span className="text-xl font-bold text-[#0f172a]">
+                <span className="text-lg font-bold text-[#0f172a]">
                   {recommended !== null ? formatRupiah(recommended) : '-'}
                 </span>
               </div>
@@ -256,7 +256,7 @@ export default function ProductRecipeModal({ products, productId = null, onClose
                       key={card.label}
                       className="flex flex-1 flex-col gap-1 rounded-lg border border-[#e2e8f0] bg-white p-[13px]"
                     >
-                      <span className="text-[11px] font-semibold text-[#64748b]">{card.label}</span>
+                      <span className="text-xs font-semibold text-[#64748b]">{card.label}</span>
                       <span className={`text-lg font-bold ${card.green ? 'text-[#059669]' : 'text-[#0f172a]'}`}>
                         {card.value}
                       </span>
@@ -265,7 +265,7 @@ export default function ProductRecipeModal({ products, productId = null, onClose
                 </div>
               </div>
 
-              <p className="flex items-center gap-2.5 rounded-md bg-[#f1f5f9] p-3 text-[11px] leading-4 text-[#475569]">
+              <p className="flex items-center gap-2.5 rounded-md bg-[#f1f5f9] p-3 text-xs leading-4 text-[#475569]">
                 <Info className="size-4 shrink-0" />
                 Alert stok otomatis mengikuti ketersediaan bahan baku asli di modul Inventory Toko Kopi Irona.
               </p>

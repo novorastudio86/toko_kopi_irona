@@ -7,14 +7,14 @@ import { SCOPE_LABELS, formatQty } from './orderTypeFormat';
 
 function RuleLines({ ids, ruleById }: { ids: string[]; ruleById: Map<string, OrderTypeRule> }) {
   if (ids.length === 0)
-    return <p className="text-[11px] text-[#94a3b8]">Tidak ada aturan yang kena produk ini.</p>;
+    return <p className="text-xs text-[#94a3b8]">Tidak ada aturan yang kena produk ini.</p>;
   return (
     <ul className="flex flex-col gap-1.5">
       {ids.map((id) => {
         const r = ruleById.get(id);
         if (!r) return null;
         return (
-          <li key={id} className="flex items-start justify-between gap-3 text-[11px]">
+          <li key={id} className="flex items-start justify-between gap-3 text-xs">
             <span className="text-[#475569]">
               <span className="font-semibold text-[#0f172a]">
                 {r.appliesToAllProducts ? 'Semua Produk' : 'Produk tertentu'} ·{' '}
@@ -95,7 +95,7 @@ export default function ProductPriceModal({ productId, rules, onClose }: Props) 
                     {formatRupiah(prices.dineInPrice)}
                   </span>
                 </div>
-                <p className="text-[11px] text-[#94a3b8]">
+                <p className="text-xs text-[#94a3b8]">
                   Harga jual dari Daftar Produk, tanpa biaya tambahan.
                 </p>
               </div>
@@ -107,7 +107,7 @@ export default function ProductPriceModal({ productId, rules, onClose }: Props) 
                     {formatRupiah(prices.takeAwayPrice)}
                   </span>
                 </div>
-                <p className="text-[11px] text-[#64748b]">
+                <p className="text-xs text-[#64748b]">
                   Harga Dine In {formatRupiah(prices.dineInPrice)}
                 </p>
                 <RuleLines ids={prices.takeAwayRuleIds} ruleById={ruleById} />
@@ -120,7 +120,7 @@ export default function ProductPriceModal({ productId, rules, onClose }: Props) 
                     {formatRupiah(prices.onlinePrice)}
                   </span>
                 </div>
-                <p className="text-[11px] text-[#64748b]">
+                <p className="text-xs text-[#64748b]">
                   Harga Dine In {formatRupiah(prices.dineInPrice)}
                 </p>
                 <RuleLines ids={prices.onlineRuleIds} ruleById={ruleById} />

@@ -162,7 +162,7 @@ export default function StockAdjustmentModal({ onClose, onSaved }: Props) {
                 </select>
                 <FieldError message={errors.item} />
                 {itemType === 'racikan' && racikanList.length === 0 && (
-                  <p className="text-[11px] text-[#94a3b8]">
+                  <p className="text-xs text-[#94a3b8]">
                     Belum ada racikan Batch. Buat dulu di Master Resep.
                   </p>
                 )}
@@ -231,7 +231,7 @@ export default function StockAdjustmentModal({ onClose, onSaved }: Props) {
                 </div>
               )}
 
-              <p className="flex items-center gap-2 text-[11px] leading-4 text-[#64748b]">
+              <p className="flex items-center gap-2 text-xs leading-4 text-[#64748b]">
                 <Info className="size-3.5 shrink-0" />
                 Yang dicatat adalah selisihnya, sehingga riwayat stok tetap bisa ditelusuri.
               </p>

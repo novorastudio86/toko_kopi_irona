@@ -33,7 +33,7 @@ function InfoPopup({ text }: { text: string }) {
         <Info className="size-3.5" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-20 mt-1 w-64 rounded-xl border border-[#334155] bg-[#0f172a] p-3 text-[11px] leading-4 text-[#e2e8f0] shadow-xl">
+        <div className="absolute right-0 top-full z-20 mt-1 w-64 rounded-xl border border-[#334155] bg-[#0f172a] p-3 text-xs leading-4 text-[#e2e8f0] shadow-xl">
           {text}
         </div>
       )}
@@ -207,7 +207,7 @@ export default function SalesSummaryReportScreen() {
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span
-                      className={`text-[11px] font-bold uppercase tracking-[0.5px] ${i === steps.length - 1 ? 'text-[#94a3b8]' : 'text-[#64748b]'}`}
+                      className={`text-xs font-bold uppercase tracking-[0.5px] ${i === steps.length - 1 ? 'text-[#94a3b8]' : 'text-[#64748b]'}`}
                     >
                       {s.label}
                     </span>
@@ -219,7 +219,7 @@ export default function SalesSummaryReportScreen() {
                   </span>
                   {s.op && s.op !== '−' && s.op !== '=' && (
                     <span
-                      className={`text-[10px] ${i === steps.length - 1 ? 'text-[#cbd5e1]' : 'text-[#94a3b8]'}`}
+                      className={`text-xs ${i === steps.length - 1 ? 'text-[#cbd5e1]' : 'text-[#94a3b8]'}`}
                     >
                       {s.op === '− refund'
                         ? `setelah refund ${formatRupiah(data?.refund ?? 0)}`

@@ -54,7 +54,7 @@ type FormState = { mode: 'create' } | { mode: 'edit'; id: string } | null;
 function ChannelTag({ label, muted }: { label: string; muted: boolean }) {
   return (
     <span
-      className={`rounded px-1.5 text-[10px] font-medium leading-4 text-white ${
+      className={`rounded px-1.5 text-xs font-medium leading-4 text-white ${
         muted ? 'bg-[#94a3b8]' : 'bg-[#1e293b]'
       }`}
     >
@@ -400,13 +400,13 @@ export default function ProductListScreen() {
                               {row.name}
                             </p>
                             {incomplete && (
-                              <span className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-[10px] font-medium leading-4 text-[#e11d48]">
+                              <span className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-xs font-medium leading-4 text-[#e11d48]">
                                 <AlertTriangle className="size-3" />
                                 Resep Belum Diisi
                               </span>
                             )}
                             {noPrice && (
-                              <span className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-[10px] font-medium leading-4 text-[#e11d48]">
+                              <span className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-xs font-medium leading-4 text-[#e11d48]">
                                 <AlertTriangle className="size-3" />
                                 Harga Belum Lengkap
                               </span>

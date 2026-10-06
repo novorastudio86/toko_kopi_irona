@@ -126,7 +126,7 @@ export default function ShiftDefaultsModal({ employee, allEmployees, onClose, on
       >
         <div className="flex shrink-0 items-start justify-between border-b border-[#e2e8f0] px-6 pb-5 pt-5">
           <div>
-            <h2 className="text-lg font-bold leading-7 text-[#0f172a]">
+            <h2 className="text-base font-bold leading-6 text-[#0f172a]">
               Jadwal Mingguan{employee ? ` — ${employee.fullName}` : ''}
             </h2>
             <p className="text-xs leading-4 text-[#64748b]">
@@ -185,7 +185,7 @@ export default function ShiftDefaultsModal({ employee, allEmployees, onClose, on
 
                         {first && second && (
                           <div className="flex items-center gap-1">
-                            <span className="text-[10px] font-bold uppercase text-[#94a3b8]">+</span>
+                            <span className="text-xs font-bold uppercase text-[#94a3b8]">+</span>
                             <select value={second} onChange={(e) => setSecond(dow, e.target.value)} className={selectClass}>
                               {options.map((p) => (
                                 <option key={p.id} value={p.id}>
@@ -208,7 +208,7 @@ export default function ShiftDefaultsModal({ employee, allEmployees, onClose, on
                             onClick={() => setSecond(dow, options[0].id)}
                             disabled={options.length === 0}
                             title={options.length === 0 ? 'Tidak ada shift lain yang jamnya tidak bertabrakan' : undefined}
-                            className="flex items-center gap-1 rounded-lg border border-dashed border-[#cbd5e1] px-2.5 py-1.5 text-[11px] font-semibold text-[#475569] hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex items-center gap-1 rounded-lg border border-dashed border-[#cbd5e1] px-2.5 py-1.5 text-xs font-semibold text-[#475569] hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             <Plus className="size-3" />
                             Shift 2

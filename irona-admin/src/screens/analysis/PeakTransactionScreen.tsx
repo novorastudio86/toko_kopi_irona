@@ -133,18 +133,18 @@ export default function PeakTransactionScreen() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="flex flex-col gap-1 rounded-2xl border border-[#0f172a] bg-[#0f172a] p-4">
-          <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#94a3b8]">
+          <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#94a3b8]">
             Jam Teramai
           </p>
           <p className="font-mono text-lg font-bold text-white">
             {peakHour === null ? '—' : hourLabel(peakHour)}
           </p>
-          <p className="text-[11px] text-[#94a3b8]">
+          <p className="text-xs text-[#94a3b8]">
             berdasarkan {metric === 'sales' ? 'nilai penjualan' : 'jumlah transaksi'}
           </p>
         </div>
         <div className="flex flex-col gap-1 rounded-2xl border border-[#e2e8f0] bg-white p-4">
-          <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+          <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
             Hari Teramai
           </p>
           <p className="text-lg font-bold text-[#0f172a]">
@@ -195,47 +195,49 @@ export default function PeakTransactionScreen() {
       </section>
 
       <div className="overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
-        <table className="w-full border-collapse">
-          <thead className="border-b border-[#e2e8f0] bg-[rgba(248,250,252,0.75)]">
-            <tr>
-              <th className={`${thClass} pl-6 text-left`}>Jam</th>
-              <th className={`${thClass} text-right`}>Jumlah Transaksi</th>
-              <th className={`${thClass} text-right`}>Nilai Penjualan</th>
-              <th className={`${thClass} pr-6 text-right`}>% dari Total Periode</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paged.map((r) => {
-              const pct = total ? (r[metric] / total) * 100 : 0;
-              return (
-                <tr key={r.hour} className="border-t border-[#f1f5f9] text-sm first:border-t-0">
-                  <td className="py-3 pl-6 pr-3 font-mono font-semibold text-[#0f172a]">
-                    {hourLabel(r.hour)}
-                  </td>
-                  <td className="py-3 pr-3 text-right font-mono">
-                    {r.transactions ? r.transactions.toLocaleString('id-ID') : '—'}
-                  </td>
-                  <td className="py-3 pr-3 text-right font-mono">
-                    {r.sales ? formatRupiah(r.sales) : '—'}
-                  </td>
-                  <td className="py-3 pr-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <div className="h-1.5 w-24 overflow-hidden rounded-full bg-[#f1f5f9]">
-                        <div
-                          className="h-full rounded-full bg-[#0f172a]"
-                          style={{ width: `${pct}%` }}
-                        />
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[720px] border-collapse">
+            <thead className="border-b border-[#e2e8f0] bg-[rgba(248,250,252,0.75)]">
+              <tr>
+                <th className={`${thClass} pl-6 text-left`}>Jam</th>
+                <th className={`${thClass} text-right`}>Jumlah Transaksi</th>
+                <th className={`${thClass} text-right`}>Nilai Penjualan</th>
+                <th className={`${thClass} pr-6 text-right`}>% dari Total Periode</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paged.map((r) => {
+                const pct = total ? (r[metric] / total) * 100 : 0;
+                return (
+                  <tr key={r.hour} className="border-t border-[#f1f5f9] text-sm first:border-t-0">
+                    <td className="py-3 pl-6 pr-3 font-mono font-semibold text-[#0f172a]">
+                      {hourLabel(r.hour)}
+                    </td>
+                    <td className="py-3 pr-3 text-right font-mono">
+                      {r.transactions ? r.transactions.toLocaleString('id-ID') : '—'}
+                    </td>
+                    <td className="py-3 pr-3 text-right font-mono">
+                      {r.sales ? formatRupiah(r.sales) : '—'}
+                    </td>
+                    <td className="py-3 pr-6 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <div className="h-1.5 w-24 overflow-hidden rounded-full bg-[#f1f5f9]">
+                          <div
+                            className="h-full rounded-full bg-[#0f172a]"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                        <span className="w-12 font-mono">
+                          {pct.toLocaleString('id-ID', { maximumFractionDigits: 1 })}%
+                        </span>
                       </div>
-                      <span className="w-12 font-mono">
-                        {pct.toLocaleString('id-ID', { maximumFractionDigits: 1 })}%
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
         <TablePagination
           page={currentPage}
           pageSize={pageSize}

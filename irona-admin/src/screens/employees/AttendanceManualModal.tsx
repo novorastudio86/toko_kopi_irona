@@ -95,7 +95,7 @@ export default function AttendanceManualModal({ date, employees, onClose, onSave
       >
         <div className="flex shrink-0 items-start justify-between border-b border-[#e2e8f0] px-6 pb-5 pt-5">
           <div>
-            <h2 className="text-lg font-bold leading-7 text-[#0f172a]">Tambah Presensi Manual</h2>
+            <h2 className="text-base font-bold leading-6 text-[#0f172a]">Tambah Presensi Manual</h2>
             <p className="text-xs leading-4 text-[#64748b]">
               Untuk karyawan yang lupa scan di{' '}
               {parseLocalDate(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })}
@@ -127,7 +127,7 @@ export default function AttendanceManualModal({ date, employees, onClose, onSave
             </select>
             <FieldError message={errors.employee} />
             {employees.length === 0 && (
-              <p className="text-[11px] text-[#94a3b8]">
+              <p className="text-xs text-[#94a3b8]">
                 Semua karyawan aktif sudah tercatat di tanggal ini.
               </p>
             )}
@@ -145,7 +145,7 @@ export default function AttendanceManualModal({ date, employees, onClose, onSave
               <FieldError message={errors.shift} />
               {scheduled !== null && (
                 <p
-                  className={`text-[11px] leading-4 ${differsFromSchedule ? 'text-[#b45309]' : 'text-[#94a3b8]'}`}
+                  className={`text-xs leading-4 ${differsFromSchedule ? 'text-[#b45309]' : 'text-[#94a3b8]'}`}
                 >
                   {scheduled.length === 0
                     ? 'Karyawan ini tidak terjadwal di tanggal ini (libur / belum diatur) — pilih shift yang dikerjakan.'
@@ -197,7 +197,7 @@ export default function AttendanceManualModal({ date, employees, onClose, onSave
             <FieldError message={errors.reason} />
           </div>
 
-          <p className="text-[11px] leading-4 text-[#94a3b8]">
+          <p className="text-xs leading-4 text-[#94a3b8]">
             Telat, lembur (lewat 23:00 / sebelum 08:00 karena Jam Khusus), dan Shift 2 dihitung
             otomatis dari shift yang dipilih.
           </p>

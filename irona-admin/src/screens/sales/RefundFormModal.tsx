@@ -138,7 +138,7 @@ export default function RefundFormModal({ onClose, onSaved }: Props) {
               </button>
             </div>
             <FieldError message={errors.query} />
-            <p className="text-[11px] text-[#94a3b8]">
+            <p className="text-xs text-[#94a3b8]">
               Channel (offline/online) terdeteksi otomatis dari transaksinya.
             </p>
           </div>
@@ -150,13 +150,13 @@ export default function RefundFormModal({ onClose, onSaved }: Props) {
                   <p className="font-mono text-sm font-bold text-[#0f172a]">
                     {tx.transactionNumber}
                   </p>
-                  <p className="text-[11px] text-[#64748b]">
+                  <p className="text-xs text-[#64748b]">
                     {formatDateTime(tx.transactionDate)} · {ORDER_TYPE_LABELS[tx.orderType]} ·{' '}
                     {tx.paymentMethod === 'qris' ? 'QRIS' : 'Tunai'}
                   </p>
                 </div>
                 <span
-                  className={`inline-flex rounded-md px-2 py-0.5 text-[10px] font-bold ${
+                  className={`inline-flex rounded-md px-2 py-0.5 text-xs font-bold ${
                     tx.channel === 'online'
                       ? 'bg-[#eff6ff] text-[#1d4ed8]'
                       : 'bg-[#e2e8f0] text-[#334155]'
@@ -170,7 +170,7 @@ export default function RefundFormModal({ onClose, onSaved }: Props) {
                 <span className="text-[#64748b]">Pelanggan: </span>
                 <span className="font-semibold">{tx.customerName || '—'}</span>
                 {tx.isMember && (
-                  <span className="ml-1.5 rounded bg-[#0f172a] px-1.5 py-0.5 text-[10px] font-bold text-white">
+                  <span className="ml-1.5 rounded bg-[#0f172a] px-1.5 py-0.5 text-xs font-bold text-white">
                     Member
                   </span>
                 )}
@@ -178,7 +178,7 @@ export default function RefundFormModal({ onClose, onSaved }: Props) {
 
               <div className="flex flex-col gap-1 border-t border-[#e2e8f0] pt-3">
                 {tx.items.length === 0 && (
-                  <p className="text-[11px] text-[#94a3b8]">Tidak ada rincian produk.</p>
+                  <p className="text-xs text-[#94a3b8]">Tidak ada rincian produk.</p>
                 )}
                 {tx.items.map((item, i) => (
                   <div key={i} className="flex justify-between text-xs text-[#334155]">
@@ -201,7 +201,7 @@ export default function RefundFormModal({ onClose, onSaved }: Props) {
               </div>
 
               {tx.isMember && (
-                <p className="flex items-start gap-1.5 rounded-lg bg-white px-3 py-2 text-[11px] leading-4 text-[#475569]">
+                <p className="flex items-start gap-1.5 rounded-lg bg-white px-3 py-2 text-xs leading-4 text-[#475569]">
                   <Info className="mt-px size-3.5 shrink-0" />
                   <span>
                     Total Belanja & Poin akan disesuaikan otomatis
@@ -229,7 +229,7 @@ export default function RefundFormModal({ onClose, onSaved }: Props) {
                   }`}
                 >
                   <p className="text-xs font-bold text-[#0f172a]">{opt.title}</p>
-                  <p className="pt-0.5 text-[11px] leading-4 text-[#64748b]">{opt.desc}</p>
+                  <p className="pt-0.5 text-xs leading-4 text-[#64748b]">{opt.desc}</p>
                 </button>
               ))}
             </div>

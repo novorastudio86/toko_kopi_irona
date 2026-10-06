@@ -109,7 +109,7 @@ export function RecipeStep({
             Komposisi Takaran Resep (Per 1 Porsi)
           </p>
 
-          <div className="grid grid-cols-[minmax(0,1fr)_76px_44px_88px_84px_28px] gap-2.5 whitespace-nowrap px-3 text-[11px] font-semibold uppercase tracking-[0.3px] text-[#64748b]">
+          <div className="grid grid-cols-[minmax(0,1fr)_76px_44px_88px_84px_28px] gap-2.5 whitespace-nowrap px-3 text-xs font-semibold uppercase tracking-[0.3px] text-[#64748b]">
             <span>Bahan Baku / Racikan</span>
             <span>Takaran</span>
             <span>Satuan</span>
@@ -174,7 +174,7 @@ export function RecipeStep({
           </button>
 
           {racikanSources.length === 0 && (
-            <p className="text-[11px] leading-4 text-[#94a3b8]">
+            <p className="text-xs leading-4 text-[#94a3b8]">
               Belum ada racikan. Racikan bisa dibuat di Master Resep, lalu akan muncul di daftar ini.
             </p>
           )}
@@ -200,7 +200,7 @@ export function RecipeStep({
             hasError={!!error}
             placeholder="Contoh: 4.000"
           />
-          <p className="text-[11px] leading-4 text-[#94a3b8]">
+          <p className="text-xs leading-4 text-[#94a3b8]">
             Isi dengan harga beli/modal produk jadi (mis. air mineral botolan). Stok bahan tidak dipotong otomatis.
           </p>
         </div>
@@ -217,7 +217,7 @@ export function RecipeStep({
             <span className="flex items-center gap-2 text-[#475569]">
               Add Cost (Penyusutan)
               {addCostPct !== null && (
-                <span className="rounded border border-[#e2e8f0] bg-white px-1.5 text-[11px] font-semibold text-[#0f172a]">
+                <span className="rounded border border-[#e2e8f0] bg-white px-1.5 text-xs font-semibold text-[#0f172a]">
                   {addCostPct}%
                 </span>
               )}

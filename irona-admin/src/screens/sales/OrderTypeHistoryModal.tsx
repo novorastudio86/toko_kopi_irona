@@ -92,7 +92,7 @@ export default function OrderTypeHistoryModal({ onClose }: Props) {
               <div key={h.id} className="rounded-xl border border-[#e2e8f0] px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
                       h.action === 'dihapus'
                         ? 'bg-[#fff1f2] text-[#e11d48]'
                         : 'bg-[#0f172a] text-white'
@@ -100,7 +100,7 @@ export default function OrderTypeHistoryModal({ onClose }: Props) {
                   >
                     {ACTION_LABELS[h.action]}
                   </span>
-                  <span className="text-[11px] text-[#64748b]">
+                  <span className="text-xs text-[#64748b]">
                     {new Date(h.createdAt).toLocaleString('id-ID', {
                       day: 'numeric',
                       month: 'short',
@@ -115,7 +115,7 @@ export default function OrderTypeHistoryModal({ onClose }: Props) {
                     if (h.action === 'diubah') {
                       if (!before || !after || before[k] === after[k]) return null;
                       return (
-                        <li key={k} className="text-[11px] text-[#334155]">
+                        <li key={k} className="text-xs text-[#334155]">
                           <span className="font-semibold">{LABELS[k]}:</span>{' '}
                           <span className="text-[#94a3b8] line-through">{before[k]}</span> →{' '}
                           {after[k]}
@@ -124,7 +124,7 @@ export default function OrderTypeHistoryModal({ onClose }: Props) {
                     }
                     const snap = after ?? before;
                     return snap ? (
-                      <li key={k} className="text-[11px] text-[#334155]">
+                      <li key={k} className="text-xs text-[#334155]">
                         <span className="font-semibold">{LABELS[k]}:</span> {snap[k]}
                       </li>
                     ) : null;

@@ -75,7 +75,7 @@ const COLUMNS: Column[] = [
     defaultOn: true,
     render: (r) => (
       <span
-        className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${r.channel === 'online' ? 'bg-[#eff6ff] text-[#1d4ed8]' : 'bg-[#f1f5f9] text-[#334155]'}`}
+        className={`rounded-md px-2 py-0.5 text-xs font-bold ${r.channel === 'online' ? 'bg-[#eff6ff] text-[#1d4ed8]' : 'bg-[#f1f5f9] text-[#334155]'}`}
       >
         {CHANNEL_LABELS[r.channel]}
       </span>
@@ -184,7 +184,7 @@ const COLUMNS: Column[] = [
     render: (r) =>
       r.balanceStatus ? (
         <span
-          className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${BALANCE_STATUS_CLASSES[r.balanceStatus]}`}
+          className={`rounded-md px-2 py-0.5 text-xs font-bold ${BALANCE_STATUS_CLASSES[r.balanceStatus]}`}
         >
           {BALANCE_STATUS_LABELS[r.balanceStatus]}
         </span>

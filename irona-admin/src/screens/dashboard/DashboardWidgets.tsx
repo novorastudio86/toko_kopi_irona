@@ -22,7 +22,7 @@ export function WidgetCard({
   return (
     <article className="flex flex-col justify-between rounded-[22px] border border-[rgba(226,232,240,0.9)] bg-white p-[29px] shadow-[0px_2px_8px_-2px_rgba(0,0,0,0.05)]">
       <div className="flex flex-col gap-6">
-        <h3 className="text-lg font-bold leading-7 tracking-[-0.45px] text-[#0f172a]">{title}</h3>
+        <h3 className="text-base font-bold leading-6 tracking-[-0.45px] text-[#0f172a]">{title}</h3>
         {empty ? (
           <p className="py-6 text-center text-xs text-[#94a3b8]">Belum ada data di periode ini.</p>
         ) : (
@@ -87,7 +87,7 @@ export function LabeledBarList({ rows, limit }: { rows: BreakdownRow[]; limit?: 
         <div key={r.key} className="grid grid-cols-[88px_1fr] items-center gap-3">
           <span className="text-right text-xs font-medium text-[#475569]">{r.label}</span>
           <div className="flex flex-col gap-1">
-            <span className="text-[13px] font-bold leading-4 text-[#0f172a]">{rp(r.amount)}</span>
+            <span className="text-sm font-bold leading-4 text-[#0f172a]">{rp(r.amount)}</span>
             <Bar ratio={r.amount / max} height={8} />
           </div>
         </div>
@@ -106,7 +106,7 @@ export function ShareBarList({ rows, limit }: { rows: BreakdownRow[]; limit?: nu
           <div className="flex items-center justify-between gap-3">
             <span className="text-xs font-medium text-[#334155]">{r.label}</span>
             <span className="flex items-center gap-3">
-              <span className="text-[13px] font-bold leading-4 text-[#0f172a]">{rp(r.amount)}</span>
+              <span className="text-sm font-bold leading-4 text-[#0f172a]">{rp(r.amount)}</span>
               <span className="w-8 text-right text-xs font-medium text-[#94a3b8]">
                 {Math.round((r.amount / total) * 100)}%
               </span>
@@ -128,7 +128,7 @@ export function QtyBarList({ rows, limit }: { rows: BreakdownRow[]; limit?: numb
         <div key={r.key} className="flex flex-col gap-1">
           <div className="flex items-center justify-between gap-3">
             <span className="text-xs font-medium text-[#334155]">{r.label}</span>
-            <span className="text-[13px] font-bold text-[#0f172a]">{qtyFmt(r.count)}</span>
+            <span className="text-sm font-bold text-[#0f172a]">{qtyFmt(r.count)}</span>
           </div>
           <Bar ratio={r.count / max} />
         </div>
@@ -152,7 +152,7 @@ export function StockList({ rows, limit }: { rows: LowStockRow[]; limit?: number
       {rows.slice(0, limit).map((r) => (
         <div key={r.name} className="flex flex-col gap-1.5">
           <div className="flex items-start justify-between gap-3">
-            <span className="text-[13px] font-medium leading-5 text-[#1e293b]">{r.name}</span>
+            <span className="text-sm font-medium leading-5 text-[#1e293b]">{r.name}</span>
             <span className="shrink-0 text-xs font-bold text-[#0f172a]">
               {qtyFmt(r.stock)} {r.unit}
               <span className="font-medium text-[#94a3b8]">

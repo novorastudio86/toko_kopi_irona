@@ -234,51 +234,53 @@ export default function PaymentReportScreen() {
       </section>
 
       <div className="overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
-        <table className="w-full border-collapse">
-          <thead className="border-b border-[#e2e8f0] bg-[rgba(248,250,252,0.75)]">
-            <tr>
-              <th className={`${thClass} pl-6 text-left`}>Metode Pembayaran</th>
-              <th className={`${thClass} text-right`}>Jumlah Transaksi</th>
-              <th className={`${thClass} text-right`}>%</th>
-              <th className={`${thClass} text-right`}>Nominal</th>
-              <th className={`${thClass} pr-6 text-right`}>%</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!loading && methods.length === 0 && (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[720px] border-collapse">
+            <thead className="border-b border-[#e2e8f0] bg-[rgba(248,250,252,0.75)]">
               <tr>
-                <td colSpan={5} className="py-10 text-center text-sm text-[#94a3b8]">
-                  Tidak ada transaksi di periode ini.
-                </td>
+                <th className={`${thClass} pl-6 text-left`}>Metode Pembayaran</th>
+                <th className={`${thClass} text-right`}>Jumlah Transaksi</th>
+                <th className={`${thClass} text-right`}>%</th>
+                <th className={`${thClass} text-right`}>Nominal</th>
+                <th className={`${thClass} pr-6 text-right`}>%</th>
               </tr>
-            )}
-            {methods.map((m) => (
-              <tr key={m.method} className="border-t border-[#f1f5f9] first:border-t-0 text-sm">
-                <td className="py-3.5 pl-6 pr-3">
-                  <span className="flex items-center gap-2 font-semibold text-[#0f172a]">
-                    <span
-                      className="size-2.5 rounded-full"
-                      style={{ background: METHOD_COLORS[m.method] ?? '#94a3b8' }}
-                    />
-                    {PAYMENT_LABELS[m.method] ?? m.method}
-                  </span>
-                </td>
-                <td className="py-3.5 pr-3 text-right font-mono">
-                  {m.transactions.toLocaleString('id-ID')}
-                </td>
-                <td className="py-3.5 pr-3 text-right font-mono text-[#64748b]">
-                  {pct(m.transactions, totalTx).toFixed(1)}%
-                </td>
-                <td className="py-3.5 pr-3 text-right font-mono font-semibold">
-                  {formatRupiah(m.amount)}
-                </td>
-                <td className="py-3.5 pr-6 text-right font-mono text-[#64748b]">
-                  {pct(m.amount, totalAmount).toFixed(1)}%
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {!loading && methods.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="py-10 text-center text-sm text-[#94a3b8]">
+                    Tidak ada transaksi di periode ini.
+                  </td>
+                </tr>
+              )}
+              {methods.map((m) => (
+                <tr key={m.method} className="border-t border-[#f1f5f9] first:border-t-0 text-sm">
+                  <td className="py-3.5 pl-6 pr-3">
+                    <span className="flex items-center gap-2 font-semibold text-[#0f172a]">
+                      <span
+                        className="size-2.5 rounded-full"
+                        style={{ background: METHOD_COLORS[m.method] ?? '#94a3b8' }}
+                      />
+                      {PAYMENT_LABELS[m.method] ?? m.method}
+                    </span>
+                  </td>
+                  <td className="py-3.5 pr-3 text-right font-mono">
+                    {m.transactions.toLocaleString('id-ID')}
+                  </td>
+                  <td className="py-3.5 pr-3 text-right font-mono text-[#64748b]">
+                    {pct(m.transactions, totalTx).toFixed(1)}%
+                  </td>
+                  <td className="py-3.5 pr-3 text-right font-mono font-semibold">
+                    {formatRupiah(m.amount)}
+                  </td>
+                  <td className="py-3.5 pr-6 text-right font-mono text-[#64748b]">
+                    {pct(m.amount, totalAmount).toFixed(1)}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ function Section({
           </span>
           <div>
             <p className="text-sm font-bold text-[#0f172a]">{title}</p>
-            <p className="text-[11px] text-[#64748b]">{description}</p>
+            <p className="text-xs text-[#64748b]">{description}</p>
           </div>
         </div>
         {aside}
@@ -157,61 +157,63 @@ function PauseSection({ onChanged }: { onChanged: (message: string) => void }) {
                 className="flex w-full items-center justify-between gap-3 border-t border-[#f1f5f9] px-4 py-2.5 text-left text-xs first:border-t-0 hover:bg-[#f8fafc]"
               >
                 <span className="font-semibold text-[#0f172a]">{p.name}</span>
-                <span className="text-[11px] text-[#94a3b8]">{p.categoryName}</span>
+                <span className="text-xs text-[#94a3b8]">{p.categoryName}</span>
               </button>
             ))}
           </div>
         )}
       </div>
 
-      {error && <p className="mb-3 text-[11px] text-[#e11d48]">{error}</p>}
+      {error && <p className="mb-3 text-xs text-[#e11d48]">{error}</p>}
 
-      <table className="w-full border-collapse">
-        <thead className="border-y border-[#e2e8f0] bg-[#f8fafc]">
-          <tr className="text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]">
-            <th className="px-3 py-2.5 text-left">Nama Produk</th>
-            <th className="px-3 py-2.5 text-left">Dijeda Sejak</th>
-            <th className="px-3 py-2.5 text-right">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paused.length === 0 && (
-            <tr>
-              <td colSpan={3} className="py-8 text-center text-sm text-[#94a3b8]">
-                Tidak ada produk yang sedang dijeda tayangnya dari Online.
-              </td>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[640px] border-collapse">
+          <thead className="border-y border-[#e2e8f0] bg-[#f8fafc]">
+            <tr className="text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]">
+              <th className="px-3 py-2.5 text-left">Nama Produk</th>
+              <th className="px-3 py-2.5 text-left">Dijeda Sejak</th>
+              <th className="px-3 py-2.5 text-right">Aksi</th>
             </tr>
-          )}
-          {paused.map((p) => (
-            <tr key={p.productId} className="border-t border-[#f1f5f9]">
-              <td className="px-3 py-2.5 text-sm font-semibold text-[#0f172a]">{p.productName}</td>
-              <td className="px-3 py-2.5 text-sm text-[#475569]">
-                {new Date(p.pausedAt).toLocaleString('id-ID', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </td>
-              <td className="px-3 py-2.5 text-right">
-                <button
-                  disabled={busy}
-                  onClick={() =>
-                    run(
-                      () => resumeProductOnline(p.productId),
-                      `"${p.productName}" tampil lagi di Online.`
-                    )
-                  }
-                  className="rounded-lg border border-[#e2e8f0] px-3 py-1 text-xs font-semibold text-[#334155] hover:bg-[#f8fafc] disabled:opacity-50"
-                >
-                  Tampilkan Kembali
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {paused.length === 0 && (
+              <tr>
+                <td colSpan={3} className="py-8 text-center text-sm text-[#94a3b8]">
+                  Tidak ada produk yang sedang dijeda tayangnya dari Online.
+                </td>
+              </tr>
+            )}
+            {paused.map((p) => (
+              <tr key={p.productId} className="border-t border-[#f1f5f9]">
+                <td className="px-3 py-2.5 text-sm font-semibold text-[#0f172a]">{p.productName}</td>
+                <td className="px-3 py-2.5 text-sm text-[#475569]">
+                  {new Date(p.pausedAt).toLocaleString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </td>
+                <td className="px-3 py-2.5 text-right">
+                  <button
+                    disabled={busy}
+                    onClick={() =>
+                      run(
+                        () => resumeProductOnline(p.productId),
+                        `"${p.productName}" tampil lagi di Online.`
+                      )
+                    }
+                    className="rounded-lg border border-[#e2e8f0] px-3 py-1 text-xs font-semibold text-[#334155] hover:bg-[#f8fafc] disabled:opacity-50"
+                  >
+                    Tampilkan Kembali
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </Section>
   );
 }
@@ -315,15 +317,15 @@ function DeliverySection({
           />
         </div>
       </div>
-      <p className="pt-2 text-[11px] leading-4 text-[#94a3b8]">
+      <p className="pt-2 text-xs leading-4 text-[#94a3b8]">
         Ongkir dihitung dari 0 km: tiap kelipatan penuh kena tarif per kelipatan; sisa jarak yang
         belum genap 1 kelipatan kena tarif per 100 m (dibulatkan ke atas). Di atas jarak maksimal,
         opsi antar tidak muncul saat checkout.
       </p>
-      {error && <p className="pt-2 text-[11px] text-[#e11d48]">{error}</p>}
+      {error && <p className="pt-2 text-xs text-[#e11d48]">{error}</p>}
 
       <div className="mt-4 flex flex-col gap-3 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
-        <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">Simulasi</p>
+        <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">Simulasi</p>
         <div className="flex items-center gap-3">
           <div className="w-40">
             <NumberInput value={simulate} onChange={setSimulate} suffix="km" decimal />
@@ -356,7 +358,7 @@ function DeliverySection({
               return (
                 <span
                   key={d}
-                  className="rounded-full border border-[#e2e8f0] bg-white px-3 py-1 text-[11px] text-[#475569]"
+                  className="rounded-full border border-[#e2e8f0] bg-white px-3 py-1 text-xs text-[#475569]"
                 >
                   {d.toLocaleString('id-ID')} km ={' '}
                   <span
@@ -418,7 +420,7 @@ function ServiceFeeSection({
       <div className="w-64">
         <RupiahInput value={fee} onChange={setFee} placeholder="1.000" />
       </div>
-      {error && <p className="pt-2 text-[11px] text-[#e11d48]">{error}</p>}
+      {error && <p className="pt-2 text-xs text-[#e11d48]">{error}</p>}
     </Section>
   );
 }
@@ -504,7 +506,7 @@ export default function OnlineOrderScreen() {
               aside={
                 <button
                   onClick={() => setSimulationOpen(true)}
-                  className="shrink-0 rounded-lg border border-[#e2e8f0] px-3 py-1.5 text-[11px] font-semibold text-[#334155] hover:bg-[#f8fafc]"
+                  className="shrink-0 rounded-lg border border-[#e2e8f0] px-3 py-1.5 text-xs font-semibold text-[#334155] hover:bg-[#f8fafc]"
                 >
                   Lihat Simulasi
                 </button>
@@ -513,7 +515,7 @@ export default function OnlineOrderScreen() {
               <p className="font-mono text-sm font-bold text-[#0f172a]">
                 MDR {settings.mdrPercent}% + PPN {settings.ppnPercent}% dari MDR
               </p>
-              <p className="pt-1 text-[11px] text-[#94a3b8]">
+              <p className="pt-1 text-xs text-[#94a3b8]">
                 PPN hanya dikenakan ke biaya MDR, bukan ke total transaksi.
               </p>
             </Section>

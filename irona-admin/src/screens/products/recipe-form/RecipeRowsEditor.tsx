@@ -36,7 +36,7 @@ export function RecipeRowsEditor({ title, rows, onChange, sources, allowRacikan 
         {title}
       </p>
 
-      <div className="grid grid-cols-[minmax(0,5fr)_92px_56px_104px_128px] gap-2.5 px-3 text-[11px] font-medium leading-4 text-[#64748b]">
+      <div className="grid grid-cols-[minmax(0,5fr)_92px_56px_104px_128px] gap-2.5 px-3 text-xs font-medium leading-4 text-[#64748b]">
         <span>{allowRacikan ? 'Bahan Baku / Racikan' : 'Bahan Baku'}</span>
         <span>Takaran</span>
         <span>Satuan</span>

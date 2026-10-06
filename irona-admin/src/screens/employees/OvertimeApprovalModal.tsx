@@ -229,7 +229,7 @@ export default function OvertimeApprovalModal({ single, onClose, onSaved }: Prop
             placeholder="Catatan (opsional), mis. menunggu stok opname / santai setelah tutup"
             className="w-full rounded-xl border border-[#cbd5e1] px-4 py-2.5 text-xs outline-none focus:border-[#94a3b8]"
           />
-          <p className="text-[11px] leading-4 text-[#94a3b8]">
+          <p className="text-xs leading-4 text-[#94a3b8]">
             Dibayar per menit (tarif per jam ÷ 60). Lembur pagi karena Jam Khusus sudah otomatis
             disetujui dan tidak muncul di sini.
           </p>

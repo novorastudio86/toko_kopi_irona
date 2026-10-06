@@ -56,7 +56,7 @@ export default function CashFlowEntryDetail({ entry: e }: Props) {
         const ratio = totalNet ? e.amount / totalNet : 0;
         show(
           <div className="flex flex-col gap-1">
-            <div className="flex justify-between pb-1 text-[11px] font-bold uppercase tracking-[0.5px] text-[#64748b]">
+            <div className="flex justify-between pb-1 text-xs font-bold uppercase tracking-[0.5px] text-[#64748b]">
               <span>{sales.length} transaksi</span>
               <span>Bersih → Jatah {BUCKET_LABELS[e.bucket]}</span>
             </div>
@@ -68,7 +68,7 @@ export default function CashFlowEntryDetail({ entry: e }: Props) {
                 >
                   <span className="text-[#334155]">
                     <span className="font-mono">{t.number}</span>
-                    <span className="block text-[10px] text-[#94a3b8]">
+                    <span className="block text-xs text-[#94a3b8]">
                       {new Date(t.time).toLocaleTimeString('id-ID', {
                         hour: '2-digit',
                         minute: '2-digit',
@@ -81,7 +81,7 @@ export default function CashFlowEntryDetail({ entry: e }: Props) {
                   </span>
                   <span className="text-right font-mono">
                     {formatRupiahDetail(t.net)}
-                    <span className="block text-[10px] text-[#047857]">
+                    <span className="block text-xs text-[#047857]">
                       +{formatRupiahDetail(Math.round(t.net * ratio * 100) / 100)}
                     </span>
                   </span>
@@ -181,7 +181,7 @@ export default function CashFlowEntryDetail({ entry: e }: Props) {
         </p>
       )}
 
-      <p className="text-[11px] leading-4 text-[#94a3b8]">
+      <p className="text-xs leading-4 text-[#94a3b8]">
         {e.entryType !== 'alokasi' &&
           `Dicatat ${formatDateTime(e.sortAt)} · tanggal ${formatDate(e.entryDate)}. `}
         {SOURCE_HINTS[e.entryType] ?? ''}

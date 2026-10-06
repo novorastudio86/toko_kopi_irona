@@ -33,7 +33,7 @@ export function StatCard({
       }`}
     >
       <p
-        className={`text-[11px] font-bold uppercase tracking-[0.55px] ${dark ? 'text-[#94a3b8]' : 'text-[#64748b]'}`}
+        className={`text-xs font-bold uppercase tracking-[0.55px] ${dark ? 'text-[#94a3b8]' : 'text-[#64748b]'}`}
       >
         {label}
       </p>
@@ -45,7 +45,7 @@ export function StatCard({
         {format === 'number' ? value.toLocaleString('id-ID') : formatRupiah(value)}
       </p>
       {hint && (
-        <p className={`text-[11px] leading-4 ${dark ? 'text-[#cbd5e1]' : 'text-[#94a3b8]'}`}>
+        <p className={`text-xs leading-4 ${dark ? 'text-[#cbd5e1]' : 'text-[#94a3b8]'}`}>
           {hint}
         </p>
       )}
@@ -75,10 +75,10 @@ export function HppPanel({
       <div className="flex flex-col gap-3 rounded-2xl border border-[#e2e8f0] bg-white p-4 lg:col-span-2">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+            <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
               Batas Belanja Bahan Baku · {label}
             </p>
-            <p className="text-[11px] text-[#94a3b8]">
+            <p className="text-xs text-[#94a3b8]">
               {settings.hppBudgetPct}% dari alokasi HPP {label} ({formatRupiah(month.allocation)})
             </p>
           </div>
@@ -102,14 +102,14 @@ export function HppPanel({
           </span>
         </div>
         {over && (
-          <p className="flex items-start gap-1.5 rounded-lg bg-[#fff1f2] px-3 py-2 text-[11px] leading-4 text-[#be123c]">
+          <p className="flex items-start gap-1.5 rounded-lg bg-[#fff1f2] px-3 py-2 text-xs leading-4 text-[#be123c]">
             <AlertTriangle className="mt-px size-3.5 shrink-0" />
             Belanja bahan sudah melewati batas {settings.hppBudgetPct}%. Tetap tercatat — ini hanya
             peringatan.
           </p>
         )}
         {!month.isClosed && month.remaining > 0 && (
-          <p className="text-[11px] text-[#94a3b8]">
+          <p className="text-xs text-[#94a3b8]">
             Sisa batas belanja yang tidak terpakai otomatis masuk Saldo Mengendap saat bulan
             berganti.
           </p>
@@ -140,7 +140,7 @@ export function FixedCostBreakdown({ entries }: { entries: CashFlowEntry[] }) {
     <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
       {items.map((i) => (
         <div key={i.label} className="rounded-xl border border-[#e2e8f0] bg-white px-4 py-3">
-          <p className="text-[11px] text-[#64748b]">{i.label}</p>
+          <p className="text-xs text-[#64748b]">{i.label}</p>
           <p className="font-mono text-sm font-bold text-[#0f172a]">{formatRupiah(i.value)}</p>
         </div>
       ))}
@@ -163,7 +163,7 @@ export function NetProfitPanel({
   const bepEffect = month.bepBalance;
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+      <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
         Pembagian Net Profit · {label}
       </p>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -179,10 +179,10 @@ export function NetProfitPanel({
           hint={`Jatah ${formatRupiah(month.bepShare)} − aset ${formatRupiah(month.assetSpent)}`}
         >
           {bepEffect < 0 && (
-            <p className="text-[11px] font-semibold text-[#e11d48]">Kekurangan ditanggung Owner</p>
+            <p className="text-xs font-semibold text-[#e11d48]">Kekurangan ditanggung Owner</p>
           )}
           {bepEffect > 0 && (
-            <p className="text-[11px] text-[#047857]">Sisa BEP ikut masuk ke Owner</p>
+            <p className="text-xs text-[#047857]">Sisa BEP ikut masuk ke Owner</p>
           )}
         </StatCard>
         <div
@@ -259,7 +259,7 @@ export function OnlineBalanceStrip({
         </div>
         <div>
           <p className="text-sm font-bold text-[#0f172a]">Saldo Online</p>
-          <p className="text-[11px] leading-4 text-[#64748b]">
+          <p className="text-xs leading-4 text-[#64748b]">
             Pesanan online {periodLabel} via Midtrans (bersih setelah MDR), status saat ini
           </p>
         </div>
@@ -271,9 +271,9 @@ export function OnlineBalanceStrip({
           { label: 'Sudah Dicairkan', value: total('dicairkan'), hint: 'Sudah masuk rekening' },
         ].map((c) => (
           <div key={c.label} className="rounded-xl bg-[#f8fafc] px-3 py-2">
-            <p className="text-[11px] text-[#64748b]">{c.label}</p>
+            <p className="text-xs text-[#64748b]">{c.label}</p>
             <p className="font-mono text-sm font-bold text-[#0f172a]">{formatRupiah(c.value)}</p>
-            <p className="text-[10px] text-[#94a3b8]">{c.hint}</p>
+            <p className="text-xs text-[#94a3b8]">{c.hint}</p>
           </div>
         ))}
       </div>

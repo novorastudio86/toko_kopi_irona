@@ -20,7 +20,7 @@ import { DAY_LABELS, DAY_ORDER, typeMeaning } from './discountFormat';
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-[#e2e8f0] p-5">
-      <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">{title}</p>
+      <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">{title}</p>
       {children}
     </div>
   );
@@ -373,7 +373,7 @@ export default function DiscountFormModal({ promotion, onClose, onSaved }: Props
                           {p.name} —{' '}
                           {p.sellingPrice > 0 ? formatRupiah(p.sellingPrice) : 'harga belum diatur'}
                           {!p.isActive && (
-                            <span className="text-[10px] text-[#94a3b8]">(nonaktif)</span>
+                            <span className="text-xs text-[#94a3b8]">(nonaktif)</span>
                           )}
                         </label>
                       ))}
@@ -402,7 +402,7 @@ export default function DiscountFormModal({ promotion, onClose, onSaved }: Props
                   <span className="text-sm text-[#64748b]">km</span>
                 </div>
                 <FieldError message={errors.maxKm} />
-                <p className="text-[11px] text-[#94a3b8]">
+                <p className="text-xs text-[#94a3b8]">
                   Kosongkan untuk berlaku di semua jarak pengantaran. Isi 100% untuk gratis ongkir.
                 </p>
               </div>
@@ -438,7 +438,7 @@ export default function DiscountFormModal({ promotion, onClose, onSaved }: Props
                   { value: 'otomatis', label: 'Otomatis' },
                 ]}
               />
-              <p className="text-[11px] text-[#475569]">{typeMeaning(promoType, channel)}</p>
+              <p className="text-xs text-[#475569]">{typeMeaning(promoType, channel)}</p>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -544,7 +544,7 @@ export default function DiscountFormModal({ promotion, onClose, onSaved }: Props
             <div className="flex flex-col gap-1.5">
               <FieldLabel
                 aside={
-                  <span className="text-[11px] font-normal normal-case text-[#94a3b8]">
+                  <span className="text-xs font-normal normal-case text-[#94a3b8]">
                     opsional · kosong = setiap hari
                   </span>
                 }
@@ -586,7 +586,7 @@ export default function DiscountFormModal({ promotion, onClose, onSaved }: Props
               </div>
             </div>
             <FieldError message={errors.hours} />
-            <p className="flex items-center gap-2 text-[11px] text-[#94a3b8]">
+            <p className="flex items-center gap-2 text-xs text-[#94a3b8]">
               <Info className="size-3.5 shrink-0" />
               {channel === 'online' && promoType === 'manual'
                 ? 'Voucher berlaku sampai tanggal selesai, kapan pun diklaim. '

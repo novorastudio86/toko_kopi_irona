@@ -79,7 +79,7 @@ export function PageHeader({ title, info, badge, action }: Props) {
             </Popover.Root>
           )}
           {badge && (
-            <span className="rounded-full border border-[#e2e8f0] bg-[#f1f5f9] px-2.5 py-0.5 text-[11px] font-semibold leading-4 text-[#475569]">
+            <span className="rounded-full border border-[#e2e8f0] bg-[#f1f5f9] px-2.5 py-0.5 text-xs font-semibold leading-4 text-[#475569]">
               {badge}
             </span>
           )}

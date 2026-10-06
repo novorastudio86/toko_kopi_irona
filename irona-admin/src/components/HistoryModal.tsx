@@ -94,18 +94,18 @@ export function HistoryModal({ title, load, fields, onClose }: Props) {
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-2">
                     <span
-                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white ${action.className}`}
+                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold text-white ${action.className}`}
                     >
                       {action.label}
                     </span>
                     <span className="truncate text-xs font-semibold text-[#0f172a]">{h.subject}</span>
                     {h.tag && (
-                      <span className="shrink-0 rounded border border-[#e2e8f0] px-1.5 text-[10px] font-medium text-[#64748b]">
+                      <span className="shrink-0 rounded border border-[#e2e8f0] px-1.5 text-xs font-medium text-[#64748b]">
                         {h.tag}
                       </span>
                     )}
                   </div>
-                  <span className="shrink-0 text-[11px] text-[#64748b]">
+                  <span className="shrink-0 text-xs text-[#64748b]">
                     {new Date(h.changedAt).toLocaleString('id-ID', {
                       day: 'numeric',
                       month: 'short',
@@ -116,7 +116,7 @@ export function HistoryModal({ title, load, fields, onClose }: Props) {
                   </span>
                 </div>
                 {h.reason && (
-                  <p className="pt-1.5 text-[11px] text-[#334155]">
+                  <p className="pt-1.5 text-xs text-[#334155]">
                     <span className="font-semibold">Alasan:</span> {h.reason}
                   </p>
                 )}
@@ -129,7 +129,7 @@ export function HistoryModal({ title, load, fields, onClose }: Props) {
                         const from = (c.from as string[] | null) ?? [];
                         const to = (c.to as string[] | null) ?? [];
                         return (
-                          <li key={k} className="text-[11px] text-[#334155]">
+                          <li key={k} className="text-xs text-[#334155]">
                             {label}
                             {from
                               .filter((x) => !to.includes(x))
@@ -149,7 +149,7 @@ export function HistoryModal({ title, load, fields, onClose }: Props) {
                         );
                       }
                       return (
-                        <li key={k} className="text-[11px] text-[#334155]">
+                        <li key={k} className="text-xs text-[#334155]">
                           {label}{' '}
                           {k === 'photo_url' ? (
                             show(k, c.to)

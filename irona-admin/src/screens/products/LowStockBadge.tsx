@@ -92,7 +92,7 @@ export function LowStockBadge({ items, productUnit, onViewInventory }: Props) {
           }
         }}
         aria-expanded={open}
-        className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-[10px] font-medium leading-4 text-[#e11d48] hover:bg-[#fff1f2]"
+        className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-xs font-medium leading-4 text-[#e11d48] hover:bg-[#fff1f2]"
       >
         <AlertTriangle className="size-3" />
         Bahan Baku Menipis
@@ -138,28 +138,28 @@ export function LowStockBadge({ items, productUnit, onViewInventory }: Props) {
                       <p className="truncate text-sm font-medium">
                         {item.name}
                         {item.itemType === 'racikan' && (
-                          <span className="ml-1.5 text-[11px] font-normal text-[#94a3b8]">(racikan)</span>
+                          <span className="ml-1.5 text-xs font-normal text-[#94a3b8]">(racikan)</span>
                         )}
                       </p>
-                      <span className="shrink-0 rounded bg-white px-2 py-0.5 text-[11px] font-semibold text-[#0f172a]">
+                      <span className="shrink-0 rounded bg-white px-2 py-0.5 text-xs font-semibold text-[#0f172a]">
                         Menipis
                       </span>
                     </div>
                     <div className="mt-2 grid grid-cols-3 gap-2 border-t border-white/10 pt-2">
                       <div>
-                        <p className="text-[11px] text-[#94a3b8]">Stok Tersisa</p>
+                        <p className="text-xs text-[#94a3b8]">Stok Tersisa</p>
                         <p className="text-sm font-semibold">
                           {formatQty(item.currentStock)} {item.unitName}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[11px] text-[#94a3b8]">Batas Minimum</p>
+                        <p className="text-xs text-[#94a3b8]">Batas Minimum</p>
                         <p className="text-sm font-semibold">
                           {formatQty(item.minStock)} {item.unitName}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[11px] text-[#94a3b8]">Estimasi Porsi</p>
+                        <p className="text-xs text-[#94a3b8]">Estimasi Porsi</p>
                         <p className="text-sm font-semibold">
                           {portions !== null ? `± ${formatQty(portions)} ${unitShort}` : '-'}
                         </p>

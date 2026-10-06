@@ -48,7 +48,7 @@ function DiffBadge({ kind, min }: { kind: 'open' | 'close'; min: number | null }
   const bad = min !== null && (kind === 'open' ? min > 0 : min < 0);
   return (
     <span
-      className={`inline-flex whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+      className={`inline-flex whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold ${
         min === null
           ? 'text-[#94a3b8]'
           : bad

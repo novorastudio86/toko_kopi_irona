@@ -156,10 +156,10 @@ export default function AdjustmentReportScreen() {
             className="flex items-center justify-between rounded-2xl border border-[#e2e8f0] bg-white p-5"
           >
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+              <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
                 {label}
               </p>
-              <p className="pt-1 font-mono text-xl font-bold text-[#0f172a]">
+              <p className="pt-1 font-mono text-lg font-bold text-[#0f172a]">
                 {formatRupiah(s.amount)}
               </p>
             </div>

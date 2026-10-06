@@ -220,19 +220,19 @@ export default function StockInModal({ onClose, onSaved }: Props) {
               {/* Pratinjau hasil */}
               <div className="flex gap-3 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
                 <div className="flex flex-1 flex-col">
-                  <span className="text-[10px] font-bold uppercase text-[#64748b]">Masuk ke Stok</span>
+                  <span className="text-xs font-bold uppercase text-[#64748b]">Masuk ke Stok</span>
                   <span className="font-mono text-sm font-bold text-[#0f172a]">
                     {baseQty > 0 ? `+${formatQty(baseQty)} ${material?.unitName ?? ''}` : '—'}
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col">
-                  <span className="text-[10px] font-bold uppercase text-[#64748b]">Harga per Satuan Baru</span>
+                  <span className="text-xs font-bold uppercase text-[#64748b]">Harga per Satuan Baru</span>
                   <span className="font-mono text-sm font-bold text-[#0f172a]">
                     {unitPrice !== null ? `${formatRupiahDetail(unitPrice)} / ${material?.unitName ?? ''}` : '—'}
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col">
-                  <span className="text-[10px] font-bold uppercase text-[#64748b]">Harga Lama</span>
+                  <span className="text-xs font-bold uppercase text-[#64748b]">Harga Lama</span>
                   <span className="font-mono text-sm text-[#64748b]">
                     {material?.unitPrice != null
                       ? `${formatRupiahDetail(material.unitPrice)} / ${material.unitName}`
@@ -241,7 +241,7 @@ export default function StockInModal({ onClose, onSaved }: Props) {
                 </div>
               </div>
 
-              <p className="flex items-center gap-2 text-[11px] leading-4 text-[#64748b]">
+              <p className="flex items-center gap-2 text-xs leading-4 text-[#64748b]">
                 <Info className="size-3.5 shrink-0" />
                 Harga baru langsung dipakai menghitung ulang Total Cost produk dan racikan yang memakai bahan ini.
               </p>

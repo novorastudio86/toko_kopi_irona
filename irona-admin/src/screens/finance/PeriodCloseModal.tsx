@@ -138,7 +138,7 @@ export default function PeriodCloseModal({ focusMonth, onClose, onChanged }: Pro
                       {formatMonthLabel(p.month)}
                     </span>
                     <span
-                      className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
+                      className={`rounded-md px-2 py-0.5 text-xs font-bold ${
                         p.status === 'tertutup'
                           ? 'bg-[#f1f5f9] text-[#475569]'
                           : p.status === 'dibuka'
@@ -181,7 +181,7 @@ export default function PeriodCloseModal({ focusMonth, onClose, onChanged }: Pro
                 </div>
 
                 {p.status === 'dibuka' && (
-                  <p className="text-[11px] leading-4 text-[#92400e]">
+                  <p className="text-xs leading-4 text-[#92400e]">
                     Dibuka oleh {p.openedByName ?? '—'}
                     {p.openedAt ? `, ${formatDateTime(p.openedAt)}` : ''} — {p.reason}
                   </p>
@@ -239,7 +239,7 @@ export default function PeriodCloseModal({ focusMonth, onClose, onChanged }: Pro
                     </span>
                     {l.reason && <span className="block text-[#475569]">{l.reason}</span>}
                   </span>
-                  <span className="shrink-0 text-right text-[11px] text-[#64748b]">
+                  <span className="shrink-0 text-right text-xs text-[#64748b]">
                     {l.byName ?? '—'}
                     <span className="block">{formatDateTime(l.at)}</span>
                   </span>

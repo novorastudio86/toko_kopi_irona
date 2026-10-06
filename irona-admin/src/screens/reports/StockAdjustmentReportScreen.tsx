@@ -25,7 +25,7 @@ const REASONS = Object.keys(ADJUSTMENT_LABELS) as AdjustmentReason[];
 function ReasonBadge({ reason }: { reason: AdjustmentReason }) {
   return (
     <span
-      className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${ADJUSTMENT_CLASSES[reason]}`}
+      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${ADJUSTMENT_CLASSES[reason]}`}
     >
       {ADJUSTMENT_LABELS[reason]}
     </span>
@@ -212,7 +212,7 @@ export default function StockAdjustmentReportScreen() {
               {countByReason.map((c) => (
                 <span
                   key={c.reason}
-                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${ADJUSTMENT_CLASSES[c.reason]}`}
+                  className={`rounded-full px-1.5 py-0.5 text-xs font-semibold ${ADJUSTMENT_CLASSES[c.reason]}`}
                 >
                   {ADJUSTMENT_LABELS[c.reason]}: {c.count}x
                 </span>
@@ -378,7 +378,7 @@ function AdjustmentDetailModal({ row, onClose }: { row: StockAdjustmentRow; onCl
             ))}
           </div>
           <div>
-            <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.55px] text-[#64748b]">
+            <p className="mb-1 text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
               Keterangan
             </p>
             <p className="whitespace-pre-wrap rounded-lg bg-[#f8fafc] p-3 text-xs text-[#0f172a]">

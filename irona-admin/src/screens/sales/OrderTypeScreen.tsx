@@ -31,7 +31,7 @@ function RulesTable({
   onEdit: (r: OrderTypeRule) => void;
   onDelete: (r: OrderTypeRule) => void;
 }) {
-  const th = 'py-2.5 text-left text-[10px] font-bold uppercase tracking-[0.4px] text-[#64748b]';
+  const th = 'py-2.5 text-left text-xs font-bold uppercase tracking-[0.4px] text-[#64748b]';
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[640px] border-collapse">
@@ -148,13 +148,13 @@ function Card({
           </span>
           <div>
             <p className="text-sm font-bold text-[#0f172a]">{title}</p>
-            <p className="text-[11px] text-[#64748b]">{subtitle}</p>
+            <p className="text-xs text-[#64748b]">{subtitle}</p>
           </div>
         </div>
         {onAdd && (
           <button
             onClick={onAdd}
-            className="flex items-center gap-1.5 rounded-lg bg-[#0f172a] px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-[#1e293b]"
+            className="flex items-center gap-1.5 rounded-lg bg-[#0f172a] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1e293b]"
           >
             <img src={icPlus} alt="" className="size-3.5" />
             Tambah Aturan
@@ -320,7 +320,7 @@ export default function OrderTypeScreen() {
             subtitle={`${onlineRules.length} aturan berlaku (scope Online + Keduanya)`}
             onAdd={() => setFormState({ rule: null, scope: 'online' })}
           >
-            <p className="border-t border-[#e2e8f0] bg-[#fcfcfd] px-5 py-2 text-[11px] text-[#94a3b8]">
+            <p className="border-t border-[#e2e8f0] bg-[#fcfcfd] px-5 py-2 text-xs text-[#94a3b8]">
               Menampilkan aturan berscope Online atau Keduanya — aturan khusus Take Away tidak ikut
               tampil di sini.
             </p>

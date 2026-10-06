@@ -26,13 +26,13 @@ export default function PeakHeatmap({
         <div className="grid grid-cols-[64px_repeat(24,minmax(0,1fr))] gap-[3px]">
           <div />
           {HOURS.map((h) => (
-            <div key={h} className="pb-1 text-center font-mono text-[10px] text-[#94a3b8]">
+            <div key={h} className="pb-1 text-center font-mono text-xs text-[#94a3b8]">
               {String(h).padStart(2, '0')}
             </div>
           ))}
           {DAY_ORDER.map((dow) => (
             <div key={dow} className="contents">
-              <div className="flex items-center pr-2 text-[11px] font-medium text-[#475569]">
+              <div className="flex items-center pr-2 text-xs font-medium text-[#475569]">
                 {DAY_NAMES[dow]}
               </div>
               {HOURS.map((h) => {
@@ -42,7 +42,7 @@ export default function PeakHeatmap({
                   <div
                     key={h}
                     title={`${DAY_NAMES[dow]} ${hourLabel(h)}: ${format(v)}`}
-                    className="flex aspect-square min-h-[22px] items-center justify-center rounded-[4px] text-[9px] font-semibold"
+                    className="flex aspect-square min-h-[22px] items-center justify-center rounded-[4px] text-xs font-semibold"
                     style={{
                       background: v ? `rgba(15, 23, 42, ${0.08 + ratio * 0.92})` : '#f8fafc',
                       color: ratio > 0.5 ? '#fff' : '#475569',
@@ -55,7 +55,7 @@ export default function PeakHeatmap({
             </div>
           ))}
         </div>
-        <div className="mt-3 flex items-center justify-end gap-2 text-[11px] text-[#64748b]">
+        <div className="mt-3 flex items-center justify-end gap-2 text-xs text-[#64748b]">
           <span>Sepi</span>
           <div
             className="h-2 w-32 rounded-full"

@@ -181,7 +181,7 @@ export default function KasbonFormModal({ kasbon, onClose, onSaved }: Props) {
             />
           </div>
 
-          <p className="flex items-center gap-2 text-[11px] leading-4 text-[#64748b]">
+          <p className="flex items-center gap-2 text-xs leading-4 text-[#64748b]">
             <Info className="size-3.5 shrink-0" />
             Kasbon otomatis mengurangi gaji bulan pengajuan. Bisa diubah atau dihapus selama bulan ini belum lewat.
           </p>
