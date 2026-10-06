@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { FlaskConical, Plus, X } from 'lucide-react';
 import { formatRupiah, formatRupiahDetail } from '../../../utils/format';
 import type { RecipeRow, RecipeSource } from '../../../types/product';
+import { SourcePicker } from '../../../components/SourcePicker';
 
 export function newRow(): RecipeRow {
   return { rowId: crypto.randomUUID(), sourceKey: '', quantity: '' };
@@ -54,29 +55,13 @@ export function RecipeRowsEditor({ title, rows, onChange, sources, allowRacikan 
             key={row.rowId}
             className="grid grid-cols-[minmax(0,5fr)_92px_56px_104px_128px] items-center gap-2.5 rounded-md border border-[#e2e8f0] bg-white p-[13px] drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)]"
           >
-            <select
+            <SourcePicker
               value={row.sourceKey}
-              onChange={(e) => updateRow(row.rowId, { sourceKey: e.target.value })}
-              className="w-full rounded border border-[#cbd5e1] bg-white px-3 py-[7px] text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]"
-            >
-              <option value="">Pilih bahan...</option>
-              <optgroup label="Bahan Baku">
-                {rawSources.map((s) => (
-                  <option key={s.key} value={s.key} disabled={usedElsewhere.has(s.key)}>
-                    {s.name} ({s.unitName})
-                  </option>
-                ))}
-              </optgroup>
-              {racikanSources.length > 0 && (
-                <optgroup label="Racikan">
-                  {racikanSources.map((s) => (
-                    <option key={s.key} value={s.key} disabled={usedElsewhere.has(s.key)}>
-                      {s.name} ({s.unitName})
-                    </option>
-                  ))}
-                </optgroup>
-              )}
-            </select>
+              onChange={(key) => updateRow(row.rowId, { sourceKey: key })}
+              sources={[...rawSources, ...racikanSources]}
+              disabledKeys={usedElsewhere}
+              inputClassName="rounded py-[7px] text-xs"
+            />
 
             <input
               type="number"

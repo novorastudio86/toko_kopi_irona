@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Info, X } from 'lucide-react';
 import { fetchCategories } from '../../../services/categories';
 import {
@@ -53,6 +53,7 @@ type Props = {
 export default function ProductFormModal({ productId = null, onClose, onSaved }: Props) {
   const isEdit = !!productId;
   const [step, setStep] = useState<Step>(1);
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [sources, setSources] = useState<RecipeSource[]>([]);
@@ -63,13 +64,13 @@ export default function ProductFormModal({ productId = null, onClose, onSaved }:
   const [info, setInfo] = useState<InfoValues>(EMPTY_INFO);
   const [infoErrors, setInfoErrors] = useState<InfoErrors>({});
 
-  const [method, setMethod] = useState<RecipeMethod>('isi_sekarang');
+  const [method, setMethod] = useState<RecipeMethod | null>(null); // dipilih user di step 2
   const [rows, setRows] = useState<RecipeRow[]>([newRecipeRow()]);
   const [addCostPct, setAddCostPct] = useState<number | null>(10);
   const [manualTotalCost, setManualTotalCost] = useState('');
   const [recipeError, setRecipeError] = useState<string | null>(null);
 
-  const [desiredPct, setDesiredPct] = useState<number | null>(30);
+  const [desiredPct, setDesiredPct] = useState<number | null>(null);
   const [sellingPrice, setSellingPrice] = useState('');
   const [pricingErrors, setPricingErrors] = useState<{ desiredPct?: string; sellingPrice?: string }>({});
 
@@ -110,7 +111,7 @@ export default function ProductFormModal({ productId = null, onClose, onSaved }:
             availableOnline: detail.availableOnline,
             unit: detail.unit,
             sku: detail.sku ?? '',
-            skuTouched: true, // SKU lama dipertahankan
+            skuTouched: !!detail.sku, // SKU lama dipertahankan; produk lama tanpa SKU dibuatkan otomatis
           });
           setMethod(METHOD_BY_STATUS[detail.recipeStatus]);
           setRows(
@@ -124,7 +125,7 @@ export default function ProductFormModal({ productId = null, onClose, onSaved }:
           );
           setAddCostPct(detail.addCostPercentage);
           setManualTotalCost(detail.baseCost !== null ? String(Math.round(detail.baseCost)) : '');
-          setDesiredPct(detail.desiredCostPercentage ?? 30);
+          setDesiredPct(detail.desiredCostPercentage ?? null);
           setSellingPrice(detail.sellingPrice !== null ? String(Math.round(detail.sellingPrice)) : '');
         }
         setCaptureSnapshot(true);
@@ -138,6 +139,11 @@ export default function ProductFormModal({ productId = null, onClose, onSaved }:
       cancelled = true;
     };
   }, [productId]);
+
+  // Setiap pindah step, tampilkan dari atas
+  useEffect(() => {
+    bodyRef.current?.scrollTo({ top: 0 });
+  }, [step]);
 
   // SKU otomatis mengikuti kategori, selama belum diketik manual
   useEffect(() => {
@@ -167,12 +173,9 @@ export default function ProductFormModal({ productId = null, onClose, onSaved }:
     (sum, r) => sum + Number(r.quantity) * (sourceMap.get(r.sourceKey)?.unitPrice ?? 0),
     0
   );
-  const totalCost =
-    method === 'tanpa_resep'
-      ? Number(manualTotalCost) || 0
-      : method === 'isi_sekarang'
-        ? recipeCost * (1 + (addCostPct ?? 0) / 100)
-        : 0;
+  // Cost sebelum Add Cost: dari resep, atau diisi manual untuk produk tanpa resep
+  const cost = method === 'tanpa_resep' ? Number(manualTotalCost) || 0 : method === 'isi_sekarang' ? recipeCost : 0;
+  const totalCost = cost * (1 + (addCostPct ?? 0) / 100);
 
   const snapshot = useMemo(
     () =>
@@ -222,16 +225,17 @@ export default function ProductFormModal({ productId = null, onClose, onSaved }:
   }
 
   function validateRecipe(): string | null {
+    if (!method) return 'Pilih metode manajemen resep terlebih dahulu.';
     if (method === 'isi_sekarang') {
       if (rows.some((r) => r.sourceKey && !(Number(r.quantity) > 0))) {
         return 'Takaran setiap bahan harus lebih dari 0.';
       }
       if (validRows.length === 0) return 'Tambahkan minimal satu bahan dengan takarannya.';
-      if (addCostPct === null || addCostPct < 0) return 'Pilih persentase Add Cost.';
     }
     if (method === 'tanpa_resep' && !(Number(manualTotalCost) > 0)) {
-      return 'Total Cost wajib diisi untuk produk tanpa resep.';
+      return 'Cost wajib diisi untuk produk tanpa resep.';
     }
+    if (method !== 'isi_nanti' && (addCostPct === null || addCostPct < 0)) return 'Pilih persentase Add Cost.';
     return null;
   }
 
@@ -269,10 +273,6 @@ export default function ProductFormModal({ productId = null, onClose, onSaved }:
         return;
       }
 
-      // Isi otomatis harga jual dari rekomendasi (dibulatkan ke atas per Rp1.000)
-      if (!sellingPrice && desiredPct && desiredPct > 0 && totalCost > 0) {
-        setSellingPrice(String(Math.ceil(totalCost / (desiredPct / 100) / 1000) * 1000));
-      }
       setStep(3);
       return;
     }
@@ -312,7 +312,7 @@ export default function ProductFormModal({ productId = null, onClose, onSaved }:
           recipeStatus,
           isActive,
           baseCost: method === 'tanpa_resep' ? Number(manualTotalCost) : null,
-          addCostPercentage: method === 'isi_sekarang' ? addCostPct ?? 0 : 0,
+          addCostPercentage: method === 'isi_nanti' ? 0 : addCostPct ?? 0,
           desiredCostPercentage: method === 'isi_nanti' ? null : desiredPct,
           sellingPrice: method === 'isi_nanti' ? null : Number(sellingPrice),
           recipe:
@@ -443,7 +443,7 @@ export default function ProductFormModal({ productId = null, onClose, onSaved }:
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div ref={bodyRef} className="flex-1 overflow-y-auto p-8">
           {initLoading ? (
             <p className="py-10 text-center text-xs text-[#94a3b8]">Memuat data...</p>
           ) : initError ? (
@@ -471,7 +471,7 @@ export default function ProductFormModal({ productId = null, onClose, onSaved }:
               onAddCostPctChange={setAddCostPct}
               manualTotalCost={manualTotalCost}
               onManualTotalCostChange={setManualTotalCost}
-              recipeCost={recipeCost}
+              cost={cost}
               totalCost={totalCost}
               error={recipeError}
             />

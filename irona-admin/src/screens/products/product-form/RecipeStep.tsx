@@ -3,6 +3,7 @@ import { FlaskConical, Plus, X } from 'lucide-react';
 import { formatRupiah, formatRupiahDetail } from '../../../utils/format';
 import type { RecipeMethod, RecipeRow, RecipeSource } from '../../../types/product';
 import { FieldError, FieldLabel, PercentChips, RupiahInput } from './formUi';
+import { SourcePicker } from '../../../components/SourcePicker';
 
 const METHODS: { value: RecipeMethod; title: string; description: string }[] = [
   {
@@ -27,7 +28,7 @@ export function newRecipeRow(): RecipeRow {
 }
 
 type Props = {
-  method: RecipeMethod;
+  method: RecipeMethod | null;
   onMethodChange: (method: RecipeMethod) => void;
   rows: RecipeRow[];
   onRowsChange: (rows: RecipeRow[]) => void;
@@ -36,7 +37,7 @@ type Props = {
   onAddCostPctChange: (value: number | null) => void;
   manualTotalCost: string;
   onManualTotalCostChange: (digits: string) => void;
-  recipeCost: number;
+  cost: number;
   totalCost: number;
   error?: string | null;
 };
@@ -51,13 +52,14 @@ export function RecipeStep({
   onAddCostPctChange,
   manualTotalCost,
   onManualTotalCostChange,
-  recipeCost,
+  cost,
   totalCost,
   error,
 }: Props) {
   const sourceMap = useMemo(() => new Map(sources.map((s) => [s.key, s])), [sources]);
   const rawSources = sources.filter((s) => s.type === 'bahan_baku');
   const racikanSources = sources.filter((s) => s.type === 'racikan');
+  const orderedSources = [...rawSources, ...racikanSources];
 
   function updateRow(rowId: string, patch: Partial<RecipeRow>) {
     onRowsChange(rows.map((r) => (r.rowId === rowId ? { ...r, ...patch } : r)));
@@ -101,129 +103,82 @@ export function RecipeStep({
 
       {/* Isi Sekarang: editor resep */}
       {method === 'isi_sekarang' && (
-        <>
-          <div className="flex flex-col gap-3 rounded-2xl border border-[#e2e8f0] bg-[rgba(248,250,252,0.7)] p-5">
-            <p className="flex items-center gap-2 text-sm font-bold leading-5 text-[#0f172a]">
-              <FlaskConical className="size-4" />
-              Komposisi Takaran Resep (Per 1 Porsi)
-            </p>
+        <div className="flex flex-col gap-3 rounded-2xl border border-[#e2e8f0] bg-[rgba(248,250,252,0.7)] p-5">
+          <p className="flex items-center gap-2 text-sm font-bold leading-5 text-[#0f172a]">
+            <FlaskConical className="size-4" />
+            Komposisi Takaran Resep (Per 1 Porsi)
+          </p>
 
-            <div className="grid grid-cols-[minmax(0,1fr)_96px_56px_104px_104px_28px] gap-3 px-3 text-[11px] font-semibold uppercase tracking-[0.3px] text-[#64748b]">
-              <span>Bahan Baku / Racikan</span>
-              <span>Takaran</span>
-              <span>Satuan</span>
-              <span>Harga Satuan</span>
-              <span>Total HPP</span>
-              <span />
-            </div>
+          <div className="grid grid-cols-[minmax(0,1fr)_76px_44px_88px_84px_28px] gap-2.5 whitespace-nowrap px-3 text-[11px] font-semibold uppercase tracking-[0.3px] text-[#64748b]">
+            <span>Bahan Baku / Racikan</span>
+            <span>Takaran</span>
+            <span>Satuan</span>
+            <span>Harga Satuan</span>
+            <span>Total HPP</span>
+            <span />
+          </div>
 
-            {rows.map((row) => {
-              const source = sourceMap.get(row.sourceKey);
-              const qty = Number(row.quantity);
-              const subtotal = source && qty > 0 ? qty * source.unitPrice : null;
-              const usedElsewhere = new Set(rows.filter((r) => r.rowId !== row.rowId).map((r) => r.sourceKey));
+          {rows.map((row) => {
+            const source = sourceMap.get(row.sourceKey);
+            const qty = Number(row.quantity);
+            const subtotal = source && qty > 0 ? qty * source.unitPrice : null;
+            const usedElsewhere = new Set(rows.filter((r) => r.rowId !== row.rowId).map((r) => r.sourceKey));
 
-              return (
-                <div
-                  key={row.rowId}
-                  className="grid grid-cols-[minmax(0,1fr)_96px_56px_104px_104px_28px] items-center gap-3 rounded-xl border border-[#e2e8f0] bg-white p-3"
+            return (
+              <div
+                key={row.rowId}
+                className="grid grid-cols-[minmax(0,1fr)_76px_44px_88px_84px_28px] items-center gap-2.5 rounded-xl border border-[#e2e8f0] bg-white p-3"
+              >
+                <SourcePicker
+                  value={row.sourceKey}
+                  onChange={(key) => updateRow(row.rowId, { sourceKey: key })}
+                  sources={orderedSources}
+                  disabledKeys={usedElsewhere}
+                  inputClassName="rounded-lg py-2 text-sm"
+                />
+                <input
+                  type="number"
+                  min={0}
+                  step="any"
+                  value={row.quantity}
+                  onChange={(e) => updateRow(row.rowId, { quantity: e.target.value })}
+                  placeholder="0"
+                  className="w-full rounded-lg border border-[#cbd5e1] bg-white px-3 py-2 text-sm font-semibold text-[#0f172a] outline-none focus:border-[#94a3b8]"
+                />
+                <span className="text-sm text-[#64748b]">{source?.unitName ?? '-'}</span>
+                <span className="font-mono text-xs text-[#64748b]">
+                  {source ? formatRupiahDetail(source.unitPrice) : '-'}
+                </span>
+                <span className="font-mono text-xs font-bold text-[#0f172a]">
+                  {subtotal !== null ? formatRupiah(subtotal) : '-'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onRowsChange(rows.filter((r) => r.rowId !== row.rowId))}
+                  aria-label="Hapus bahan"
+                  className="flex size-7 items-center justify-center rounded-lg text-[#94a3b8] hover:bg-[#f1f5f9] hover:text-[#0f172a]"
                 >
-                  <select
-                    value={row.sourceKey}
-                    onChange={(e) => updateRow(row.rowId, { sourceKey: e.target.value })}
-                    className="w-full rounded-lg border border-[#cbd5e1] bg-white px-3 py-2 text-sm text-[#0f172a] outline-none focus:border-[#94a3b8]"
-                  >
-                    <option value="">Pilih bahan...</option>
-                    <optgroup label="Bahan Baku">
-                      {rawSources.map((s) => (
-                        <option key={s.key} value={s.key} disabled={usedElsewhere.has(s.key)}>
-                          {s.name} ({s.unitName})
-                        </option>
-                      ))}
-                    </optgroup>
-                    {racikanSources.length > 0 && (
-                      <optgroup label="Racikan">
-                        {racikanSources.map((s) => (
-                          <option key={s.key} value={s.key} disabled={usedElsewhere.has(s.key)}>
-                            {s.name} ({s.unitName})
-                          </option>
-                        ))}
-                      </optgroup>
-                    )}
-                  </select>
-                  <input
-                    type="number"
-                    min={0}
-                    step="any"
-                    value={row.quantity}
-                    onChange={(e) => updateRow(row.rowId, { quantity: e.target.value })}
-                    placeholder="0"
-                    className="w-full rounded-lg border border-[#cbd5e1] bg-white px-3 py-2 text-sm font-semibold text-[#0f172a] outline-none focus:border-[#94a3b8]"
-                  />
-                  <span className="text-sm text-[#64748b]">{source?.unitName ?? '-'}</span>
-                  <span className="font-mono text-xs text-[#64748b]">
-                    {source ? formatRupiahDetail(source.unitPrice) : '-'}
-                  </span>
-                  <span className="font-mono text-xs font-bold text-[#0f172a]">
-                    {subtotal !== null ? formatRupiah(subtotal) : '-'}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => onRowsChange(rows.filter((r) => r.rowId !== row.rowId))}
-                    aria-label="Hapus bahan"
-                    className="flex size-7 items-center justify-center rounded-lg text-[#94a3b8] hover:bg-[#f1f5f9] hover:text-[#0f172a]"
-                  >
-                    <X className="size-4" />
-                  </button>
-                </div>
-              );
-            })}
+                  <X className="size-4" />
+                </button>
+              </div>
+            );
+          })}
 
-            <button
-              type="button"
-              onClick={() => onRowsChange([...rows, newRecipeRow()])}
-              className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-[#cbd5e1] py-3 text-sm font-semibold text-[#1e293b] hover:bg-white"
-            >
-              <Plus className="size-4" />
-              Tambah Bahan Lain
-            </button>
+          <button
+            type="button"
+            onClick={() => onRowsChange([...rows, newRecipeRow()])}
+            className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-[#cbd5e1] py-3 text-sm font-semibold text-[#1e293b] hover:bg-white"
+          >
+            <Plus className="size-4" />
+            Tambah Bahan Lain
+          </button>
 
-            {racikanSources.length === 0 && (
-              <p className="text-[11px] leading-4 text-[#94a3b8]">
-                Belum ada racikan. Racikan bisa dibuat di Master Resep, lalu akan muncul di daftar ini.
-              </p>
-            )}
-          </div>
-
-          {/* Ringkasan biaya */}
-          <div className="flex flex-col gap-3 rounded-2xl border border-[#e2e8f0] bg-[#f1f5f9] p-5">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-[#475569]">Cost</span>
-              <span className="font-mono text-[#0f172a]">{formatRupiah(recipeCost)}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="flex items-center gap-2 text-[#475569]">
-                Add Cost (Penyusutan)
-                {addCostPct !== null && (
-                  <span className="rounded border border-[#e2e8f0] bg-white px-1.5 text-[11px] font-semibold text-[#0f172a]">
-                    {addCostPct}%
-                  </span>
-                )}
-              </span>
-              <span className="font-mono text-[#0f172a]">
-                +{formatRupiah(recipeCost * ((addCostPct ?? 0) / 100))}
-              </span>
-            </div>
-            <PercentChips options={[10, 20, 30]} value={addCostPct} onChange={onAddCostPctChange} />
-            <div className="mt-1 flex items-end justify-between border-t border-[#e2e8f0] pt-4">
-              <span className="text-sm font-bold text-[#0f172a]">Total Cost</span>
-              <span className="text-2xl font-extrabold tracking-[-0.5px] text-[#0f172a]">
-                {formatRupiah(totalCost)}
-                <span className="text-sm font-medium text-[#64748b]"> / porsi</span>
-              </span>
-            </div>
-          </div>
-        </>
+          {racikanSources.length === 0 && (
+            <p className="text-[11px] leading-4 text-[#94a3b8]">
+              Belum ada racikan. Racikan bisa dibuat di Master Resep, lalu akan muncul di daftar ini.
+            </p>
+          )}
+        </div>
       )}
 
       {/* Isi Nanti */}
@@ -238,7 +193,7 @@ export function RecipeStep({
       {/* Tanpa Resep */}
       {method === 'tanpa_resep' && (
         <div className="flex flex-col gap-2 rounded-2xl border border-[#e2e8f0] bg-[rgba(248,250,252,0.7)] p-5">
-          <FieldLabel required>Total Cost per Satuan</FieldLabel>
+          <FieldLabel required>Cost per Satuan</FieldLabel>
           <RupiahInput
             value={manualTotalCost}
             onChange={onManualTotalCostChange}
@@ -248,6 +203,37 @@ export function RecipeStep({
           <p className="text-[11px] leading-4 text-[#94a3b8]">
             Isi dengan harga beli/modal produk jadi (mis. air mineral botolan). Stok bahan tidak dipotong otomatis.
           </p>
+        </div>
+      )}
+
+      {/* Ringkasan biaya: Cost + Add Cost = Total Cost */}
+      {(method === 'isi_sekarang' || method === 'tanpa_resep') && (
+        <div className="flex flex-col gap-3 rounded-2xl border border-[#e2e8f0] bg-[#f1f5f9] p-5">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[#475569]">Cost</span>
+            <span className="font-mono text-[#0f172a]">{formatRupiah(cost)}</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="flex items-center gap-2 text-[#475569]">
+              Add Cost (Penyusutan)
+              {addCostPct !== null && (
+                <span className="rounded border border-[#e2e8f0] bg-white px-1.5 text-[11px] font-semibold text-[#0f172a]">
+                  {addCostPct}%
+                </span>
+              )}
+            </span>
+            <span className="font-mono text-[#0f172a]">
+              +{formatRupiah(cost * ((addCostPct ?? 0) / 100))}
+            </span>
+          </div>
+          <PercentChips options={[10, 20, 30]} value={addCostPct} onChange={onAddCostPctChange} />
+          <div className="mt-1 flex items-end justify-between border-t border-[#e2e8f0] pt-4">
+            <span className="text-sm font-bold text-[#0f172a]">Total Cost</span>
+            <span className="text-2xl font-extrabold tracking-[-0.5px] text-[#0f172a]">
+              {formatRupiah(totalCost)}
+              <span className="text-sm font-medium text-[#64748b]"> / porsi</span>
+            </span>
+          </div>
         </div>
       )}
 
