@@ -125,7 +125,6 @@ export default function ReceiptSettingsScreen() {
   return (
     <div className="flex max-w-[1400px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Penjualan', 'Custom Struk']}
         title="Pengaturan Struk"
         info="Atur tampilan struk yang dicetak di Kasir App. Semua perubahan tersimpan otomatis. Koneksi printer Bluetooth diatur di Kasir App."
         action={

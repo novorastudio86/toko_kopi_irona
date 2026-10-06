@@ -306,7 +306,6 @@ export default function CashFlowScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Keuangan', 'Cash Flow']}
         title="Cash Flow"
         info="Pencatatan & pelacakan pembagian uang toko (bukan pemindahan uang sungguhan). Setiap penjualan bersih otomatis dibagi ke HPP, Fixed Cost, dan Net Profit; setiap pengeluaran dicatat keluar dari bucket-nya. Saldo boleh minus."
         badge={

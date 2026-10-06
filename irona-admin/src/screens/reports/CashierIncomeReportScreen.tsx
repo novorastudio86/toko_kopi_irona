@@ -141,7 +141,6 @@ export default function CashierIncomeReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Toko', 'Laporan Pendapatan Kasir']}
         title="Laporan Pendapatan Kasir"
         info="Rekap per sesi login–logout kasir di Kasir App. Penerimaan = yang dibayar pelanggan (termasuk ongkir & biaya layanan untuk online). Kas Keluar = kasbon yang dibuat Admin selama sesi, hanya informasi (tidak dipakai menghitung selisih)."
         badge={rangeText(range)}

@@ -252,7 +252,6 @@ export default function ProductListScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Produk & Menu', 'Daftar Produk']}
         title="Daftar Produk"
         info="Kelola menu yang dijual: harga jual, margin terhadap total cost resep, dan kanal penjualannya."
         badge={loading ? undefined : `${products.length} Produk`}

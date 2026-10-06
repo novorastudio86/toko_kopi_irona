@@ -76,7 +76,6 @@ export default function PeakTransactionScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Analisa Tren & Margin', 'Waktu Teramai Penjualan']}
         title="Waktu Teramai Penjualan"
         info="Jumlah transaksi & nilai penjualan (setelah diskon dan refund) per jam & hari (WIB), berdasarkan waktu order. Transaksi dibatalkan/direfund penuh tidak dihitung."
         badge={rangeText(range)}

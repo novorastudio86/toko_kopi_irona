@@ -458,7 +458,6 @@ export default function OnlineOrderScreen() {
   return (
     <div className="flex max-w-[1400px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Penjualan', 'Order Online']}
         title="Order Online"
         info="Pengaturan pesanan dari Web Customer: jeda tayang produk, skema ongkir, biaya layanan, dan info potongan payment gateway. Harga online diatur di Tipe Order."
         action={

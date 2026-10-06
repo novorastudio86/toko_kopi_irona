@@ -121,7 +121,6 @@ export default function OnlineSalesReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Penjualan', 'Laporan Penjualan Online']}
         title="Laporan Penjualan Online"
         info="Pesanan dari Web Customer. Nilai Produk = total produk setelah diskon; ongkir & biaya layanan dicatat terpisah. Total Bayar = yang dibayar pelanggan lewat Midtrans."
         badge={rangeText(range)}

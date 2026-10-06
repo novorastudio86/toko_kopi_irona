@@ -103,7 +103,6 @@ export default function AttendanceScreen() {
   return (
     <div className="flex max-w-[1400px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Karyawan & Shift', 'Presensi']}
         title="Presensi"
         info="Rekap kehadiran harian dari scan QR. Admin bisa mengoreksi jam yang keliru atau menambah presensi yang terlewat."
         badge={

@@ -145,7 +145,6 @@ export default function KasbonListScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Karyawan & Shift', 'Kasbon']}
         title="Kasbon"
         info="Kasbon = gaji dibayar di muka. Dipotong sekaligus dari gaji bulan pengajuan, maksimal sebesar gaji pokok."
         badge={loading ? undefined : `${running.length} berjalan · ${formatRupiah(runningTotal)}`}

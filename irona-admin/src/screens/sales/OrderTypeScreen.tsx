@@ -230,7 +230,6 @@ export default function OrderTypeScreen() {
   return (
     <div className="flex max-w-[1400px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Penjualan', 'Tipe Order']}
         title="Tipe Order"
         info="Atur bahan tambahan (cup, kresek, dll) yang ikut terpakai & ditagihkan untuk Take Away dan Online. Biaya dari beberapa aturan yang kena 1 produk dijumlahkan."
         action={

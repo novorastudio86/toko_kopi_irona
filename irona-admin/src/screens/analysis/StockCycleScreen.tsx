@@ -110,7 +110,6 @@ export default function StockCycleScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Analisa Tren & Margin', 'Perputaran Stok']}
         title="Perputaran Stok"
         info={`Seberapa cepat bahan baku terpakai. Terpakai = pemakaian dari Kelola Stok (penjualan dikurangi refund, bahan produksi racikan, Try & Error; penyesuaian tidak dihitung). Rasio = Terpakai ÷ rata-rata stok (awal + akhir) / 2. Estimasi Hari Bertahan = jumlah hari periode ÷ rasio. Status: Cepat ≤ ${FAST_MAX_DAYS} hari, Normal ≤ ${NORMAL_MAX_DAYS} hari, Lambat > ${NORMAL_MAX_DAYS} hari atau tidak terpakai.`}
         badge={`${rangeText(range)} · ${days} hari`}

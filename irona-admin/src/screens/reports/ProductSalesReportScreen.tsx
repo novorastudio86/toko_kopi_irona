@@ -173,7 +173,6 @@ export default function ProductSalesReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Produk', 'Penjualan Produk']}
         title="Penjualan Produk"
         info="Penjualan per produk setelah diskon, tanpa transaksi yang dibatalkan/direfund. HPP = Total Cost produk saat transaksi terjadi. Laba Kotor = Penjualan − HPP (belum dikurangi biaya gateway)."
         badge={rangeText(range)}

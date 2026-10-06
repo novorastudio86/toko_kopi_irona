@@ -116,7 +116,6 @@ export default function StockSummaryReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Persediaan', 'Laporan Ringkasan Persediaan']}
         title="Laporan Ringkasan Persediaan"
         info="Posisi stok pada akhir tanggal yang dipilih (stok sekarang dikurangi semua pergerakan setelah tanggal itu). Harga modal bahan baku = harga stok masuk terakhir s.d. tanggal itu; racikan = biaya per satuan dari harga bahan terkini. Jenis Racikan = bahan setengah jadi (mis. sirup) hasil produksi."
         badge={`Per ${formatDay(date)}`}

@@ -60,7 +60,6 @@ export default function ShiftScreen() {
   return (
     <div className="flex max-w-[1400px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Karyawan & Shift', 'Shift Kerja']}
         title="Shift Kerja"
         info="Jadwal mingguan tiap karyawan berulang otomatis. Ubah per tanggal hanya untuk tukar, gantikan, tambah shift, libur mendadak, atau jam khusus toko."
         action={

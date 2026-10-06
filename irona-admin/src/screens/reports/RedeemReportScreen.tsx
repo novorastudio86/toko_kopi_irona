@@ -136,7 +136,6 @@ export default function RedeemReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Pelanggan', 'Laporan Redeem Point']}
         title="Laporan Redeem Point"
         info="Semua klaim reward member. Klaim yang masih Menunggu Ditukar bisa dibatalkan (poin kembali ke member). Klaim yang dibatalkan tidak dihitung di total poin ditukar."
         badge={rangeText(range)}

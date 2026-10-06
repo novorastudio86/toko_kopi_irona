@@ -135,7 +135,6 @@ export default function AssetListScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Inventori Bahan', 'Aset Barang']}
         title="Aset"
         info="Pencatatan inventaris perlengkapan & peralatan toko. Bersifat administratif, tidak memengaruhi stok bahan baku."
         badge={loading ? undefined : `${assets.length} aset · ${formatRupiah(totalValue)}`}

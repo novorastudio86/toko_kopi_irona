@@ -137,7 +137,6 @@ export default function DiscountListScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Promosi', 'Diskon']}
         title="Diskon"
         info="Atur potongan harga produk (offline/online) dan potongan ongkir (online). Kalau beberapa diskon memenuhi syarat, hanya potongan terbesar yang dipakai."
         badge={

@@ -174,7 +174,6 @@ export default function RawMaterialListScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Inventori Bahan', 'Daftar Bahan Baku']}
         title="Daftar Bahan Baku"
         info="Master bahan baku: satuan dasar, harga per satuan dari pembelian terakhir, dan batas stok minimum."
         badge={loading ? undefined : `${materials.length} Bahan`}

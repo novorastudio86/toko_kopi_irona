@@ -182,7 +182,6 @@ export default function SalesByPeriodReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Penjualan', 'Detail Per Periode']}
         title="Detail Per Periode"
         info="Penjualan dikelompokkan per hari, minggu (Senin–Minggu), atau bulan. Laba Kotor = Penjualan − refund − biaya gateway (porsi produk)."
         badge={rangeText(range)}

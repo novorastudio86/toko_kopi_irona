@@ -149,7 +149,6 @@ export default function SalesSummaryReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Penjualan', 'Ringkasan Penjualan']}
         title="Ringkasan Penjualan"
         info="Alur perhitungan penjualan dari pendapatan kotor sampai laba kotor. Klik ikon (i) di tiap kartu untuk cara hitungnya."
         badge={rangeText(range)}

@@ -110,7 +110,6 @@ export default function CategoryListScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-8">
       <PageHeader
-        breadcrumb={['Produk & Menu', 'Daftar Kategori']}
         title="Daftar Kategori"
         info="Kelola kategori produk: urutan tampil, visibilitas di menu kasir, dan tab kategori di web customer."
         action={

@@ -135,7 +135,6 @@ export default function StockAdjustmentReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Persediaan', 'Laporan Penyesuaian Stok']}
         title="Laporan Penyesuaian Stok"
         info="Semua penyesuaian stok dari Kelola Stok. Nilai = jumlah penyesuaian × harga per satuan saat itu (harga stok masuk terakhir sebelum tanggal penyesuaian)."
         badge={rangeText(range)}

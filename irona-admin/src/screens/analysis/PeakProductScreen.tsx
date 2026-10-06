@@ -92,7 +92,6 @@ export default function PeakProductScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Analisa Tren & Margin', 'Waktu Teramai Produk']}
         title="Waktu Teramai Produk"
         info="Jumlah unit terjual per jam & hari (WIB) dari transaksi yang dibayar (tanpa yang dibatalkan/direfund penuh). Pilih satu produk untuk melihat pola khusus produk itu, atau biarkan Semua Produk untuk total."
         badge={rangeText(range)}

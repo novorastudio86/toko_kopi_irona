@@ -120,7 +120,6 @@ export default function TransactionAdjustmentScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Penjualan', 'Penyesuaian Transaksi']}
         title="Penyesuaian Transaksi"
         info="Catat refund transaksi dan try & error produk. Catatan bersifat final (tidak bisa diubah atau dihapus) supaya jejak stok, poin member, dan keuangan tetap konsisten."
         badge={loading ? undefined : `${items.length} catatan`}

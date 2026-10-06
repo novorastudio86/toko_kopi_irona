@@ -210,6 +210,20 @@ export function getNavTitle(id: string): string {
   return id;
 }
 
+/** Breadcrumb halaman = judul modul → grup → halaman, persis seperti di sidebar. */
+export function getNavTrail(id: string): string[] {
+  if (id === SETTINGS_ITEM.id) return [SETTINGS_ITEM.title];
+  const search = (nodes: NavNode[], trail: string[]): string[] | null => {
+    for (const n of nodes) {
+      if (n.id === id) return [...trail, n.title];
+      const found = n.children ? search(n.children, [...trail, n.title]) : null;
+      if (found) return found;
+    }
+    return null;
+  };
+  return search(allItems, []) ?? [];
+}
+
 function collectPageIds(): string[] {
   const ids: string[] = [SETTINGS_ITEM.id];
   const walk = (nodes: NavNode[]) =>

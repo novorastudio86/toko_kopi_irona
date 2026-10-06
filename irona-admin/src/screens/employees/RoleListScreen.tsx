@@ -128,7 +128,6 @@ export default function RoleListScreen() {
   return (
     <div className="flex max-w-[1200px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Karyawan & Shift', 'Hak Akses']}
         title="Hak Akses"
         info="Pengelompokan karyawan berdasarkan role, lengkap dengan rincian gaji pokok dan bonus bulan berjalan."
         badge={loading ? undefined : `${roles.length} role · ${totalEmployees} karyawan`}

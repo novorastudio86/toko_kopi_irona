@@ -135,7 +135,6 @@ export default function PaymentReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Penjualan', 'Laporan Jenis Bayar']}
         title="Laporan Jenis Bayar"
         info="Komposisi metode pembayaran. Nominal = total yang dibayar pelanggan (termasuk ongkir & biaya layanan untuk pesanan online). Pesanan online selalu QRIS lewat payment gateway."
         badge={rangeText(range)}

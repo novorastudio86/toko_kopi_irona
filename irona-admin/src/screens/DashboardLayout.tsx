@@ -92,7 +92,7 @@ export default function DashboardLayout() {
       )}
 
       <main className="min-h-0 flex-1 overflow-y-auto bg-[#f8fafc] font-['Plus_Jakarta_Sans_Variable',sans-serif]">
-        <Outlet />
+        <Outlet context={{ sidebarOpen: showFull }} />
       </main>
     </div>
   );

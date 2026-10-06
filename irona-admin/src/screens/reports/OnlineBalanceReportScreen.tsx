@@ -163,7 +163,6 @@ export default function OnlineBalanceReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Cash Flow', 'Saldo Online']}
         title="Laporan Cash Flow — Saldo Online"
         info="Pesanan Web Customer yang dibayar lewat payment gateway (Midtrans). Nominal bersih = nominal transaksi − MDR − PPN atas MDR. Tersedia = 3 hari kerja setelah settlement; Sudah Dicairkan dicatat admin di Keuangan › Cash Flow."
         badge={periodText}

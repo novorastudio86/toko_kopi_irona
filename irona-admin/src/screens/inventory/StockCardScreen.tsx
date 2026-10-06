@@ -115,7 +115,6 @@ export default function StockCardScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Inventori Bahan', 'Kelola Stok']}
         title="Kelola Stok"
         info="Kartu stok per periode: stok awal, barang masuk, pemakaian penjualan, penyesuaian, dan stok akhir."
         action={

@@ -217,7 +217,6 @@ export default function PointRewardScreen() {
   return (
     <div className="flex max-w-[1400px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Promosi', 'Point Reward']}
         title="Point Reward"
         info="Atur cara member mendapat poin dari transaksi, dan katalog hadiah yang bisa ditukar dengan poin di Web Customer."
         badge={loading ? undefined : `${rewards.length} reward · ${activeCount} aktif`}

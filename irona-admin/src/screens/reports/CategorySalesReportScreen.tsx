@@ -145,7 +145,6 @@ export default function CategorySalesReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Produk', 'Penjualan Kategori']}
         title="Penjualan Kategori"
         info="Penjualan dikelompokkan per kategori produk (setelah diskon, tanpa transaksi yang dibatalkan/direfund). HPP = Total Cost produk saat transaksi terjadi."
         badge={rangeText(range)}

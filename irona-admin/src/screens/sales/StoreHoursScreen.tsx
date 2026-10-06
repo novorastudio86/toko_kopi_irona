@@ -231,7 +231,6 @@ export default function StoreHoursScreen() {
   return (
     <div className="flex max-w-[1400px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Penjualan', 'Jam Buka']}
         title="Jam Buka"
         info="Jam buka toko (offline) dan jam layanan pesanan online per hari. Take Away mengikuti jam offline. Terpisah dari jam kerja/lembur karyawan."
         action={

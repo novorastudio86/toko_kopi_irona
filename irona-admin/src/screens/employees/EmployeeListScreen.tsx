@@ -205,7 +205,6 @@ export default function EmployeeListScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Karyawan & Shift', 'Daftar Karyawan']}
         title="Daftar Karyawan"
         info="Data karyawan beserta akun login untuk aplikasi Kasir dan Driver."
         badge={loading ? undefined : `${activeCount} aktif dari ${employees.length} karyawan`}

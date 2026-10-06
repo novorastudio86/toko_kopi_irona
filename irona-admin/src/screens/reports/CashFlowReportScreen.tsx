@@ -231,7 +231,6 @@ export default function CashFlowReportScreen({ bucket }: { bucket: Bucket }) {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Cash Flow', label]}
         title={`Laporan Cash Flow — ${label}`}
         info={BUCKET_INFO[bucket]}
         badge={periodText}

@@ -120,7 +120,6 @@ export default function StockPurchaseReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Persediaan', 'Laporan Pembelian']}
         title="Laporan Pembelian"
         info="Semua Stok Masuk bahan baku dari Kelola Stok. Supplier/toko diambil dari catatan yang diisi saat input stok masuk."
         badge={rangeText(range)}

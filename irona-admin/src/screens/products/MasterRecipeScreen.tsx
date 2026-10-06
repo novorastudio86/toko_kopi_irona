@@ -259,7 +259,6 @@ export default function MasterRecipeScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Produk & Menu', 'Master Resep']}
         title="Master Resep"
         info="Formula produk dan racikan. Biaya bahan selalu mengikuti harga pembelian terkini di Inventory."
         badge={

@@ -166,7 +166,6 @@ export default function OpeningHoursReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Toko', 'Laporan Jam Operasional']}
         title="Laporan Jam Operasional"
         info="Jam buka–tutup toko nyata dari sesi login kasir. Shift 1 = sesi pertama hari itu, Shift 2 = sesi kedua. Gap = waktu kosong antara logout Shift 1 dan login Shift 2. Selisih dibandingkan jam buka/tutup Offline di Jam Layanan."
         badge={rangeText(range)}

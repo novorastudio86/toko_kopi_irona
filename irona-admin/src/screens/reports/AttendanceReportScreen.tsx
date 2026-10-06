@@ -210,7 +210,6 @@ export default function AttendanceReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Karyawan', 'Absensi']}
         title="Laporan Absensi"
         info="Rekap kehadiran karyawan aktif (selain Admin/Owner) dari presensi QR & manual. Hari kerja = hari yang terjadwal di Shift Kerja. Terjadwal tapi tidak absen dihitung Tidak Masuk (hari ini belum dihitung). % Kehadiran = (Masuk + Telat) ÷ hari kerja."
         badge={rangeText(range)}

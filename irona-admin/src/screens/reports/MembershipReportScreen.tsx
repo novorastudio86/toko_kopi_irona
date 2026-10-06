@@ -149,7 +149,6 @@ export default function MembershipReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Pelanggan', 'Laporan Membership']}
         title="Laporan Membership"
         info="Daftar member beserta poin saat ini. Total Transaksi hanya transaksi resmi yang sudah dibayar (tanpa yang dibatalkan/direfund penuh). Total Belanja = nilai produk setelah diskon dikurangi refund, tanpa ongkir/biaya layanan — sama dengan dasar hitung poin."
         badge={regText}

@@ -339,7 +339,6 @@ export default function SalesDetailReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Penjualan', 'Detail Penjualan']}
         title="Detail Penjualan"
         info="Daftar semua transaksi. Waktu Bayar pesanan online = saat pembayaran settlement di Midtrans; transaksi kasir waktu bayar = waktu order."
         badge={rangeText(range)}

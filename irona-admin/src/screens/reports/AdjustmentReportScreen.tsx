@@ -97,7 +97,6 @@ export default function AdjustmentReportScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Laporan', 'Laporan Penjualan', 'Laporan Penyesuaian']}
         title="Laporan Penyesuaian"
         info="Rekap refund transaksi dan try & error produk dari Penjualan › Penyesuaian Transaksi."
         badge={rangeText(range)}

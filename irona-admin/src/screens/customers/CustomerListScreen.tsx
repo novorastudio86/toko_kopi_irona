@@ -154,7 +154,6 @@ export default function CustomerListScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        breadcrumb={['Pelanggan', 'Pelanggan Member']}
         title="Daftar Membership"
         info="Member mendaftar sendiri dari Web Customer. Di sini admin memantau transaksi & poin, menyesuaikan poin, dan menonaktifkan member."
         badge={loading ? undefined : `${customers.length} member · ${activeCount} aktif`}
