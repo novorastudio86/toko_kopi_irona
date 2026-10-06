@@ -559,7 +559,9 @@ export default function MasterRecipeScreen() {
                                     : 'Breakdown Formula Racikan (In-House)'}
                                 </p>
                                 <span className="font-mono text-xs leading-4 text-[#64748b]">
-                                  ID {isProduct ? 'Produk' : 'Racikan'}: {row.id.slice(0, 8).toUpperCase()}
+                                  {isProduct
+                                    ? `SKU: ${row.sku ?? '-'}`
+                                    : `ID Racikan: ${row.id.slice(0, 8).toUpperCase()}`}
                                 </span>
                               </div>
 

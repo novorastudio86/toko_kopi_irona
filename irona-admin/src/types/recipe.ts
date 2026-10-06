@@ -13,6 +13,7 @@ export interface RecipeListItem {
   isActive: boolean;
   unit: string | null;
   // khusus produk
+  sku: string | null;
   desiredCostPercentage: number | null;
   sellingPrice: number | null;
   // khusus racikan

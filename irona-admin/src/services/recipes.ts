@@ -26,6 +26,7 @@ export async function fetchRecipeList(): Promise<RecipeListItem[]> {
     recipeStatus: row.recipe_status,
     isActive: row.is_active,
     unit: row.unit,
+    sku: row.code ?? null,
     desiredCostPercentage: toNumber(row.desired_cost_percentage),
     sellingPrice: toNumber(row.selling_price),
     productionMode: row.production_mode,
