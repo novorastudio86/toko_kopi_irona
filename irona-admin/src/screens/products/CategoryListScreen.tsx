@@ -10,7 +10,7 @@ import { PageHeader } from '../../components/PageHeader';
 import { SearchToolbar } from '../../components/SearchToolbar';
 import { SortableTh, type SortDir } from '../../components/SortableTh';
 import { TablePagination } from '../../components/TablePagination';
-import { fetchCategories, fetchCategoryHistory } from '../../services/categories';
+import { deleteCategory, fetchCategories, fetchCategoryHistory } from '../../services/categories';
 import { HistoryButton, HistoryModal } from '../../components/HistoryModal';
 import { CATEGORY_HISTORY_FIELDS } from './historyFields';
 import { getCategoryIconSrc } from '../../constants/categoryIcons';
@@ -54,6 +54,7 @@ export default function CategoryListScreen() {
   const [reloadKey, setReloadKey] = useState(0);
 
   const [flash, setFlash] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
 
   useEffect(() => {
@@ -73,6 +74,23 @@ export default function CategoryListScreen() {
     const timer = setTimeout(() => setFlash(null), 4000);
     return () => clearTimeout(timer);
   }, [flash]);
+
+  async function handleDelete(cat: Category) {
+    if (!window.confirm(`Hapus kategori "${cat.name}"? Tindakan ini tidak bisa dibatalkan.`)) return;
+    setActionError(null);
+    try {
+      await deleteCategory(cat.id);
+      setCategories((prev) => prev.filter((c) => c.id !== cat.id));
+      setFlash(`Kategori "${cat.name}" berhasil dihapus.`);
+    } catch (err: any) {
+      setActionError(
+        err?.code === '23503'
+          ? `"${cat.name}" masih memiliki produk sehingga tidak bisa dihapus.`
+          : err?.message ?? 'Gagal menghapus kategori.'
+      );
+      setReloadKey((k) => k + 1);
+    }
+  }
 
   function handleSort(key: string) {
     const k = key as SortKey;
@@ -126,6 +144,12 @@ export default function CategoryListScreen() {
         <div className="flex items-center gap-2 rounded-xl border border-[#e2e8f0] bg-white px-4 py-3 text-xs font-medium text-[#0f172a]">
           <CheckCircle2 className="size-4 text-[#059669]" />
           {flash}
+        </div>
+      )}
+
+      {actionError && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-medium text-red-700">
+          {actionError}
         </div>
       )}
 
@@ -246,8 +270,15 @@ export default function CategoryListScreen() {
                           <DropdownMenuItem onClick={() => setFormTarget({ id: cat.id })}>
                             Ubah
                           </DropdownMenuItem>
-                          <DropdownMenuItem disabled>Lihat Produk</DropdownMenuItem>
-                          <DropdownMenuItem disabled>Hapus</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setProductsOf(cat)}>Lihat Produk</DropdownMenuItem>
+                          {/* Hanya kategori kosong yang boleh dihapus; DB juga menolak lewat FK */}
+                          <DropdownMenuItem
+                            disabled={cat.productCount > 0}
+                            title={cat.productCount > 0 ? 'Kosongkan produk di kategori ini dulu' : undefined}
+                            onClick={() => handleDelete(cat)}
+                          >
+                            Hapus
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>

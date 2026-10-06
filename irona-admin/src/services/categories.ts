@@ -75,6 +75,12 @@ export async function updateCategory(id: string, input: CategoryInput): Promise<
   if (error) throw error;
 }
 
+/** Ditolak DB (23503) bila masih ada produk di kategori ini — FK products.category_id */
+export async function deleteCategory(id: string): Promise<void> {
+  const { error } = await supabase.from('categories').delete().eq('id', id);
+  if (error) throw error;
+}
+
 /** Riwayat perubahan kategori 14 hari terakhir (diisi otomatis oleh trigger `log_category_history`) */
 export async function fetchCategoryHistory(): Promise<HistoryEntry[]> {
   const { data, error } = await supabase
