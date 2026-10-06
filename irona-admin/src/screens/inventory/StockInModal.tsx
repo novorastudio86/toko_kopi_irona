@@ -3,7 +3,7 @@ import { Info, X } from 'lucide-react';
 import { fetchUnits } from '../../services/recipes';
 import { fetchRawMaterialDetail, fetchRawMaterials } from '../../services/rawMaterials';
 import { recordStockIn } from '../../services/stock';
-import { formatQty, formatRupiahDetail, formatThousands } from '../../utils/format';
+import { formatQty, formatRupiahDetail } from '../../utils/format';
 import type { RawMaterialListItem } from '../../types/rawMaterial';
 import type { UnitOption } from '../../types/recipe';
 import { FieldError, FieldLabel, RupiahInput, inputClass } from '../products/product-form/formUi';

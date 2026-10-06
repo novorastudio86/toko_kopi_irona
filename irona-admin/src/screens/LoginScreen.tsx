@@ -6,9 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-type Props = { onLoginSuccess: () => void };
-
-export default function LoginScreen({ onLoginSuccess }: Props) {
+export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -58,7 +56,6 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     }
 
     setLoading(false);
-    onLoginSuccess();
   }
 
   return (
