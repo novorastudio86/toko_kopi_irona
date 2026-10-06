@@ -1,124 +1,91 @@
-import { Fragment } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { LogOut, PanelLeftOpen } from 'lucide-react';
+import { LogOut, PanelLeft, type LucideIcon } from 'lucide-react';
 import logo from '../assets/sidebar/logo.png';
-import { NavItemIcon, OutletAvatar } from './AppSidebar';
 import {
   SETTINGS_ITEM,
+  allItems,
   containsActive,
-  firstLeaf,
-  navGroups,
   type NavItem,
 } from '../constants/navigation';
 
 type Props = {
   activeItem: string;
   onNavigate: (id: string) => void;
-  onOpenMenu: () => void;
+  /** Buka menu lengkap; kalau moduleId diisi, modul itu langsung terbuka */
+  onOpenMenu: (moduleId?: string) => void;
   onLogout: () => void;
 };
 
 function RailButton({
-  item,
+  icon: Icon,
+  title,
   active,
   onClick,
 }: {
-  item: NavItem;
-  active: boolean;
+  icon: LucideIcon;
+  title: string;
+  active?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
-      title={item.title}
-      aria-label={item.title}
+      title={title}
+      aria-label={title}
       aria-current={active ? 'page' : undefined}
-      className={`relative flex size-11 items-center justify-center rounded-xl transition-colors ${
-        active ? 'border border-white/15 bg-white/10' : 'hover:bg-white/5'
+      className={`relative flex size-12 shrink-0 items-center justify-center rounded-lg transition-colors ${
+        active ? 'bg-[#3a3d44] text-white' : 'text-[#cfd2d8] hover:bg-[#282a2e]/60'
       }`}
     >
       {active && (
-        <span className="absolute -left-4 bottom-2 top-2 w-1 rounded-r-full bg-white shadow-[2px_0px_10px_1px_rgba(255,255,255,0.35)]" />
+        <span className="absolute inset-y-1.5 right-0 w-[3px] rounded-l-full bg-white" />
       )}
-      <NavItemIcon item={item} highlighted={active} />
-      {item.trailing?.type === 'dot' && (
-        <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[#94a3b8]" />
-      )}
+      <Icon className="size-[22px]" strokeWidth={1.75} />
     </button>
   );
 }
 
 export function SidebarRail({ activeItem, onNavigate, onOpenMenu, onLogout }: Props) {
   function handleClick(item: NavItem) {
-    if (!item.children?.length) {
-      onNavigate(item.id);
-      return;
-    }
-    // Modul yang sedang aktif diklik lagi → buka menu lengkap untuk pilih sub modul lain
-    if (containsActive(item.children, activeItem)) {
-      onOpenMenu();
-      return;
-    }
-    onNavigate(firstLeaf(item.children).leafId);
+    // Modul dengan sub modul → buka menu lengkap dengan modul itu terbuka, halaman tetap
+    if (item.children?.length) onOpenMenu(item.id);
+    else onNavigate(item.id);
   }
 
   return (
-    <aside className="flex h-screen w-[76px] shrink-0 flex-col items-center border-r border-[#2a303c] bg-[#12151a] font-['Plus_Jakarta_Sans_Variable',sans-serif]">
-      {/* Logo + tombol buka menu lengkap */}
-      <div className="flex w-full flex-col items-center gap-3 border-b border-[rgba(44,50,62,0.8)] bg-gradient-to-b from-[rgba(26,29,36,0.6)] to-[rgba(26,29,36,0)] py-4">
-        <img src={logo} alt="Toko Kopi Irona" className="h-[30px] w-[52px] object-contain" />
+    <aside className="flex h-full w-[72px] shrink-0 flex-col items-center border-r border-[#232529] bg-[#1b1c1f] font-['Plus_Jakarta_Sans_Variable',sans-serif]">
+      {/* Logo + tombol lebarkan sidebar */}
+      <div className="flex w-full shrink-0 flex-col items-center gap-2 border-b border-[#232529] py-3">
+        <img src={logo} alt="Toko Kopi Irona" className="size-14 object-cover" />
         <button
-          onClick={onOpenMenu}
-          title="Buka menu lengkap"
-          aria-label="Buka menu lengkap"
-          className="rounded-lg border border-white/10 bg-white/5 p-2 text-[#cbd5e1] hover:bg-white/10"
+          onClick={() => onOpenMenu()}
+          title="Lebarkan sidebar"
+          aria-label="Lebarkan sidebar"
+          className="rounded-md p-2 text-[#9a9ea6] transition-colors hover:bg-[#282a2e] hover:text-white"
         >
-          <PanelLeftOpen className="size-4" />
+          <PanelLeft className="size-5" />
         </button>
       </div>
 
-      {/* Ikon modul per grup */}
-      <nav className="flex w-full flex-1 flex-col items-center gap-1 overflow-y-auto px-4 py-3">
-        {navGroups.map((group, idx) => (
-          <Fragment key={group.label}>
-            {idx > 0 && <div className="my-2 h-px w-8 shrink-0 bg-white/10" />}
-            {group.items.map((item) => (
-              <RailButton
-                key={item.id}
-                item={item}
-                active={item.children ? containsActive(item.children, activeItem) : activeItem === item.id}
-                onClick={() => handleClick(item)}
-              />
-            ))}
-          </Fragment>
+      <nav className="sidebar-scroll flex w-full flex-1 flex-col items-center gap-1.5 overflow-y-auto py-3">
+        {allItems.map((item) => (
+          <RailButton
+            key={item.id}
+            icon={item.icon}
+            title={item.title}
+            active={item.children ? containsActive(item.children, activeItem) : activeItem === item.id}
+            onClick={() => handleClick(item)}
+          />
         ))}
+      </nav>
 
-        <div className="my-2 h-px w-8 shrink-0 bg-white/10" />
+      <div className="flex w-full shrink-0 flex-col items-center gap-1.5 border-t border-[#232529] py-3">
         <RailButton
-          item={SETTINGS_ITEM}
+          icon={SETTINGS_ITEM.icon}
+          title={SETTINGS_ITEM.title}
           active={activeItem === SETTINGS_ITEM.id}
           onClick={() => onNavigate(SETTINGS_ITEM.id)}
         />
-      </nav>
-
-      {/* Outlet + logout */}
-      <div className="flex w-full justify-center border-t border-[#2c323e] bg-[rgba(14,16,19,0.8)] py-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger className="rounded-full" title="Toko Kopi Irona">
-            <OutletAvatar />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side="right" align="end" className="w-48">
-            <DropdownMenuItem onClick={onLogout}>
-              <LogOut className="mr-2 size-4" />
-              Keluar
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <RailButton icon={LogOut} title="Keluar" onClick={onLogout} />
       </div>
     </aside>
   );

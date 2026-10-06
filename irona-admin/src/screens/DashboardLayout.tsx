@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router';
+import { Menu } from 'lucide-react';
+import logo from '../assets/sidebar/logo.png';
 import { AppSidebar } from '../components/AppSidebar';
 import { SidebarRail } from '../components/SidebarRail';
 import { resolveActiveNavId } from '../constants/navigation';
@@ -11,13 +13,16 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
   const activeItem = resolveActiveNavId(pathname);
 
-  // ≥ 1280px: sidebar penuh. Di bawah itu (iPad): rail ikon + panel menu melayang
+  // ≥ 1280px: sidebar penuh. 768–1279px (iPad): rail ikon + panel menu melayang.
+  // < 768px (HP): bar atas + panel menu melayang
   const isWide = useMediaQuery('(min-width: 1280px)');
+  const isMobile = useMediaQuery('(max-width: 767px)');
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    if (isWide) setDrawerOpen(false);
-  }, [isWide]);
+  // Di layar lebar, sidebar bisa disempitkan jadi rail lewat tombol panel di header
+  const [collapsed, setCollapsed] = useState(false);
+  // Modul yang dipilih dari rail → langsung terbuka saat menu lengkap muncul
+  const [menuModule, setMenuModule] = useState<string | null>(null);
+  const showFull = isWide && !collapsed;
 
   // Tutup panel dengan tombol Esc
   useEffect(() => {
@@ -27,19 +32,42 @@ export default function DashboardLayout() {
     return () => window.removeEventListener('keydown', onKey);
   }, [drawerOpen]);
 
+  function openMenu(moduleId?: string) {
+    setMenuModule(moduleId ?? null);
+    if (isWide) setCollapsed(false);
+    else setDrawerOpen(true);
+  }
+
   async function handleLogout() {
     await supabase.auth.signOut();
   }
 
   return (
-    <div className="flex h-screen">
-      {isWide ? (
-        <AppSidebar activeItem={activeItem} onNavigate={(path) => navigate(path)} onLogout={handleLogout} />
+    <div className="flex h-dvh flex-col md:flex-row">
+      {isMobile ? (
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-[#232529] bg-[#1b1c1f] px-3">
+          <img src={logo} alt="Toko Kopi Irona" className="h-14 w-20 object-cover" />
+          <button
+            onClick={() => openMenu()}
+            aria-label="Buka menu"
+            className="rounded-md p-2 text-[#cfd2d8] transition-colors hover:bg-[#282a2e]"
+          >
+            <Menu className="size-6" />
+          </button>
+        </header>
+      ) : showFull ? (
+        <AppSidebar
+          activeItem={activeItem}
+          onNavigate={(path) => navigate(path)}
+          onLogout={handleLogout}
+          onCollapse={() => setCollapsed(true)}
+          initialModule={menuModule}
+        />
       ) : (
         <SidebarRail
           activeItem={activeItem}
           onNavigate={(path) => navigate(path)}
-          onOpenMenu={() => setDrawerOpen(true)}
+          onOpenMenu={openMenu}
           onLogout={handleLogout}
         />
       )}
@@ -56,13 +84,14 @@ export default function DashboardLayout() {
               onNavigate={(path) => navigate(path)}
               onLogout={handleLogout}
               onPageChosen={() => setDrawerOpen(false)}
-              onClose={() => setDrawerOpen(false)}
+              onCollapse={() => setDrawerOpen(false)}
+              initialModule={menuModule}
             />
           </div>
         </div>
       )}
 
-      <main className="flex-1 overflow-y-auto bg-[#f8fafc] font-['Plus_Jakarta_Sans_Variable',sans-serif]">
+      <main className="min-h-0 flex-1 overflow-y-auto bg-[#f8fafc] font-['Plus_Jakarta_Sans_Variable',sans-serif]">
         <Outlet />
       </main>
     </div>

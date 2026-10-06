@@ -1,177 +1,55 @@
 import { useEffect, useState } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { LogOut, X } from 'lucide-react';
+import { ChevronDown, LogOut, PanelLeft } from 'lucide-react';
 import logo from '../assets/sidebar/logo.png';
-import icChevron from '../assets/sidebar/chevron.svg';
-import icUpDown from '../assets/sidebar/updown.svg';
 import {
   SETTINGS_ITEM,
+  allItems,
   containsActive,
+  countTables,
   findLocation,
-  firstLeaf,
-  navGroups,
   type NavItem,
   type NavNode,
-  type Trailing,
 } from '../constants/navigation';
+import { fetchNavCounts } from '../services/navCounts';
 
-/** Ikon modul: versi aktif kalau ada, kalau tidak di-invert jadi putih saat disorot */
-export function NavItemIcon({ item, highlighted }: { item: NavItem; highlighted: boolean }) {
-  if (highlighted && item.iconActive) {
-    return <img src={item.iconActive} alt="" className="size-5" />;
-  }
-  return (
-    <img src={item.icon} alt="" className={`size-5 ${highlighted ? 'brightness-0 invert' : ''}`} />
-  );
-}
+// Jalur aktif (modul → sub modul → halaman) memakai sorotan & penanda yang sama
+const ACTIVE = 'bg-[#3a3d44] text-white';
+const ActiveMarker = () => (
+  <span className="absolute inset-y-1.5 right-0 w-[3px] rounded-l-full bg-white" />
+);
 
-/** Avatar outlet dengan ring gradien (dipakai juga di rail) */
-export function OutletAvatar() {
-  return (
-    <div
-      className="relative flex size-11 shrink-0 rounded-full p-0.5 shadow-[0px_0px_16px_-2px_rgba(56,189,248,0.3)]"
-      style={{
-        backgroundImage:
-          'linear-gradient(45deg, rgb(235,122,38) 0%, rgb(246,206,176) 50%, rgb(255,109,0) 100%)',
-      }}
-    >
-      <div className="relative flex-1 overflow-hidden rounded-full bg-[#0e1013]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.3)_0%,rgba(59,130,246,0)_50%)]" />
-      </div>
-    </div>
-  );
-}
-
-function TrailingSlot({
-  trailing,
-  isOpen,
+/** Baris modul (level 1): disorot kalau dirinya / salah satu turunannya aktif */
+function ModuleRow({
+  item,
   highlighted,
+  isOpen,
+  onClick,
 }: {
-  trailing?: Trailing;
+  item: NavItem;
+  highlighted: boolean;
   isOpen?: boolean;
-  highlighted?: boolean;
+  onClick: () => void;
 }) {
-  if (!trailing) return null;
-  switch (trailing.type) {
-    case 'chevron':
-      return (
-        <img
-          src={icChevron}
-          alt=""
-          className={`size-4 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+  const Icon = item.icon;
+  return (
+    <button
+      onClick={onClick}
+      aria-current={highlighted && !item.children ? 'page' : undefined}
+      className={`relative flex w-full items-center justify-between rounded-lg px-3.5 py-3 transition-colors ${
+        highlighted ? ACTIVE : 'text-[#cfd2d8] hover:bg-[#282a2e]/60'
+      }`}
+    >
+      {highlighted && <ActiveMarker />}
+      <span className="flex items-center gap-3.5">
+        <Icon className="size-[22px] shrink-0" strokeWidth={1.75} />
+        <span className="text-[15px] font-medium leading-6">{item.title}</span>
+      </span>
+      {item.children && (
+        <ChevronDown
+          className={`size-[18px] shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
         />
-      );
-    case 'count':
-      return (
-        <span
-          className={`rounded-full px-2 py-0.5 font-mono text-xs leading-4 ${
-            highlighted ? 'bg-white text-[#21262f]' : 'bg-[#20252e] text-[#94a3b8]'
-          }`}
-        >
-          {trailing.text}
-        </span>
-      );
-    case 'dot':
-      return <span className="size-2 shrink-0 rounded-full bg-[#94a3b8]" />;
-    case 'tag':
-      return (
-        <span className="rounded border border-white/15 bg-white/10 px-[7px] py-[3px] text-[10px] font-bold leading-[15px] text-white">
-          {trailing.text}
-        </span>
-      );
-    case 'live':
-      return (
-        <span className="rounded bg-[#21262f] px-1.5 py-0.5 font-mono text-[10px] leading-[15px] text-[#94a3b8]">
-          LIVE
-        </span>
-      );
-  }
-}
-
-/** Modul tanpa sub modul yang sedang aktif — kotak highlight + garis putih di kiri */
-function ActiveRow({ item, onClick }: { item: NavItem; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="relative flex w-full items-center justify-between rounded-xl border border-white/15 bg-white/10 px-[13px] py-[11px]"
-    >
-      <span className="flex items-center gap-3 pl-1.5">
-        <span className="rounded-lg bg-white/10 p-1.5">
-          <NavItemIcon item={item} highlighted />
-        </span>
-        <span className="text-sm font-semibold leading-5 tracking-[-0.35px] text-white">
-          {item.title}
-        </span>
-      </span>
-      {item.trailing?.type !== 'live' && <TrailingSlot trailing={item.trailing} highlighted />}
-      <span className="absolute bottom-1.5 left-0 top-1.5 w-1.5 rounded-r-full bg-white shadow-[2px_0px_10px_1px_rgba(255,255,255,0.35)]" />
+      )}
     </button>
-  );
-}
-
-/** Modul yang salah satu turunannya aktif — kotak highlight tanpa garis kiri */
-function ParentHighlightRow({
-  item,
-  isOpen,
-  onClick,
-}: {
-  item: NavItem;
-  isOpen: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex w-full items-center justify-between rounded-xl border border-white/15 bg-white/10 px-3 py-2.5"
-    >
-      <span className="flex items-center gap-3">
-        <span className="rounded-lg bg-white/10 p-1.5">
-          <NavItemIcon item={item} highlighted />
-        </span>
-        <span className="text-sm font-semibold leading-5 text-white">{item.title}</span>
-      </span>
-      <TrailingSlot trailing={item.trailing} isOpen={isOpen} highlighted />
-    </button>
-  );
-}
-
-function NormalRow({
-  item,
-  isOpen,
-  onClick,
-}: {
-  item: NavItem;
-  isOpen?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex w-full items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-white/5"
-    >
-      <span className="flex items-center gap-3">
-        <span className="rounded-lg bg-[#1a1d24] p-1.5">
-          <NavItemIcon item={item} highlighted={false} />
-        </span>
-        <span className="text-sm font-medium leading-5 text-[#cbd5e1]">{item.title}</span>
-      </span>
-      <TrailingSlot trailing={item.trailing} isOpen={isOpen} />
-    </button>
-  );
-}
-
-function Connector({ active, offsetForBorder }: { active: boolean; offsetForBorder?: boolean }) {
-  return (
-    <span
-      className={`absolute top-1/2 h-px w-2 -translate-y-1/2 ${
-        offsetForBorder ? '-left-[18px]' : '-left-[17px]'
-      } ${active ? 'bg-white' : 'bg-[#2c323e]'}`}
-    />
   );
 }
 
@@ -182,6 +60,7 @@ type SubTreeProps = {
   parentGroupId: string | null;
   onGroupClick: (group: NavNode) => void;
   onLeafClick: (id: string, groupId: string | null) => void;
+  counts: Record<string, number>;
   nested?: boolean;
 };
 
@@ -192,14 +71,11 @@ function SubTree({
   parentGroupId,
   onGroupClick,
   onLeafClick,
+  counts,
   nested,
 }: SubTreeProps) {
-  const list = (
-    <div
-      className={`flex flex-col gap-1 border-l border-[rgba(44,50,62,0.8)] pl-[17px] pt-1 ${
-        nested ? 'ml-3' : 'w-[271px]'
-      }`}
-    >
+  return (
+    <div className={`flex flex-col gap-1 ${nested ? 'pl-3.5' : 'py-1 pl-12'}`}>
       {nodes.map((node) => {
         if (node.children?.length) {
           const isOpen = openGroup === node.id;
@@ -208,19 +84,15 @@ function SubTree({
             <div key={node.id} className="flex flex-col gap-1">
               <button
                 onClick={() => onGroupClick(node)}
-                className={`relative flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-left text-xs leading-4 transition-colors hover:bg-white/5 ${
-                  hasActive
-                    ? 'font-semibold text-white'
-                    : 'font-medium text-[#94a3b8] hover:text-[#cbd5e1]'
+                className={`relative flex w-full items-center justify-between gap-2 rounded-md px-3 py-2.5 text-left text-[15px] font-medium leading-6 transition-colors ${
+                  hasActive ? ACTIVE : 'text-[#9a9ea6] hover:bg-[#282a2e]/60 hover:text-[#cfd2d8]'
                 }`}
               >
+                {hasActive && <ActiveMarker />}
                 <span>{node.title}</span>
-                <img
-                  src={icChevron}
-                  alt=""
-                  className={`size-3.5 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                <ChevronDown
+                  className={`size-[18px] shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                 />
-                <Connector active={hasActive} />
               </button>
               {isOpen && (
                 <SubTree
@@ -230,6 +102,7 @@ function SubTree({
                   parentGroupId={node.id}
                   onGroupClick={onGroupClick}
                   onLeafClick={onLeafClick}
+                  counts={counts}
                   nested
                 />
               )}
@@ -238,50 +111,70 @@ function SubTree({
         }
 
         const isActive = activeItem === node.id;
+        const count = node.countTable ? counts[node.countTable] : 0;
         return (
           <button
             key={node.id}
             onClick={() => onLeafClick(node.id, parentGroupId)}
-            className={`relative flex w-full items-center justify-between rounded-lg text-left text-xs leading-4 ${
-              isActive
-                ? 'border border-white/15 bg-white/10 px-[13px] py-[9px] font-semibold text-white'
-                : 'px-3 py-1.5 font-medium text-[#94a3b8] transition-colors hover:bg-white/5 hover:text-[#cbd5e1]'
+            aria-current={isActive ? 'page' : undefined}
+            className={`relative flex w-full items-center justify-between gap-2 rounded-md px-3 py-2.5 text-left text-[15px] font-medium leading-6 transition-colors ${
+              isActive ? ACTIVE : 'text-[#9a9ea6] hover:bg-[#282a2e]/60 hover:text-[#cfd2d8]'
             }`}
           >
+            {isActive && <ActiveMarker />}
             <span>{node.title}</span>
-            {node.count && !isActive && (
-              <span className="font-mono text-[10px] leading-4 text-[#64748b]">{node.count}</span>
+            {count > 0 && (
+              <span className="rounded bg-[#262626] px-1.5 py-0.5 font-mono text-xs leading-4 text-[#cecece]">
+                {count}
+              </span>
             )}
-            <Connector active={isActive} offsetForBorder={isActive} />
           </button>
         );
       })}
     </div>
   );
-
-  return nested ? list : <div className="flex justify-end">{list}</div>;
 }
 
 type Props = {
   activeItem: string;
   onNavigate: (id: string) => void;
   onLogout: () => void;
+  /** Tombol panel di header: sempitkan sidebar (layar lebar) / tutup panel (iPad) */
+  onCollapse: () => void;
   /** Dipanggil saat pengguna memilih halaman akhir — dipakai untuk menutup panel di iPad */
   onPageChosen?: () => void;
-  /** Kalau diisi, muncul tombol X di header (mode panel melayang) */
-  onClose?: () => void;
+  /** Modul yang langsung terbuka saat sidebar muncul (dipilih dari rail) */
+  initialModule?: string | null;
 };
 
-export function AppSidebar({ activeItem, onNavigate, onLogout, onPageChosen, onClose }: Props) {
+export function AppSidebar({
+  activeItem,
+  onNavigate,
+  onLogout,
+  onCollapse,
+  onPageChosen,
+  initialModule,
+}: Props) {
   const initial = findLocation(activeItem);
-  const [openModule, setOpenModule] = useState<string | null>(initial.moduleId);
+  const [openModule, setOpenModule] = useState<string | null>(initialModule ?? initial.moduleId);
   const [openGroup, setOpenGroup] = useState<string | null>(initial.groupId);
 
-  // Sinkronkan accordion saat URL berubah dari luar sidebar (back/forward, buka link langsung)
+  // Sinkronkan accordion saat halaman berubah (klik menu, back/forward, buka link langsung)
+  const [prevActive, setPrevActive] = useState(activeItem);
+  if (prevActive !== activeItem) {
+    setPrevActive(activeItem);
+    setOpenModule(initial.moduleId);
+    setOpenGroup(initial.groupId);
+  }
+
+  // Badge jumlah data; dihitung ulang tiap pindah halaman supaya ikut berubah setelah tambah/hapus data
+  const [counts, setCounts] = useState<Record<string, number>>({});
   useEffect(() => {
-    const loc = findLocation(activeItem);
-    setOpenModule(loc.moduleId);
-    setOpenGroup(loc.groupId);
+    let cancelled = false;
+    fetchNavCounts(countTables).then((c) => !cancelled && setCounts(c));
+    return () => {
+      cancelled = true;
+    };
   }, [activeItem]);
 
   function handleSingleClick(id: string) {
@@ -291,24 +184,13 @@ export function AppSidebar({ activeItem, onNavigate, onLogout, onPageChosen, onC
     onPageChosen?.();
   }
 
+  // Modul & grup hanya buka/tutup daftar turunannya — pindah halaman baru saat halaman akhir dipilih
   function handleModuleClick(item: NavItem) {
-    if (openModule === item.id) {
-      setOpenModule(null);
-      return;
-    }
-    const { leafId, groupId } = firstLeaf(item.children!);
-    setOpenModule(item.id);
-    setOpenGroup(groupId);
-    onNavigate(leafId);
+    setOpenModule(openModule === item.id ? null : item.id);
   }
 
   function handleGroupClick(group: NavNode) {
-    if (openGroup === group.id) {
-      setOpenGroup(null);
-      return;
-    }
-    setOpenGroup(group.id);
-    onNavigate(group.children![0].id);
+    setOpenGroup(openGroup === group.id ? null : group.id);
   }
 
   function handleLeafClick(id: string, groupId: string | null) {
@@ -318,111 +200,77 @@ export function AppSidebar({ activeItem, onNavigate, onLogout, onPageChosen, onC
   }
 
   return (
-    <aside className="flex h-screen w-80 shrink-0 flex-col border-r border-[#2a303c] bg-[#12151a] font-['Plus_Jakarta_Sans_Variable',sans-serif] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)]">
-      {/* BrandHeader */}
-      <div className="border-b border-[rgba(44,50,62,0.8)] bg-gradient-to-b from-[rgba(26,29,36,0.6)] to-[rgba(26,29,36,0)] px-5 pb-[17px] pt-5">
-        <div className="flex items-center gap-3.5">
-          <img src={logo} alt="Toko Kopi Irona" className="h-[62px] w-[109px] object-contain" />
-          <span className="text-base font-extrabold uppercase leading-6 tracking-[0.4px] text-white">
-            Admin Kora
-          </span>
-          {onClose && (
-            <button
-              onClick={onClose}
-              aria-label="Tutup menu"
-              className="ml-auto rounded-lg border border-white/10 bg-white/5 p-1.5 text-[#cbd5e1] hover:bg-white/10"
-            >
-              <X className="size-4" />
-            </button>
-          )}
-        </div>
+    <aside className="flex h-full w-[280px] max-w-[85vw] shrink-0 flex-col border-r border-[#232529] bg-[#1b1c1f] font-['Plus_Jakarta_Sans_Variable',sans-serif]">
+      {/* Header brand */}
+      <div className="relative flex h-[76px] shrink-0 items-center justify-end border-b border-[#232529] px-5">
+        <img
+          src={logo}
+          alt="Toko Kopi Irona"
+          className="pointer-events-none absolute -top-[6px] left-3 size-[96px] object-cover"
+        />
+        <button
+          onClick={onCollapse}
+          title="Sempitkan sidebar"
+          aria-label="Sempitkan sidebar"
+          className="rounded-md p-2 text-[#9a9ea6] transition-colors hover:bg-[#282a2e] hover:text-white"
+        >
+          <PanelLeft className="size-5" />
+        </button>
       </div>
 
       {/* Nav */}
-      <nav className="flex flex-1 flex-col gap-[23px] overflow-y-auto px-3.5 pb-[67px] pt-[11px]">
-        {navGroups.map((group) => (
-          <div key={group.label} className="flex flex-col gap-2">
-            <p className="px-3 text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-[rgba(148,163,184,0.8)]">
-              {group.label}
-            </p>
-            <div className="flex flex-col gap-1">
-              {group.items.map((item) => {
-                if (!item.children?.length) {
-                  return activeItem === item.id ? (
-                    <ActiveRow key={item.id} item={item} onClick={() => handleSingleClick(item.id)} />
-                  ) : (
-                    <NormalRow key={item.id} item={item} onClick={() => handleSingleClick(item.id)} />
-                  );
-                }
+      <nav className="sidebar-scroll flex flex-1 flex-col gap-1.5 overflow-y-auto p-3">
+        {allItems.map((item) => {
+          if (!item.children?.length) {
+            return (
+              <ModuleRow
+                key={item.id}
+                item={item}
+                highlighted={activeItem === item.id}
+                onClick={() => handleSingleClick(item.id)}
+              />
+            );
+          }
 
-                const isOpen = openModule === item.id;
-                const hasActive = containsActive(item.children, activeItem);
-                return (
-                  <div key={item.id} className="flex flex-col gap-1">
-                    {hasActive ? (
-                      <ParentHighlightRow item={item} isOpen={isOpen} onClick={() => handleModuleClick(item)} />
-                    ) : (
-                      <NormalRow item={item} isOpen={isOpen} onClick={() => handleModuleClick(item)} />
-                    )}
-                    {isOpen && (
-                      <SubTree
-                        nodes={item.children}
-                        activeItem={activeItem}
-                        openGroup={openGroup}
-                        parentGroupId={null}
-                        onGroupClick={handleGroupClick}
-                        onLeafClick={handleLeafClick}
-                      />
-                    )}
-                  </div>
-                );
-              })}
+          const isOpen = openModule === item.id;
+          return (
+            <div key={item.id} className="flex flex-col gap-1">
+              <ModuleRow
+                item={item}
+                highlighted={containsActive(item.children, activeItem)}
+                isOpen={isOpen}
+                onClick={() => handleModuleClick(item)}
+              />
+              {isOpen && (
+                <SubTree
+                  nodes={item.children}
+                  activeItem={activeItem}
+                  openGroup={openGroup}
+                  parentGroupId={null}
+                  onGroupClick={handleGroupClick}
+                  onLeafClick={handleLeafClick}
+                  counts={counts}
+                />
+              )}
             </div>
-          </div>
-        ))}
-
-        <div className="border-t border-[rgba(44,50,62,0.6)] pt-2.5">
-          {activeItem === SETTINGS_ITEM.id ? (
-            <ActiveRow item={SETTINGS_ITEM} onClick={() => handleSingleClick(SETTINGS_ITEM.id)} />
-          ) : (
-            <button
-              onClick={() => handleSingleClick(SETTINGS_ITEM.id)}
-              className="flex w-full items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-white/5"
-            >
-              <span className="flex items-center gap-3">
-                <span className="rounded-lg bg-[#1a1d24] p-1.5">
-                  <img src={SETTINGS_ITEM.icon} alt="" className="size-5" />
-                </span>
-                <span className="text-sm font-medium leading-5 text-[#cbd5e1]">{SETTINGS_ITEM.title}</span>
-              </span>
-              <span className="rounded bg-[#1a1d24] px-1.5 py-0.5 text-[10px] leading-[15px] text-[#94a3b8]">
-                v2.4
-              </span>
-            </button>
-          )}
-        </div>
+          );
+        })}
       </nav>
 
-      {/* OutletSwitcherFooter */}
-      <div className="border-t border-[#2c323e] bg-[rgba(14,16,19,0.8)] px-3.5 pb-3.5 pt-[15px]">
-        <div className="flex items-center justify-between rounded-2xl border border-[#2c323e] bg-[rgba(26,29,36,0.9)] p-[11px]">
-          <div className="flex items-center gap-3">
-            <OutletAvatar />
-            <span className="text-xs font-bold leading-4 tracking-[0.3px] text-white">Toko Kopi Irona</span>
-          </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-lg p-1.5 hover:bg-white/5">
-              <img src={icUpDown} alt="Ganti outlet" className="size-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" align="end" className="w-48">
-              <DropdownMenuItem onClick={onLogout}>
-                <LogOut className="mr-2 size-4" />
-                Keluar
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+      {/* Pengaturan + keluar */}
+      <div className="flex shrink-0 flex-col gap-1.5 border-t border-[#232529] p-3">
+        <ModuleRow
+          item={SETTINGS_ITEM}
+          highlighted={activeItem === SETTINGS_ITEM.id}
+          onClick={() => handleSingleClick(SETTINGS_ITEM.id)}
+        />
+        <button
+          onClick={onLogout}
+          className="flex w-full items-center gap-3.5 rounded-lg px-3.5 py-3 text-[#cfd2d8] transition-colors hover:bg-[#282a2e]/60"
+        >
+          <LogOut className="size-[22px] shrink-0" strokeWidth={1.75} />
+          <span className="text-[15px] font-medium leading-6">Keluar</span>
+        </button>
       </div>
     </aside>
   );
