@@ -19,7 +19,7 @@ export function HistoryButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       title="Riwayat Perubahan"
       aria-label="Riwayat Perubahan"
-      className="flex size-9 items-center justify-center rounded-xl border border-[#e2e8f0] bg-white text-[#334155] hover:bg-[#f8fafc] hover:text-[#0f172a]"
+      className="flex size-9 items-center justify-center text-[#334155] hover:text-[#0f172a]"
     >
       <History className="size-[18px]" />
     </button>

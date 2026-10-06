@@ -44,7 +44,7 @@ export function PageHeader({ title, info, badge, action }: Props) {
             <Popover.Root>
               <Popover.Trigger
                 aria-label={`Tentang ${title}`}
-                className="flex size-7 cursor-pointer items-center justify-center rounded-full border border-[#cbd5e1] bg-[#f1f5f9] text-[#475569] hover:bg-[#e2e8f0] hover:text-[#0f172a]"
+                className="flex cursor-pointer items-center justify-center text-[#475569] hover:text-[#0f172a]"
               >
                 <Info className="size-[18px]" strokeWidth={2.25} />
               </Popover.Trigger>
