@@ -43,10 +43,15 @@ export default function CategoryProductsModal({ category, onClose }: Props) {
     <ModalShell open={!!category} onBackdropClick={onClose} panelClassName="max-w-lg" labelledBy="category-products-title">
       <div className="flex items-center justify-between border-b border-[#e2e8f0] px-6 py-4">
         <div>
-          <h2 id="category-products-title" className="text-base font-bold leading-6 text-[#0f172a]">
-            {category?.name}
-          </h2>
-          <p className="text-xs leading-4 text-[#64748b]">{category?.productCount} Produk</p>
+          <div className="flex items-center gap-2">
+            <h2 id="category-products-title" className="text-base font-bold leading-6 text-[#0f172a]">
+              {category?.name}
+            </h2>
+            <span className="rounded-md border border-[#cbd5e1] bg-[#f1f5f9] px-2 py-0.5 font-mono text-xs font-bold leading-4 text-[#334155]">
+              {category?.productCount} produk terdaftar
+            </span>
+          </div>
+          <p className="text-xs leading-4 text-[#64748b]">Daftar item produk dalam kategori</p>
         </div>
         <button
           type="button"
@@ -81,10 +86,20 @@ export default function CategoryProductsModal({ category, onClose }: Props) {
               {products.map((p) => (
                 <tr key={p.id} className="border-t border-[#f1f5f9] first:border-t-0">
                   <td className={`py-3 pl-6 text-sm leading-5 ${p.isActive ? 'text-[#0f172a]' : 'text-[#94a3b8]'}`}>
-                    {p.name}
+                    <div className="flex items-center gap-2">
+                      {p.name}
+                      {!p.isActive && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-dashed border-[#94a3b8] bg-[#f1f5f9] px-2 py-px text-xs font-medium leading-4 text-[#475569]">
+                          <span className="size-1.5 rounded-full border border-[#64748b]" />
+                          Nonaktif
+                        </span>
+                      )}
+                    </div>
                   </td>
-                  <td className="py-3 pr-6 text-right font-mono text-sm leading-5 text-[#334155]">
-                    {p.sellingPrice === null ? '—' : formatRupiah(p.sellingPrice)}
+                  <td
+                    className={`py-3 pr-6 text-right font-mono text-sm leading-5 ${p.isActive ? 'text-[#334155]' : 'text-[#94a3b8]'}`}
+                  >
+                    {p.sellingPrice ? formatRupiah(p.sellingPrice) : '-'}
                   </td>
                 </tr>
               ))}
