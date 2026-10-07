@@ -20,9 +20,6 @@ export default function PointRulesModal({ rules, onClose, onSaved }: Props) {
         }))
       : [{ key: 0, amount: '', points: '' }]
   );
-  const [threshold, setThreshold] = useState(
-    rules.roundingThreshold > 0 ? String(Math.round(rules.roundingThreshold)) : ''
-  );
   const [simulate, setSimulate] = useState('50000');
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
@@ -36,12 +33,11 @@ export default function PointRulesModal({ rules, onClose, onSaved }: Props) {
   const tiers: PointTier[] = rows
     .map((r) => ({ minAmount: Number(r.amount) || 0, points: Number(r.points) || 0 }))
     .filter((t) => t.minAmount > 0 && t.points > 0);
-  const thresholdNum = Number(threshold) || 0;
   const smallest = tiers.length ? Math.min(...tiers.map((t) => t.minAmount)) : 0;
 
   const simAmount = Number(simulate) || 0;
-  const sim = calcPoints(simAmount, tiers, thresholdNum);
-  const examples = [smallest * 0.9, smallest * 1.3, smallest * 1.6, smallest * 5, smallest * 5.5]
+  const sim = calcPoints(simAmount, tiers);
+  const examples = [smallest * 0.9, smallest * 1.9, smallest * 2, smallest * 2.6, smallest * 5.5]
     .map((v) => Math.round(v / 1000) * 1000)
     .filter((v, i, arr) => v > 0 && arr.indexOf(v) === i);
 
@@ -59,15 +55,12 @@ export default function PointRulesModal({ rules, onClose, onSaved }: Props) {
     } else if (new Set(filled.map((r) => Number(r.amount))).size !== filled.length) {
       next.tiers = 'Nominal tiap tingkat tidak boleh sama.';
     }
-    if (thresholdNum >= smallest && smallest > 0) {
-      next.threshold = `Batas pembulatan harus di bawah ${formatRupiah(smallest)} (tingkat terkecil).`;
-    }
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
     setSaving(true);
     try {
-      await savePointRules(tiers, thresholdNum);
+      await savePointRules(tiers);
       onSaved();
     } catch (err: any) {
       setErrors({ form: err?.message ?? 'Gagal menyimpan aturan poin.' });
@@ -151,22 +144,6 @@ export default function PointRulesModal({ rules, onClose, onSaved }: Props) {
             <FieldError message={errors.tiers} />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <FieldLabel>Batas Pembulatan Sisa</FieldLabel>
-            <div className="w-64">
-              <RupiahInput
-                value={threshold}
-                onChange={setThreshold}
-                hasError={!!errors.threshold}
-                placeholder="5.000"
-              />
-            </div>
-            <FieldError message={errors.threshold} />
-            <p className="text-xs leading-4 text-[#94a3b8]">
-              Sisa setelah dipecah ≥ batas ini dihitung 1 tingkat terkecil lagi; di bawahnya
-              dibuang. Kosongkan untuk tanpa pembulatan.
-            </p>
-          </div>
 
           <div className="flex flex-col gap-3 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
             <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#64748b]">
@@ -187,7 +164,7 @@ export default function PointRulesModal({ rules, onClose, onSaved }: Props) {
               <table className="w-full border-collapse">
                 <tbody>
                   {examples.map((amount) => {
-                    const r = calcPoints(amount, tiers, thresholdNum);
+                    const r = calcPoints(amount, tiers);
                     return (
                       <tr key={amount} className="border-t border-[#e2e8f0]">
                         <td className="py-1.5 font-mono text-sm text-[#475569]">

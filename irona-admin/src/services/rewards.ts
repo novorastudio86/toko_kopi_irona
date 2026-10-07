@@ -13,7 +13,7 @@ export async function fetchPointRules(): Promise<PointRules> {
   const [settings, tiers] = await Promise.all([
     supabase
       .from('point_earning_settings')
-      .select('rounding_threshold, updated_at, employees(full_name)')
+      .select('updated_at, employees(full_name)')
       .maybeSingle(),
     supabase.from('point_earning_tiers').select('min_amount, points').order('min_amount'),
   ]);
@@ -26,17 +26,16 @@ export async function fetchPointRules(): Promise<PointRules> {
       minAmount: Number(t.min_amount),
       points: t.points,
     })),
-    roundingThreshold: Number(s?.rounding_threshold ?? 0),
     updatedAt: s?.updated_at ?? null,
     updatedByName: s?.employees?.full_name ?? null,
   };
 }
 
-/** Simpan semua tingkat + batas pembulatan sekaligus (tercatat di riwayat aturan) */
-export async function savePointRules(tiers: PointTier[], roundingThreshold: number): Promise<void> {
+/** Simpan semua tingkat sekaligus (tercatat di riwayat aturan). Tanpa pembulatan sisa. */
+export async function savePointRules(tiers: PointTier[]): Promise<void> {
   const { error } = await supabase.rpc('save_point_rules', {
     p_tiers: tiers.map((t) => ({ min_amount: t.minAmount, points: t.points })),
-    p_rounding_threshold: roundingThreshold,
+    p_rounding_threshold: 0,
   });
   if (error) throw error;
 }

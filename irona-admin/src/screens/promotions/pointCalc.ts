@@ -4,15 +4,13 @@ export interface PointBreakdown {
   minAmount: number;
   points: number;
   count: number;
-  /** Diisi kalau baris ini hasil pembulatan sisa */
-  roundedFrom?: number;
 }
 
 /**
  * Salinan logika SQL `calc_points` — dipakai untuk simulasi di form (sebelum aturan disimpan).
- * Pecah dari tingkat terbesar yang muat, lalu sisa ≥ batas pembulatan dihitung 1 tingkat terkecil lagi.
+ * Pecah dari tingkat terbesar yang muat; sisa di bawah tingkat terkecil dibuang (tanpa pembulatan).
  */
-export function calcPoints(amount: number, tiers: PointTier[], roundingThreshold: number) {
+export function calcPoints(amount: number, tiers: PointTier[]) {
   const sorted = [...tiers]
     .filter((t) => t.minAmount > 0 && t.points > 0)
     .sort((a, b) => b.minAmount - a.minAmount);
@@ -29,18 +27,6 @@ export function calcPoints(amount: number, tiers: PointTier[], roundingThreshold
     }
   }
 
-  const smallest = sorted[sorted.length - 1];
-  if (smallest && roundingThreshold > 0 && remaining >= roundingThreshold) {
-    points += smallest.points;
-    breakdown.push({
-      minAmount: smallest.minAmount,
-      points: smallest.points,
-      count: 1,
-      roundedFrom: remaining,
-    });
-    remaining = 0;
-  }
-
   return { points, breakdown, leftover: remaining };
 }
 
@@ -53,12 +39,10 @@ export function shortRupiah(value: number): string {
   return String(value);
 }
 
-/** "30rb + 10rb×2 + sisa 6rb→10rb" */
+/** "30rb + 10rb×2 + sisa 6rb dibuang" */
 export function describeBreakdown(breakdown: PointBreakdown[], leftover: number): string {
-  const parts = breakdown.map((b) =>
-    b.roundedFrom !== undefined
-      ? `sisa ${shortRupiah(b.roundedFrom)}→${shortRupiah(b.minAmount)}`
-      : `${shortRupiah(b.minAmount)}${b.count > 1 ? `×${b.count}` : ''}`
+  const parts = breakdown.map(
+    (b) => `${shortRupiah(b.minAmount)}${b.count > 1 ? `×${b.count}` : ''}`
   );
   if (leftover > 0) parts.push(`sisa ${shortRupiah(leftover)} dibuang`);
   return parts.length ? parts.join(' + ') : 'belum mencapai tingkat terkecil';

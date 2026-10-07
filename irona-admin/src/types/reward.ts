@@ -5,8 +5,6 @@ export interface PointTier {
 
 export interface PointRules {
   tiers: PointTier[];
-  /** Sisa ≥ batas ini dihitung 1 tingkat terkecil lagi; 0 = tanpa pembulatan */
-  roundingThreshold: number;
   updatedAt: string | null;
   updatedByName: string | null;
 }

@@ -34,7 +34,7 @@ Poin bertanda *(sementara)* masih default dan bisa direvisi owner.
 ## Pelanggan & poin
 
 - Poin dihitung dari nilai produk setelah diskon (tanpa ongkir/biaya layanan), dengan tingkatan **greedy**: pakai tingkat terbesar berulang kali. Contoh: tingkat 10rb = 1 dan 30rb = 5 → Rp50.000 = 30rb + 10rb + 10rb = 7 poin.
-- Sisa ≥ batas pembulatan (default Rp5.000) dihitung 1 tingkat terkecil lagi.
+- Sisa di bawah tingkat terkecil dibuang (tanpa pembulatan): 10rb = 1 poin → 9rb = 0, 19rb = 1, 20rb = 2.
 - Reward hanya berupa **produk gratis** untuk N poin. Voucher diskon/ongkir ada di Promosi › Diskon.
 
 ## Diskon & ongkir

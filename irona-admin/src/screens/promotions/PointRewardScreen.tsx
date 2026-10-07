@@ -30,7 +30,7 @@ type SortKey = 'name' | 'productName' | 'pointsRequired' | 'availableStock' | 'i
 
 function RulesCard({ rules, onEdit }: { rules: PointRules; onEdit: () => void }) {
   const smallest = rules.tiers[0]?.minAmount ?? 10000;
-  const examples = [smallest * 1.6, smallest * 5].map((v) => Math.round(v / 1000) * 1000);
+  const examples = [smallest * 1.9, smallest * 5].map((v) => Math.round(v / 1000) * 1000);
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-[#e2e8f0] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
@@ -74,15 +74,13 @@ function RulesCard({ rules, onEdit }: { rules: PointRules; onEdit: () => void })
         ))}
         <span className="text-xs text-[#64748b]">
           ·{' '}
-          {rules.roundingThreshold > 0
-            ? `sisa ≥ ${formatRupiah(rules.roundingThreshold)} dibulatkan ke atas`
-            : 'tanpa pembulatan sisa'}
+          sisa di bawah tingkat terkecil tidak dapat poin
         </span>
       </div>
 
       <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-[#64748b]">
         {examples.map((amount) => {
-          const r = calcPoints(amount, rules.tiers, rules.roundingThreshold);
+          const r = calcPoints(amount, rules.tiers);
           return (
             <span key={amount}>
               Contoh:{' '}
