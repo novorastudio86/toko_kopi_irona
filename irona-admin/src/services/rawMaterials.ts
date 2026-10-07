@@ -1,6 +1,8 @@
 import { supabase } from './supabase';
 import type { RawMaterialListItem } from '../types/rawMaterial';
 import type { RawMaterialDetail, RawMaterialInput } from '../types/rawMaterial';
+import type { HistoryEntry } from '../types/history';
+import { historySince } from '../utils/date';
 
 export async function fetchRawMaterials(): Promise<RawMaterialListItem[]> {
   const [materialRes, unitRes] = await Promise.all([
@@ -135,4 +137,36 @@ export async function fetchRawMaterialUsage(materialId: string): Promise<RawMate
           ? -1
           : 1
     );
+}
+const UNIT_FIELDS = ['base_unit_id', 'default_purchase_unit_id'];
+
+/** Riwayat dari trigger `log_raw_material_history`; id satuan langsung diganti nama satuannya */
+export async function fetchRawMaterialHistory(): Promise<HistoryEntry[]> {
+  const [historyRes, unitRes] = await Promise.all([
+    supabase
+      .from('raw_material_history')
+      .select('id, raw_material_name, action, changes, changed_at')
+      .gte('changed_at', historySince())
+      .order('changed_at', { ascending: false }),
+    supabase.from('units').select('id, name'),
+  ]);
+  if (historyRes.error) throw historyRes.error;
+  if (unitRes.error) throw unitRes.error;
+
+  const unitNames = new Map((unitRes.data ?? []).map((u: any) => [u.id, u.name as string]));
+  const unitName = (v: unknown) => (v ? unitNames.get(v as string) ?? '—' : null);
+
+  return (historyRes.data ?? []).map((row: any) => {
+    const changes = row.changes as HistoryEntry['changes'];
+    for (const k of UNIT_FIELDS) {
+      if (changes?.[k]) changes[k] = { from: unitName(changes[k].from), to: unitName(changes[k].to) };
+    }
+    return {
+      id: row.id,
+      subject: row.raw_material_name,
+      action: row.action,
+      changes,
+      changedAt: row.changed_at,
+    };
+  });
 }

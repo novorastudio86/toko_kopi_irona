@@ -22,6 +22,7 @@ import { SortableTh, type SortDir } from '../../components/SortableTh';
 import { TablePagination } from '../../components/TablePagination';
 import {
   deleteRawMaterial,
+  fetchRawMaterialHistory,
   fetchRawMaterials,
   setRawMaterialActive,
 } from '../../services/rawMaterials';
@@ -32,6 +33,8 @@ import icMore from '../../assets/ui/more.svg';
 import RawMaterialFormModal from './RawMaterialFormModal';
 import { Info } from 'lucide-react'; // tambahkan ke daftar import lucide yang sudah ada
 import RawMaterialDetailModal from './RawMaterialDetailModal';
+import { HistoryButton, HistoryModal } from '../../components/HistoryModal';
+import { RAW_MATERIAL_HISTORY_FIELDS } from '../products/historyFields';
 
 type SortKey = 'name' | 'materialType' | 'unitName' | 'currentStock' | 'unitPrice' | 'minStockAlert';
 type TypeFilter = '' | 'tetap' | 'menyusut';
@@ -73,6 +76,7 @@ export default function RawMaterialListScreen() {
   const [pageSize, setPageSize] = useState(10);
   const [formState, setFormState] = useState<{ id: string | null } | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -176,15 +180,17 @@ export default function RawMaterialListScreen() {
       <PageHeader
         title="Daftar Bahan Baku"
         info="Master bahan baku: satuan dasar, harga per satuan dari pembelian terakhir, dan batas stok minimum."
-        badge={loading ? undefined : `${materials.length} Bahan`}
         action={
-          <button
-            onClick={() => setFormState({ id: null })}
-            className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-4 py-2.5 text-xs font-semibold leading-4 tracking-[0.3px] text-white drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#1e293b] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <img src={icPlus} alt="" className="size-4" />
-            Tambah Bahan Baku
-          </button>
+          <div className="flex items-center gap-3">
+            <HistoryButton onClick={() => setHistoryOpen(true)} />
+            <button
+              onClick={() => setFormState({ id: null })}
+              className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-4 py-2.5 text-xs font-semibold leading-4 tracking-[0.3px] text-white drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#1e293b] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <img src={icPlus} alt="" className="size-4" />
+              Tambah Bahan Baku
+            </button>
+          </div>
         }
       />
 
@@ -420,6 +426,14 @@ export default function RawMaterialListScreen() {
             setDetailId(null);
             setFormState({ id });
           }}
+        />
+      )}
+      {historyOpen && (
+        <HistoryModal
+          title="Riwayat Perubahan Bahan Baku"
+          load={fetchRawMaterialHistory}
+          fields={RAW_MATERIAL_HISTORY_FIELDS}
+          onClose={() => setHistoryOpen(false)}
         />
       )}
       </div>

@@ -1,6 +1,6 @@
 import type { HistoryFields } from '../../components/HistoryModal';
 import { CATEGORY_ICONS } from '../../constants/categoryIcons';
-import { formatPercent, formatQty, formatRupiah } from '../../utils/format';
+import { formatPercent, formatQty, formatRupiah, formatRupiahDetail } from '../../utils/format';
 
 const yesNo = (v: unknown) => (v ? 'Ya' : 'Tidak');
 const money = (v: unknown) => formatRupiah(Number(v));
@@ -56,4 +56,16 @@ export const RECIPE_HISTORY_FIELDS: HistoryFields = {
   min_stock_alert: { label: 'Minimum stok', format: qty },
   cashier_can_produce: { label: 'Kasir boleh update stok', format: yesNo },
   components: { label: 'Komponen' },
+};
+
+/** Kolom yang dilacak trigger `log_raw_material_history` (id satuan sudah jadi nama di service) */
+export const RAW_MATERIAL_HISTORY_FIELDS: HistoryFields = {
+  name: { label: 'Nama' },
+  material_type: { label: 'Jenis bahan', format: (v) => (v === 'menyusut' ? 'Menyusut' : 'Tetap') },
+  base_unit_id: { label: 'Satuan dasar' },
+  default_purchase_unit_id: { label: 'Satuan beli' },
+  default_qty_per_package: { label: 'Isi per kemasan', format: qty },
+  unit_price: { label: 'Harga per satuan', format: (v) => formatRupiahDetail(Number(v)) },
+  min_stock_alert: { label: 'Minimum stok', format: qty },
+  is_active: { label: 'Aktif', format: yesNo },
 };
