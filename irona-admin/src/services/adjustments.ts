@@ -156,6 +156,7 @@ export async function createTryError(input: TneInput): Promise<void> {
     p_quantity: input.quantity,
     p_items: input.items,
     p_notes: input.notes,
+    p_add_cost: input.addCostPercentage,
   });
   if (error) throw error;
 }

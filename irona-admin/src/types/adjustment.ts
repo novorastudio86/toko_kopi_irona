@@ -64,6 +64,8 @@ export type TneInput = {
   quantity: number;
   items: { raw_material_id: string; quantity: number }[];
   notes: string | null;
+  /** Hanya racikan_baru; resep existing pakai add cost Master Resep */
+  addCostPercentage?: number;
 };
 
 export type TryErrorDetail = {

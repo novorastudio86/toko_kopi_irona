@@ -8,7 +8,7 @@ import {
 } from '../../services/adjustments';
 import type { RecipeOption, TneUsageLine } from '../../types/adjustment';
 import { formatRupiah, formatRupiahDetail } from '../../utils/format';
-import { FieldError, FieldLabel, inputClass } from '../products/product-form/formUi';
+import { FieldError, FieldLabel, PercentChips, inputClass } from '../products/product-form/formUi';
 import { formatNumber } from './adjustmentFormat';
 
 type Props = {
@@ -19,9 +19,6 @@ type Props = {
 type Mode = 'resep' | 'racikan_baru';
 type MaterialOption = Awaited<ReturnType<typeof fetchMaterialOptions>>[number];
 type MaterialRow = { key: number; materialId: string; qty: string };
-
-/** Racikan baru: add cost terkunci 10% (PRD) */
-const BRAINSTORM_ADD_COST = 10;
 
 let rowKey = 0;
 const newRow = (): MaterialRow => ({ key: ++rowKey, materialId: '', qty: '' });
@@ -43,6 +40,7 @@ export default function TryErrorFormModal({ onClose, onSaved }: Props) {
   const [usage, setUsage] = useState<TneUsageLine[]>([]);
   const [loadingUsage, setLoadingUsage] = useState(false);
   const [rows, setRows] = useState<MaterialRow[]>([newRow()]);
+  const [addCostPct, setAddCostPct] = useState<number | null>(10);
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
@@ -108,7 +106,8 @@ export default function TryErrorFormModal({ onClose, onSaved }: Props) {
     return { row, material: m, qty, subtotal: m ? qty * m.unitPrice : 0 };
   });
   const brainstormCost = brainstormLines.reduce((s, l) => s + l.subtotal, 0);
-  const brainstormTotal = Math.round(brainstormCost * (1 + BRAINSTORM_ADD_COST / 100) * 100) / 100;
+  const brainstormAddCost = brainstormCost * ((addCostPct ?? 0) / 100);
+  const brainstormTotal = Math.round((brainstormCost + brainstormAddCost) * 100) / 100;
 
   const recipeTotal = recipe ? Math.round(recipe.costPerPorsi * porsiNum * 100) / 100 : 0;
   const shortage = usage.filter((u) => u.currentStock < u.quantity);
@@ -140,6 +139,8 @@ export default function TryErrorFormModal({ onClose, onSaved }: Props) {
         if (lacking.length > 0)
           next.rows = `Stok tidak cukup: ${[...new Set(lacking.map((l) => l.material!.name))].join(', ')}.`;
       }
+      if (addCostPct === null || addCostPct < 0 || addCostPct > 100)
+        next.addCost = 'Add Cost harus antara 0–100%.';
     }
     setErrors(next);
     if (Object.keys(next).length > 0) return;
@@ -166,6 +167,7 @@ export default function TryErrorFormModal({ onClose, onSaved }: Props) {
             .filter((r) => r.materialId)
             .map((r) => ({ raw_material_id: r.materialId, quantity: Number(r.qty) })),
           notes: notes.trim() || null,
+          addCostPercentage: addCostPct ?? 0,
         });
         onSaved('Racikan Baru (Brainstorm)');
       }
@@ -397,10 +399,21 @@ export default function TryErrorFormModal({ onClose, onSaved }: Props) {
                   <span>Cost bahan</span>
                   <span className="font-mono">{formatRupiahDetail(brainstormCost)}</span>
                 </div>
-                <div className="flex justify-between text-[#64748b]">
-                  <span>Add Cost (terkunci)</span>
-                  <span className="font-mono">{BRAINSTORM_ADD_COST}%</span>
+                <div className="flex items-center justify-between text-[#64748b]">
+                  <span className="flex items-center gap-2">
+                    Add Cost (Penyusutan)
+                    {addCostPct !== null && (
+                      <span className="rounded border border-[#e2e8f0] bg-white px-1.5 font-semibold text-[#0f172a]">
+                        {addCostPct}%
+                      </span>
+                    )}
+                  </span>
+                  <span className="font-mono">+{formatRupiahDetail(brainstormAddCost)}</span>
                 </div>
+                <div className="py-1">
+                  <PercentChips options={[10, 20, 30]} value={addCostPct} onChange={setAddCostPct} />
+                </div>
+                <FieldError message={errors.addCost} />
                 <div className="mt-1 flex justify-between border-t border-dashed border-[#cbd5e1] pt-2 text-sm font-bold text-[#0f172a]">
                   <span>Total Cost</span>
                   <span className="font-mono">{formatRupiah(brainstormTotal)}</span>

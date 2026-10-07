@@ -56,7 +56,7 @@ Poin bertanda *(sementara)* masih default dan bisa direvisi owner.
 - **Refund** selalu 1 transaksi utuh.
   - "Salah order" (belum dibuat) mengembalikan stok bahan.
   - Untuk member, poin dan total belanjanya ikut ditarik.
-- **Try & Error** hanya memotong stok bahan. Biayanya = cost per porsi di Master Resep × porsi; untuk racikan baru, add cost terkunci 10%.
+- **Try & Error** hanya memotong stok bahan. Biayanya = cost per porsi di Master Resep × porsi; untuk racikan baru, add cost dipilih saat mencatat (10%/20%/30% atau custom, default 10%).
 - Semua catatan penyesuaian bersifat final (tidak bisa diubah/dihapus).
 
 ## Keuangan (Cash Flow)
