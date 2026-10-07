@@ -22,6 +22,7 @@ export interface RecipeListItem {
   totalOutputQty: number | null;
   currentStock: number | null;
   minStockAlert: number | null;
+  cashierCanProduce: boolean;
 }
 
 /** Satu komponen di dalam baris expand */
@@ -43,6 +44,7 @@ export interface RacikanSaveInput {
   totalOutputQty: number;
   addCostPercentage: number;
   minStockAlert: number | null;
+  cashierCanProduce: boolean;
   components: { type: 'bahan_baku' | 'racikan'; id: string; quantity: number; unitId: string }[];
 }
 
@@ -55,6 +57,7 @@ export interface RacikanDetail {
   totalOutputQty: number;
   addCostPercentage: number;
   minStockAlert: number | null;
+  cashierCanProduce: boolean;
   components: { type: 'bahan_baku' | 'racikan'; id: string; quantity: number }[];
 }
 

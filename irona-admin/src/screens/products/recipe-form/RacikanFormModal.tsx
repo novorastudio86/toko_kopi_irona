@@ -5,7 +5,7 @@ import { fetchRacikanDetail, fetchUnits, saveRacikan } from '../../../services/r
 import { formatRupiah, formatRupiahDetail } from '../../../utils/format';
 import type { RecipeRow, RecipeSource } from '../../../types/product';
 import type { UnitOption } from '../../../types/recipe';
-import { FieldError, FieldLabel, PercentChips, inputClass } from '../product-form/formUi';
+import { CheckboxOption, FieldError, FieldLabel, PercentChips, inputClass } from '../product-form/formUi';
 import { RecipeRowsEditor, newRow } from './RecipeRowsEditor';
 
 type Mode = 'batch' | 'made_to_order';
@@ -31,6 +31,7 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
   const [yieldQty, setYieldQty] = useState('');
   const [totalOutput, setTotalOutput] = useState('');
   const [minStock, setMinStock] = useState('');
+  const [cashierCanProduce, setCashierCanProduce] = useState(false);
   const [addCostPct, setAddCostPct] = useState<number | null>(10);
 
   const [units, setUnits] = useState<UnitOption[]>([]);
@@ -57,6 +58,7 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
           setYieldQty(String(detail.yieldQty));
           setTotalOutput(String(detail.totalOutputQty));
           setMinStock(detail.minStockAlert !== null ? String(detail.minStockAlert) : '');
+          setCashierCanProduce(detail.cashierCanProduce);
           setAddCostPct(detail.addCostPercentage);
           setRows(
             detail.components.length > 0
@@ -120,6 +122,7 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
           totalOutputQty: Number(totalOutput),
           addCostPercentage: addCostPct ?? 0,
           minStockAlert: mode === 'batch' ? Number(minStock) : null,
+          cashierCanProduce: mode === 'batch' && cashierCanProduce,
           components: validRows.map((r) => {
             const source = sourceMap.get(r.sourceKey)!;
             return { type: source.type, id: source.id, quantity: Number(r.quantity), unitId: source.unitId };
@@ -306,6 +309,17 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
                     </div>
                   )}
                 </div>
+
+                {mode === 'batch' && (
+                  <div className="border-t border-[#e2e8f0] pt-3">
+                    <CheckboxOption
+                      checked={cashierCanProduce}
+                      onToggle={() => setCashierCanProduce((v) => !v)}
+                      title="Izinkan Kasir Update Stok"
+                      description="Kasir bisa mencatat produksi racikan ini lewat Kasir App dengan menyertakan alasannya."
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Add cost & kalkulasi */}
@@ -333,6 +347,9 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
                       {formatRupiah(totalCostPerBatch)}
                     </span>
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
                   <div className="flex flex-col rounded-lg border border-[#e2e8f0] bg-white p-[11px]">
                     <span className="text-xs leading-4 text-[#64748b]">Cost per Porsi</span>
                     <span className="font-mono text-sm font-bold text-[#0f172a]">
@@ -340,19 +357,12 @@ export default function RacikanFormModal({ racikanId = null, onClose, onSaved }:
                       <span className="text-xs font-normal text-[#64748b]">/ porsi</span>
                     </span>
                   </div>
-                  <div className="col-span-2 flex flex-col justify-between rounded-lg border border-[#e2e8f0] bg-white p-[11px]">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold uppercase tracking-[0.55px] text-[#334155]">
-                        Harga per Satuan (HPP):
-                      </span>
-                      <span className="font-mono text-sm font-extrabold text-[#0f172a]">
-                        {pricePerUnit !== null ? formatRupiahDetail(pricePerUnit) : '-'}{' '}
-                        <span className="text-xs font-semibold text-[#64748b]">/ {unitName || '-'}</span>
-                      </span>
-                    </div>
-                    <p className="pt-0.5 text-xs leading-4 text-[#64748b]">
-                      (Total Cost ÷ {totalOutput || '0'} {unitName} — acuan harga saat dipakai di resep lain)
-                    </p>
+                  <div className="flex flex-col rounded-lg border border-[#e2e8f0] bg-white p-[11px]">
+                    <span className="text-xs leading-4 text-[#64748b]">HPP</span>
+                    <span className="font-mono text-sm font-bold text-[#0f172a]">
+                      {pricePerUnit !== null ? formatRupiahDetail(pricePerUnit) : '-'}{' '}
+                      <span className="text-xs font-normal text-[#64748b]">/ {unitName || '-'}</span>
+                    </span>
                   </div>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { formatThousands } from '../../../utils/format';
+import icCheck from '../../../assets/ui/check.svg';
 
 export function inputClass(hasError?: boolean): string {
   return `w-full rounded-xl border bg-white px-[17px] py-[13px] text-sm font-medium text-[#0f172a] outline-none placeholder:text-[#94a3b8] focus:border-[#94a3b8] ${
@@ -115,5 +116,40 @@ export function PercentChips({
         </button>
       )}
     </div>
+  );
+}
+
+/** Checkbox dengan judul + keterangan */
+export function CheckboxOption({
+  checked,
+  onToggle,
+  title,
+  description,
+}: {
+  checked: boolean;
+  onToggle: () => void;
+  title: string;
+  description: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      onClick={onToggle}
+      className="flex items-start gap-2.5 text-left"
+    >
+      <span
+        className={`mt-px flex size-[18px] shrink-0 items-center justify-center rounded ${
+          checked ? 'bg-[#0f172a]' : 'border border-[#cbd5e1] bg-white'
+        }`}
+      >
+        {checked && <img src={icCheck} alt="" className="size-4" />}
+      </span>
+      <span className="flex flex-col gap-0.5">
+        <span className="text-xs font-semibold leading-4 text-[#0f172a]">{title}</span>
+        <span className="text-xs leading-[16.5px] text-[#64748b]">{description}</span>
+      </span>
+    </button>
   );
 }

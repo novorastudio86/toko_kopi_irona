@@ -8,8 +8,7 @@ import {
   fetchNextDisplayOrder,
   updateCategory,
 } from '../../services/categories';
-import { FieldError, FieldLabel, inputClass } from './product-form/formUi';
-import icCheck from '../../assets/ui/check.svg';
+import { CheckboxOption, FieldError, FieldLabel, inputClass } from './product-form/formUi';
 
 type Props = {
   /** undefined = tambah baru, string = ubah kategori */
@@ -19,40 +18,6 @@ type Props = {
 };
 
 type Errors = { name?: string; displayOrder?: string; form?: string };
-
-function ChannelCheckbox({
-  checked,
-  onToggle,
-  title,
-  description,
-}: {
-  checked: boolean;
-  onToggle: () => void;
-  title: string;
-  description: string;
-}) {
-  return (
-    <button
-      type="button"
-      role="checkbox"
-      aria-checked={checked}
-      onClick={onToggle}
-      className="flex items-start gap-2.5 text-left"
-    >
-      <span
-        className={`mt-px flex size-[18px] shrink-0 items-center justify-center rounded ${
-          checked ? 'bg-[#0f172a]' : 'border border-[#cbd5e1] bg-white'
-        }`}
-      >
-        {checked && <img src={icCheck} alt="" className="size-4" />}
-      </span>
-      <span className="flex flex-col gap-0.5">
-        <span className="text-xs font-semibold leading-4 text-[#0f172a]">{title}</span>
-        <span className="text-xs leading-[16.5px] text-[#64748b]">{description}</span>
-      </span>
-    </button>
-  );
-}
 
 export default function CategoryFormModal({ categoryId, onClose, onSaved }: Props) {
   const isEdit = !!categoryId;
@@ -201,13 +166,13 @@ export default function CategoryFormModal({ categoryId, onClose, onSaved }: Prop
               </div>
 
               <div className="flex flex-col gap-3 border-t border-[#e2e8f0] pt-4">
-                <ChannelCheckbox
+                <CheckboxOption
                   checked={showInMenu}
                   onToggle={() => setShowInMenu((v) => !v)}
                   title="Tampil di Menu Kasir / POS"
                   description="Tampilkan pada antarmuka kasir saat melayani pesanan offline."
                 />
-                <ChannelCheckbox
+                <CheckboxOption
                   checked={showOnline}
                   onToggle={() => setShowOnline((v) => !v)}
                   title="Tampil di Online Order"

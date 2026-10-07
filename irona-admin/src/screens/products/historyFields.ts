@@ -54,5 +54,6 @@ export const RECIPE_HISTORY_FIELDS: HistoryFields = {
   total_output_qty: { label: 'Total hasil', format: qty },
   add_cost_percentage: { label: 'Add cost', format: pct },
   min_stock_alert: { label: 'Minimum stok', format: qty },
+  cashier_can_produce: { label: 'Kasir boleh update stok', format: yesNo },
   components: { label: 'Komponen' },
 };

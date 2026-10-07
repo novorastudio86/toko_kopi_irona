@@ -34,6 +34,7 @@ export async function fetchRecipeList(): Promise<RecipeListItem[]> {
     totalOutputQty: toNumber(row.total_output_qty),
     currentStock: toNumber(row.current_stock),
     minStockAlert: toNumber(row.min_stock_alert),
+    cashierCanProduce: !!row.cashier_can_produce,
   }));
 }
 
@@ -107,7 +108,7 @@ export async function fetchRacikanDetail(id: string): Promise<RacikanDetail | nu
   const [racikanRes, componentRes] = await Promise.all([
     supabase
       .from('racikan')
-      .select('id, name, unit_id, production_mode, yield_qty, total_output_qty, add_cost_percentage, min_stock_alert')
+      .select('id, name, unit_id, production_mode, yield_qty, total_output_qty, add_cost_percentage, min_stock_alert, cashier_can_produce')
       .eq('id', id)
       .maybeSingle(),
     supabase
@@ -130,6 +131,7 @@ export async function fetchRacikanDetail(id: string): Promise<RacikanDetail | nu
     totalOutputQty: Number(row.total_output_qty),
     addCostPercentage: Number(row.add_cost_percentage ?? 0),
     minStockAlert: row.min_stock_alert === null ? null : Number(row.min_stock_alert),
+    cashierCanProduce: row.cashier_can_produce,
     components: (componentRes.data ?? []).map((c: any) => ({
       type: c.component_type,
       id: c.component_type === 'bahan_baku' ? c.raw_material_id : c.component_racikan_id,
@@ -150,6 +152,7 @@ export async function saveRacikan(input: RacikanSaveInput, racikanId: string | n
       total_output_qty: input.totalOutputQty,
       add_cost_percentage: input.addCostPercentage,
       min_stock_alert: input.minStockAlert,
+      cashier_can_produce: input.cashierCanProduce,
       is_active: true,
     },
     p_components: input.components.map((c) => ({

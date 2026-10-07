@@ -584,6 +584,11 @@ export default function MasterRecipeScreen() {
                                       {formatQty(row.totalOutputQty ?? 0)} {row.unit ?? ''}
                                     </span>
                                   </span>
+                                  {row.cashierCanProduce && (
+                                    <span className="ml-auto rounded border border-[#cbd5e1] bg-[#e2e8f0] px-[9px] py-[3px] text-xs font-semibold leading-4 text-[#1e293b]">
+                                      Kasir bisa update stok
+                                    </span>
+                                  )}
                                 </div>
                               )}
 
