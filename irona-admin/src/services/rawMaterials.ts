@@ -49,6 +49,7 @@ function toRow(input: RawMaterialInput) {
     default_purchase_unit_id: input.defaultPurchaseUnitId,
     default_qty_per_package: input.defaultQtyPerPackage,
     min_stock_alert: input.minStockAlert,
+    shrinkage_percentage: input.shrinkagePercentage,
   };
 }
 
@@ -56,7 +57,7 @@ export async function fetchRawMaterialDetail(id: string): Promise<RawMaterialDet
   const { data, error } = await supabase
     .from('raw_materials')
     .select(
-      'id, name, material_type, base_unit_id, default_purchase_unit_id, default_qty_per_package, unit_price, current_stock, min_stock_alert, is_active'
+      'id, name, material_type, base_unit_id, default_purchase_unit_id, default_qty_per_package, unit_price, current_stock, min_stock_alert, shrinkage_percentage, is_active'
     )
     .eq('id', id)
     .maybeSingle();
@@ -72,6 +73,7 @@ export async function fetchRawMaterialDetail(id: string): Promise<RawMaterialDet
     defaultPurchaseUnitId: row.default_purchase_unit_id,
     defaultQtyPerPackage: row.default_qty_per_package === null ? null : Number(row.default_qty_per_package),
     minStockAlert: Number(row.min_stock_alert ?? 0),
+    shrinkagePercentage: row.shrinkage_percentage === null ? null : Number(row.shrinkage_percentage),
     unitPrice: row.unit_price === null ? null : Number(row.unit_price),
     currentStock: Number(row.current_stock ?? 0),
     isActive: row.is_active,

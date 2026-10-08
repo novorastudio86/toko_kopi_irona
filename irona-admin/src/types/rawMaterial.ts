@@ -18,6 +18,8 @@ export interface RawMaterialInput {
   defaultPurchaseUnitId: string | null;
   defaultQtyPerPackage: number | null;
   minStockAlert: number;
+  /** Estimasi penyusutan (%), hanya untuk bahan menyusut */
+  shrinkagePercentage: number | null;
 }
 
 export interface RawMaterialDetail extends RawMaterialInput {

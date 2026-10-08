@@ -67,5 +67,6 @@ export const RAW_MATERIAL_HISTORY_FIELDS: HistoryFields = {
   default_qty_per_package: { label: 'Isi per kemasan', format: qty },
   unit_price: { label: 'Harga per satuan', format: (v) => formatRupiahDetail(Number(v)) },
   min_stock_alert: { label: 'Minimum stok', format: qty },
+  shrinkage_percentage: { label: 'Estimasi penyusutan', format: pct },
   is_active: { label: 'Aktif', format: yesNo },
 };

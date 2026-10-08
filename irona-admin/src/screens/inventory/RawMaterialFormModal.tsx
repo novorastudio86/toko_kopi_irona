@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react';
-import { Info, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { X } from 'lucide-react';
 import { fetchUnits } from '../../services/recipes';
 import {
   createRawMaterial,
@@ -8,7 +8,6 @@ import {
   isRawMaterialNameTaken,
   updateRawMaterial,
 } from '../../services/rawMaterials';
-import { formatQty, formatRupiahDetail } from '../../utils/format';
 import type { MaterialType } from '../../types/rawMaterial';
 import type { UnitOption } from '../../types/recipe';
 import { FieldError, FieldLabel, inputClass } from '../products/product-form/formUi';
@@ -26,20 +25,6 @@ const TYPE_CARDS: { value: MaterialType; title: string; description: string }[] 
   },
 ];
 
-/** Kartu angka read-only di bagian "Status Kalkulasi Otomatis Sistem" */
-function AutoCard({ label, value, note }: { label: string; value: ReactNode; note: string }) {
-  return (
-    <div className="flex flex-1 flex-col gap-0.5 rounded-lg border border-[#e2e8f0] bg-[#f1f5f9] p-[11px]">
-      <div className="flex items-start justify-between">
-        <span className="text-xs font-bold uppercase leading-4 text-[#64748b]">{label}</span>
-        <Info className="size-3.5 text-[#94a3b8]" />
-      </div>
-      <span className="font-mono text-sm font-bold leading-5 text-[#1e293b]">{value}</span>
-      <span className="text-xs leading-4 text-[#64748b]">{note}</span>
-    </div>
-  );
-}
-
 type Props = {
   materialId?: string | null;
   onClose: () => void;
@@ -50,15 +35,15 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
   const isEdit = !!materialId;
 
   const [name, setName] = useState('');
-  const [materialType, setMaterialType] = useState<MaterialType>('menyusut');
+  // Kosong saat create: field lain baru muncul setelah jenis bahan dipilih
+  const [materialType, setMaterialType] = useState<MaterialType | ''>('');
   const [baseUnitId, setBaseUnitId] = useState('');
   const [purchaseUnitId, setPurchaseUnitId] = useState('');
   const [qtyPerPackage, setQtyPerPackage] = useState('');
   const [minStock, setMinStock] = useState('');
+  const [shrinkage, setShrinkage] = useState('');
 
   const [units, setUnits] = useState<UnitOption[]>([]);
-  const [unitPrice, setUnitPrice] = useState<number | null>(null);
-  const [currentStock, setCurrentStock] = useState(0);
 
   const [newUnitOpen, setNewUnitOpen] = useState(false);
   const [newUnitName, setNewUnitName] = useState('');
@@ -85,8 +70,7 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
           setPurchaseUnitId(detail.defaultPurchaseUnitId ?? '');
           setQtyPerPackage(detail.defaultQtyPerPackage !== null ? String(detail.defaultQtyPerPackage) : '');
           setMinStock(String(detail.minStockAlert));
-          setUnitPrice(detail.unitPrice);
-          setCurrentStock(detail.currentStock);
+          setShrinkage(detail.shrinkagePercentage !== null ? String(detail.shrinkagePercentage) : '');
         }
       } catch (err: any) {
         if (!cancelled) setErrors({ form: err?.message ?? 'Gagal memuat data.' });
@@ -131,6 +115,12 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
     const next: Record<string, string | undefined> = {};
     const trimmed = name.trim();
     if (!trimmed) next.name = 'Nama bahan wajib diisi.';
+    if (!materialType) next.materialType = 'Pilih jenis bahan.';
+    if (materialType === 'menyusut') {
+      const pct = Number(shrinkage);
+      if (shrinkage === '') next.shrinkage = 'Estimasi penyusutan wajib diisi.';
+      else if (!(pct >= 0 && pct <= 100)) next.shrinkage = 'Estimasi penyusutan harus 0–100%.';
+    }
     if (!baseUnitId) next.baseUnit = 'Pilih satuan dasar.';
     if (qtyPerPackage && !(Number(qtyPerPackage) > 0)) next.qty = 'Isi per kemasan harus lebih dari 0.';
     if (minStock && Number(minStock) < 0) next.minStock = 'Alert stok minimum tidak boleh negatif.';
@@ -150,11 +140,12 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
 
     const input = {
       name: trimmed,
-      materialType,
+      materialType: materialType as MaterialType,
       baseUnitId,
       defaultPurchaseUnitId: purchaseUnitId || null,
       defaultQtyPerPackage: qtyPerPackage ? Number(qtyPerPackage) : null,
       minStockAlert: minStock ? Number(minStock) : 0,
+      shrinkagePercentage: materialType === 'menyusut' ? Number(shrinkage) : null,
     };
 
     setSaving(true);
@@ -242,162 +233,190 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
                     );
                   })}
                 </div>
+                <FieldError message={errors.materialType} />
               </div>
 
-              {/* Satuan dasar & satuan pembelian */}
-              <div className="flex gap-4">
-                <div className="flex flex-1 flex-col gap-1">
-                  <FieldLabel required>Satuan Dasar</FieldLabel>
-                  <select
-                    value={baseUnitId}
-                    onChange={(e) => setBaseUnitId(e.target.value)}
-                    className={inputClass(!!errors.baseUnit)}
+              {materialType === 'menyusut' && (
+                <div className="flex flex-col gap-2 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] p-[15px]">
+                  <FieldLabel
+                    required
+                    aside={
+                      <span className="rounded bg-[#e2e8f0]/60 px-2 py-0.5 font-mono text-[11px] leading-5 text-[#64748b]">
+                        Yield Loss
+                      </span>
+                    }
                   >
-                    <option value="">Pilih satuan</option>
-                    {units.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.name}
-                      </option>
-                    ))}
-                  </select>
-                  <FieldError message={errors.baseUnit} />
-
-                  {newUnitOpen ? (
-                    <div className="flex flex-col gap-1.5 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] p-2.5">
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          autoFocus
-                          value={newUnitName}
-                          onChange={(e) => setNewUnitName(e.target.value)}
-                          placeholder="Nama satuan, mis. kg"
-                          className="flex-1 rounded border border-[#cbd5e1] bg-white px-2.5 py-1.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleCreateUnit}
-                          disabled={newUnitSaving}
-                          className="rounded bg-[#0f172a] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1e293b] disabled:opacity-60"
-                        >
-                          {newUnitSaving ? '...' : 'Simpan'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setNewUnitOpen(false);
-                            setErrors((prev) => ({ ...prev, newUnit: undefined }));
-                          }}
-                          className="rounded px-2 py-1.5 text-xs font-medium text-[#475569] hover:bg-white"
-                        >
-                          Batal
-                        </button>
-                      </div>
-                      <FieldError message={errors.newUnit} />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setNewUnitOpen(true)}
-                      className="self-start text-xs leading-4 text-[#475569] underline hover:text-[#0f172a]"
+                    Estimasi Penyusutan (%)
+                  </FieldLabel>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`flex w-32 shrink-0 items-stretch overflow-hidden rounded-lg border ${
+                        errors.shrinkage ? 'border-[#f43f5e]' : 'border-[#cbd5e1]'
+                      }`}
                     >
-                      + Tambah Satuan Baru
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex flex-1 flex-col gap-1.5">
-                  <FieldLabel>Satuan Pembelian Default</FieldLabel>
-                  <select
-                    value={purchaseUnitId}
-                    onChange={(e) => setPurchaseUnitId(e.target.value)}
-                    className={inputClass()}
-                  >
-                    <option value="">Belum ditentukan</option>
-                    {units.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.name}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs leading-4 text-[#94a3b8]">
-                    Satuan saat membeli (mis. karton, jerigen, dus).
-                  </p>
-                </div>
-              </div>
-
-              {/* Isi per kemasan & alert stok minimum */}
-              <div className="flex gap-4">
-                <div className="flex flex-1 flex-col gap-1.5">
-                  <FieldLabel>Isi per Kemasan Default</FieldLabel>
-                  <div
-                    className={`flex items-stretch overflow-hidden rounded-lg border ${
-                      errors.qty ? 'border-[#f43f5e]' : 'border-[#cbd5e1]'
-                    }`}
-                  >
-                    <input
-                      type="number"
-                      min={0}
-                      step="any"
-                      value={qtyPerPackage}
-                      onChange={(e) => setQtyPerPackage(e.target.value)}
-                      placeholder="1000"
-                      className="w-full bg-white px-3 py-2 text-right text-xs text-[#0f172a] outline-none"
-                    />
-                    <span className="flex items-center border-l border-[#cbd5e1] bg-[#e2e8f0] px-3 font-mono text-xs text-[#334155]">
-                      {baseUnitName || '-'}
-                    </span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        step="any"
+                        value={shrinkage}
+                        onChange={(e) => setShrinkage(e.target.value)}
+                        placeholder="5"
+                        className="w-full bg-white px-3 py-2 font-mono text-sm text-[#0f172a] outline-none"
+                      />
+                      <span className="flex items-center border-l border-[#cbd5e1] bg-[#f1f5f9] px-3 text-xs font-bold text-[#475569]">
+                        %
+                      </span>
+                    </div>
+                    <p className="text-[11px] leading-[18px] text-[#64748b]">
+                      Batas toleransi susut (mis. yield roasting, sisa foam, evaporasi) — referensi cek stok &amp;
+                      opname, bukan pemotong stok otomatis.
+                    </p>
                   </div>
-                  <p className="text-xs leading-4 text-[#94a3b8]">
-                    Jumlah satuan dasar dalam 1 kemasan pembelian.
-                  </p>
-                  <FieldError message={errors.qty} />
+                  <FieldError message={errors.shrinkage} />
                 </div>
+              )}
 
-                <div className="flex flex-1 flex-col gap-1.5">
-                  <FieldLabel>Alert Stok Minimum</FieldLabel>
-                  <div
-                    className={`flex items-stretch overflow-hidden rounded-lg border ${
-                      errors.minStock ? 'border-[#f43f5e]' : 'border-[#cbd5e1]'
-                    }`}
-                  >
-                    <input
-                      type="number"
-                      min={0}
-                      step="any"
-                      value={minStock}
-                      onChange={(e) => setMinStock(e.target.value)}
-                      placeholder="0"
-                      className="w-full bg-white px-3 py-2 text-right text-xs text-[#0f172a] outline-none"
-                    />
-                    <span className="flex items-center border-l border-[#cbd5e1] bg-[#e2e8f0] px-3 font-mono text-xs text-[#334155]">
-                      {baseUnitName || '-'}
-                    </span>
+              {materialType && (
+                <>
+                  {/* Satuan dasar & satuan pembelian */}
+                  <div className="flex gap-4">
+                    <div className="flex flex-1 flex-col gap-1.5">
+                      <FieldLabel required>Satuan Dasar</FieldLabel>
+                      <select
+                        value={baseUnitId}
+                        onChange={(e) => setBaseUnitId(e.target.value)}
+                        className={inputClass(!!errors.baseUnit)}
+                      >
+                        <option value="">Pilih satuan</option>
+                        {units.map((u) => (
+                          <option key={u.id} value={u.id}>
+                            {u.name}
+                          </option>
+                        ))}
+                      </select>
+                      <FieldError message={errors.baseUnit} />
+
+                      {newUnitOpen ? (
+                        <div className="flex flex-col gap-1.5 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] p-2.5">
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              autoFocus
+                              value={newUnitName}
+                              onChange={(e) => setNewUnitName(e.target.value)}
+                              placeholder="Nama satuan, mis. kg"
+                              className="flex-1 rounded border border-[#cbd5e1] bg-white px-2.5 py-1.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleCreateUnit}
+                              disabled={newUnitSaving}
+                              className="rounded bg-[#0f172a] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1e293b] disabled:opacity-60"
+                            >
+                              {newUnitSaving ? '...' : 'Simpan'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setNewUnitOpen(false);
+                                setErrors((prev) => ({ ...prev, newUnit: undefined }));
+                              }}
+                              className="rounded px-2 py-1.5 text-xs font-medium text-[#475569] hover:bg-white"
+                            >
+                              Batal
+                            </button>
+                          </div>
+                          <FieldError message={errors.newUnit} />
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setNewUnitOpen(true)}
+                          className="self-start text-xs leading-4 text-[#475569] underline hover:text-[#0f172a]"
+                        >
+                          + Tambah Satuan Baru
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex flex-1 flex-col gap-1.5">
+                      <FieldLabel>Satuan Pembelian Default</FieldLabel>
+                      <select
+                        value={purchaseUnitId}
+                        onChange={(e) => setPurchaseUnitId(e.target.value)}
+                        className={inputClass()}
+                      >
+                        <option value="">Belum ditentukan</option>
+                        {units.map((u) => (
+                          <option key={u.id} value={u.id}>
+                            {u.name}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="text-xs leading-4 text-[#94a3b8]">
+                        Satuan saat membeli (mis. karton, jerigen, dus).
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-xs leading-4 text-[#94a3b8]">
-                    Peringatan muncul jika stok turun sampai batas ini. Isi 0 untuk mematikan.
-                  </p>
-                  <FieldError message={errors.minStock} />
-                </div>
-              </div>
 
-              {/* Status otomatis */}
-              <div className="flex flex-col gap-2 border-t border-[#e2e8f0] pt-3">
-                <p className="text-xs font-bold uppercase tracking-[0.55px] text-[#334155]">
-                  Status Kalkulasi Otomatis Sistem
-                </p>
-                <div className="flex gap-2.5">
-                  <AutoCard
-                    label="Harga per Satuan"
-                    value={unitPrice !== null ? `${formatRupiahDetail(unitPrice)} / ${baseUnitName}` : '—'}
-                    note="Dihitung otomatis dari pembelian terakhir di Stok Masuk."
-                  />
-                  <AutoCard
-                    label="Stok Saat Ini"
-                    value={`${formatQty(currentStock)} ${baseUnitName}`}
-                    note="Terisi otomatis saat penerimaan barang."
-                  />
-                </div>
-              </div>
+                  {/* Isi per kemasan & alert stok minimum */}
+                  <div className="flex gap-4">
+                    <div className="flex flex-1 flex-col gap-1.5">
+                      <FieldLabel>Isi per Kemasan Default</FieldLabel>
+                      <div
+                        className={`flex items-stretch overflow-hidden rounded-lg border ${
+                          errors.qty ? 'border-[#f43f5e]' : 'border-[#cbd5e1]'
+                        }`}
+                      >
+                        <input
+                          type="number"
+                          min={0}
+                          step="any"
+                          value={qtyPerPackage}
+                          onChange={(e) => setQtyPerPackage(e.target.value)}
+                          placeholder="1000"
+                          className="w-full bg-white px-3 py-2 text-right text-xs text-[#0f172a] outline-none"
+                        />
+                        <span className="flex items-center border-l border-[#cbd5e1] bg-[#e2e8f0] px-3 font-mono text-xs text-[#334155]">
+                          {baseUnitName || '-'}
+                        </span>
+                      </div>
+                      <p className="text-xs leading-4 text-[#94a3b8]">
+                        Jumlah satuan dasar dalam 1 kemasan pembelian.
+                      </p>
+                      <FieldError message={errors.qty} />
+                    </div>
+
+                    <div className="flex flex-1 flex-col gap-1.5">
+                      <FieldLabel>Alert Stok Minimum</FieldLabel>
+                      <div
+                        className={`flex items-stretch overflow-hidden rounded-lg border ${
+                          errors.minStock ? 'border-[#f43f5e]' : 'border-[#cbd5e1]'
+                        }`}
+                      >
+                        <input
+                          type="number"
+                          min={0}
+                          step="any"
+                          value={minStock}
+                          onChange={(e) => setMinStock(e.target.value)}
+                          placeholder="0"
+                          className="w-full bg-white px-3 py-2 text-right text-xs text-[#0f172a] outline-none"
+                        />
+                        <span className="flex items-center border-l border-[#cbd5e1] bg-[#e2e8f0] px-3 font-mono text-xs text-[#334155]">
+                          {baseUnitName || '-'}
+                        </span>
+                      </div>
+                      <p className="text-xs leading-4 text-[#94a3b8]">
+                        Peringatan muncul jika stok turun sampai batas ini. Isi 0 untuk mematikan.
+                      </p>
+                      <FieldError message={errors.minStock} />
+                    </div>
+                  </div>
+
+                </>
+              )}
 
               {errors.form && (
                 <p className="rounded-xl border border-[#fecdd3] bg-[#fff1f2] px-4 py-3 text-xs text-[#e11d48]">

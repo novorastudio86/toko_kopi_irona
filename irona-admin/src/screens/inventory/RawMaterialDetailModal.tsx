@@ -134,6 +134,12 @@ export default function RawMaterialDetailModal({ materialId, onClose, onEdit }: 
                   </div>
                 </Field>
 
+                {detail.materialType === 'menyusut' && (
+                  <Field label="Estimasi Penyusutan">
+                    {detail.shrinkagePercentage !== null ? `${formatQty(detail.shrinkagePercentage)}%` : '—'}
+                  </Field>
+                )}
+
                 <Field label="Alert Stok Minimum">
                   {detail.minStockAlert > 0 ? `${formatQty(detail.minStockAlert)} ${baseUnit}` : '—'}
                 </Field>
