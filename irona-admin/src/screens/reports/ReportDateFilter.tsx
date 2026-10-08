@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { PRESET_LABELS, presetRange, type DatePreset, type DateRange } from './reportRange';
+import { PRESET_LABELS, REPORT_PRESETS, presetRange, type DatePreset, type DateRange } from './reportRange';
 
 const inputClass =
   'rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5 text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]';
@@ -10,12 +10,15 @@ export default function ReportDateFilter({
   range,
   today,
   onChange,
+  presets = REPORT_PRESETS,
   children,
 }: {
   preset: DatePreset;
   range: DateRange;
   today: string;
   onChange: (preset: DatePreset, range: DateRange) => void;
+  /** Pilihan cepat yang ditampilkan */
+  presets?: DatePreset[];
   /** Filter tambahan di sebelah kanan (mis. status) */
   children?: ReactNode;
 }) {
@@ -31,7 +34,7 @@ export default function ReportDateFilter({
           className={`${inputClass} w-44`}
           aria-label="Periode"
         >
-          {(Object.keys(PRESET_LABELS) as DatePreset[]).map((p) => (
+          {presets.map((p) => (
             <option key={p} value={p}>
               {PRESET_LABELS[p]}
             </option>

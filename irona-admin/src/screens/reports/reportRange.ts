@@ -1,14 +1,28 @@
 import { parseLocalDate, toLocalISO } from '../../utils/date';
 
-export type DatePreset = 'this_month' | 'last_month' | 'last_3_months' | 'this_year' | 'custom';
+export type DatePreset =
+  | 'last_7_days'
+  | 'last_30_days'
+  | 'this_month'
+  | 'last_month'
+  | 'last_2_months'
+  | 'last_3_months'
+  | 'this_year'
+  | 'custom';
 
 export const PRESET_LABELS: Record<DatePreset, string> = {
+  last_7_days: '7 Hari Terakhir',
+  last_30_days: '30 Hari Terakhir',
   this_month: 'Bulan Ini',
   last_month: 'Bulan Lalu',
+  last_2_months: '2 Bulan Terakhir',
   last_3_months: '3 Bulan Terakhir',
   this_year: 'Tahun Ini',
   custom: 'Pilih Tanggal',
 };
+
+/** Pilihan default di laporan */
+export const REPORT_PRESETS: DatePreset[] = ['this_month', 'last_month', 'last_3_months', 'this_year', 'custom'];
 
 export type DateRange = { start: string; end: string };
 
@@ -17,11 +31,18 @@ export function presetRange(preset: Exclude<DatePreset, 'custom'>, today: string
   const t = parseLocalDate(today);
   const y = t.getFullYear();
   const m = t.getMonth();
+  const d = t.getDate();
   switch (preset) {
+    case 'last_7_days':
+      return { start: toLocalISO(new Date(y, m, d - 6)), end: today };
+    case 'last_30_days':
+      return { start: toLocalISO(new Date(y, m, d - 29)), end: today };
     case 'this_month':
       return { start: toLocalISO(new Date(y, m, 1)), end: today };
     case 'last_month':
       return { start: toLocalISO(new Date(y, m - 1, 1)), end: toLocalISO(new Date(y, m, 0)) };
+    case 'last_2_months':
+      return { start: toLocalISO(new Date(y, m - 1, 1)), end: today };
     case 'last_3_months':
       return { start: toLocalISO(new Date(y, m - 2, 1)), end: today };
     case 'this_year':

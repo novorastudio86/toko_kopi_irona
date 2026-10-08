@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import { ChevronDown, ChevronRight, Download, Plus } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,8 @@ import { SearchToolbar } from '../../components/SearchToolbar';
 import { TablePagination } from '../../components/TablePagination';
 import { fetchItemMovements, fetchStockCard } from '../../services/stock';
 import { formatQty, formatRupiah } from '../../utils/format';
+import { todayISO } from '../../utils/date';
+import { PRESET_LABELS, presetRange, type DatePreset, type DateRange } from '../reports/reportRange';
 import type { StockCardRow, StockMovementRow } from '../../types/stock';
 import { CheckCircle2 } from 'lucide-react'; // tambahkan ke import lucide yang sudah ada
 import StockInModal from './StockInModal';
@@ -19,13 +21,9 @@ import StockAdjustmentModal from './StockAdjustmentModal';
 import RacikanProductionModal from './RacikanProductionModal';
 
 
-/** Tanggal hari ini & awal bulan dalam format YYYY-MM-DD */
-function defaultRange() {
-  const now = new Date();
-  const first = new Date(now.getFullYear(), now.getMonth(), 1);
-  const iso = (d: Date) => d.toISOString().slice(0, 10);
-  return { start: iso(first), end: iso(now) };
-}
+const PRESETS: DatePreset[] = ['last_7_days', 'last_30_days', 'this_month', 'last_2_months', 'custom'];
+const dateClass =
+  'rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2 font-mono text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]';
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -45,7 +43,9 @@ function Delta({ value, unit }: { value: number; unit?: string }) {
 export default function StockCardScreen() {
   // ?q=nama bahan (mis. dari Perputaran Stok) langsung mengisi pencarian
   const [searchParams] = useSearchParams();
-  const [range, setRange] = useState(defaultRange);
+  const [today] = useState(todayISO);
+  const [preset, setPreset] = useState<DatePreset>('last_30_days');
+  const [range, setRange] = useState<DateRange>(() => presetRange('last_30_days', todayISO()));
   const [rows, setRows] = useState<StockCardRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -152,29 +152,48 @@ export default function StockCardScreen() {
         placeholder="Cari nama bahan..."
       >
         <div className="flex items-center gap-2">
+          <select
+            value={preset}
+            onChange={(e) => {
+              const p = e.target.value as DatePreset;
+              setPreset(p);
+              if (p !== 'custom') setRange(presetRange(p, today));
+            }}
+            className={`${dateClass} w-44 font-sans`}
+            aria-label="Periode"
+          >
+            {PRESETS.map((p) => (
+              <option key={p} value={p}>
+                {PRESET_LABELS[p]}
+              </option>
+            ))}
+          </select>
           <input
             type="date"
             value={range.start}
             max={range.end}
-            onChange={(e) => setRange((prev) => ({ ...prev, start: e.target.value }))}
-            className="rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2 font-mono text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]"
+            onChange={(e) => {
+              if (!e.target.value) return;
+              setPreset('custom');
+              setRange((prev) => ({ ...prev, start: e.target.value }));
+            }}
+            className={dateClass}
+            aria-label="Dari tanggal"
           />
           <span className="text-xs text-[#94a3b8]">–</span>
           <input
             type="date"
             value={range.end}
             min={range.start}
-            onChange={(e) => setRange((prev) => ({ ...prev, end: e.target.value }))}
-            className="rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2 font-mono text-xs text-[#0f172a] outline-none focus:border-[#94a3b8]"
+            max={today}
+            onChange={(e) => {
+              if (!e.target.value) return;
+              setPreset('custom');
+              setRange((prev) => ({ ...prev, end: e.target.value }));
+            }}
+            className={dateClass}
+            aria-label="Sampai tanggal"
           />
-          <button
-            disabled
-            title="Ekspor (segera hadir)"
-            className="flex items-center gap-1.5 rounded-xl border border-[#e2e8f0] bg-white px-3 py-2 text-xs font-medium text-[#334155] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <Download className="size-3.5" />
-            Ekspor
-          </button>
         </div>
       </SearchToolbar>
 
