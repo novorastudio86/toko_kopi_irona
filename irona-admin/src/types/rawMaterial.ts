@@ -11,6 +11,11 @@ export interface RawMaterialListItem {
   isActive: boolean;
 }
 
+/** Baris Daftar Bahan Baku: bahan baku atau racikan batch */
+export type StockListItem = Omit<RawMaterialListItem, 'materialType'> & {
+  materialType: MaterialType | 'racikan';
+};
+
 export interface RawMaterialInput {
   name: string;
   materialType: MaterialType;

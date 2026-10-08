@@ -23,24 +23,43 @@ import { SortableTh, type SortDir } from '../../components/SortableTh';
 import { TablePagination } from '../../components/TablePagination';
 import {
   deleteRawMaterial,
+  fetchBatchRacikanStock,
   fetchRawMaterialHistory,
   fetchRawMaterials,
   setRawMaterialActive,
 } from '../../services/rawMaterials';
 import { formatQty, formatRupiahDetail } from '../../utils/format';
-import type { RawMaterialListItem } from '../../types/rawMaterial';
+import type { StockListItem } from '../../types/rawMaterial';
 import icPlus from '../../assets/ui/plus.svg';
 import icMore from '../../assets/ui/more.svg';
 import RawMaterialFormModal from './RawMaterialFormModal';
-import { Info } from 'lucide-react'; // tambahkan ke daftar import lucide yang sudah ada
+import RacikanProductionModal from './RacikanProductionModal';
+import { FlaskConical, Info } from 'lucide-react';
 import RawMaterialDetailModal from './RawMaterialDetailModal';
 import { HistoryButton, HistoryModal } from '../../components/HistoryModal';
 import { RAW_MATERIAL_HISTORY_FIELDS } from '../products/historyFields';
 
 type SortKey = 'name' | 'materialType' | 'unitName' | 'currentStock' | 'unitPrice' | 'minStockAlert';
-type TypeFilter = '' | 'tetap' | 'menyusut';
+type TypeFilter = '' | StockListItem['materialType'];
 
-function TypeBadge({ type, muted }: { type: 'tetap' | 'menyusut'; muted: boolean }) {
+const isLowStock = (m: StockListItem) => m.isActive && m.minStockAlert > 0 && m.currentStock <= m.minStockAlert;
+
+/** Rasio stok / batas menipis: makin kecil makin kritis. Tanpa batas atau nonaktif → paling bawah */
+const stockRatio = (m: StockListItem) =>
+  m.isActive && m.minStockAlert > 0 ? m.currentStock / m.minStockAlert : Infinity;
+
+function TypeBadge({ type, muted }: { type: StockListItem['materialType']; muted: boolean }) {
+  if (type === 'racikan') {
+    return (
+      <span
+        className={`rounded border border-dashed px-2.5 py-[3px] text-xs font-bold uppercase leading-4 ${
+          muted ? 'border-[#cbd5e1] bg-[#f1f5f9] text-[#94a3b8]' : 'border-[#475569] bg-[#f8fafc] text-[#0f172a]'
+        }`}
+      >
+        Racikan
+      </span>
+    );
+  }
   if (type === 'menyusut') {
     return (
       <span
@@ -64,7 +83,7 @@ function TypeBadge({ type, muted }: { type: 'tetap' | 'menyusut'; muted: boolean
 }
 
 export default function RawMaterialListScreen() {
-  const [materials, setMaterials] = useState<RawMaterialListItem[]>([]);
+  const [materials, setMaterials] = useState<StockListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -77,6 +96,7 @@ export default function RawMaterialListScreen() {
   const [pageSize, setPageSize] = useState(10);
   const [formState, setFormState] = useState<{ id: string | null } | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [productionId, setProductionId] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [hideStockBanner, setHideStockBanner] = useState(false);
   const navigate = useNavigate();
@@ -85,7 +105,8 @@ export default function RawMaterialListScreen() {
     setLoading(true);
     setError(null);
     try {
-      setMaterials(await fetchRawMaterials());
+      const [raw, racikan] = await Promise.all([fetchRawMaterials(), fetchBatchRacikanStock()]);
+      setMaterials([...raw, ...racikan]);
     } catch (err: any) {
       setError(err?.message ?? 'Gagal memuat bahan baku.');
     } finally {
@@ -113,6 +134,12 @@ export default function RawMaterialListScreen() {
   const sorted = useMemo(() => {
     const arr = [...filtered];
     arr.sort((a, b) => {
+      if (sort.key === 'currentStock') {
+        const ra = stockRatio(a);
+        const rb = stockRatio(b);
+        const cmp = ra === rb ? a.currentStock - b.currentStock : ra < rb ? -1 : 1;
+        return sort.dir === 'asc' ? cmp : -cmp;
+      }
       const va = a[sort.key];
       const vb = b[sort.key];
       if (va === null && vb === null) return 0;
@@ -125,9 +152,7 @@ export default function RawMaterialListScreen() {
     return arr;
   }, [filtered, sort]);
 
-  const lowStockCount = materials.filter(
-    (m) => m.isActive && m.minStockAlert > 0 && m.currentStock <= m.minStockAlert
-  ).length;
+  const lowStockCount = materials.filter(isLowStock).length;
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -140,7 +165,7 @@ export default function RawMaterialListScreen() {
     );
   }
 
-  async function handleToggleActive(row: RawMaterialListItem) {
+  async function handleToggleActive(row: StockListItem) {
     const next = !row.isActive;
     if (
       !next &&
@@ -160,7 +185,7 @@ export default function RawMaterialListScreen() {
     }
   }
 
-  async function handleDelete(row: RawMaterialListItem) {
+  async function handleDelete(row: StockListItem) {
     if (!window.confirm(`Hapus "${row.name}" secara permanen? Tindakan ini tidak bisa dibatalkan.`)) return;
     setActionError(null);
     try {
@@ -204,7 +229,7 @@ export default function RawMaterialListScreen() {
               !
             </span>
             <p className="text-sm leading-5 text-[#334155]">
-              <span className="font-bold text-[#0f172a]">{lowStockCount} bahan baku menipis.</span> Stoknya sudah
+              <span className="font-bold text-[#0f172a]">{lowStockCount} bahan menipis.</span> Stoknya sudah
               di bawah batas minimum — segera lakukan stok masuk.{' '}
               <button
                 onClick={() => navigate('/inventory/manage-stock')}
@@ -259,6 +284,7 @@ export default function RawMaterialListScreen() {
           <option value="">Semua Jenis</option>
           <option value="tetap">Bahan Tetap</option>
           <option value="menyusut">Bahan Menyusut</option>
+          <option value="racikan">Racikan</option>
         </select>
       </SearchToolbar>
 
@@ -268,7 +294,7 @@ export default function RawMaterialListScreen() {
             <thead className="border-b border-[#e2e8f0] bg-[rgba(248,250,252,0.75)]">
               <tr>
                 <SortableTh label="Nama Bahan" sortKey="name" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[320px] pl-6" />
-                <SortableTh label="Jenis Bahan" sortKey="materialType" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[150px]" />
+                <SortableTh label="Jenis" sortKey="materialType" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[150px]" />
                 <SortableTh label="Satuan Dasar" sortKey="unitName" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Stok Saat Ini" sortKey="currentStock" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Harga per Satuan" sortKey="unitPrice" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
@@ -307,11 +333,12 @@ export default function RawMaterialListScreen() {
                 !error &&
                 paged.map((row, idx) => {
                   const inactive = !row.isActive;
-                  const isLow = row.isActive && row.minStockAlert > 0 && row.currentStock <= row.minStockAlert;
+                  const isLow = isLowStock(row);
+                  const isRacikan = row.materialType === 'racikan';
 
                   return (
                     <tr
-                      key={row.id}
+                      key={`${row.materialType}-${row.id}`}
                       className={`border-t border-[#f1f5f9] first:border-t-0 ${
                         inactive ? 'bg-[#f8fafc]' : idx % 2 === 1 ? 'bg-[rgba(248,250,252,0.6)]' : ''
                       }`}
@@ -371,6 +398,18 @@ export default function RawMaterialListScreen() {
                           <DropdownMenuTrigger className="rounded-lg border border-[#e2e8f0] p-[7px] hover:bg-[#f8fafc]">
                             <img src={icMore} alt="Aksi" className="size-4" />
                           </DropdownMenuTrigger>
+                          {isRacikan ? (
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem onClick={() => setProductionId(row.id)} disabled={inactive}>
+                              <FlaskConical className="mr-2 size-3.5" />
+                              Produksi Racikan
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigate('/product/recipe')}>
+                              <Pencil className="mr-2 size-3.5" />
+                              Ubah di Master Resep
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                          ) : (
                           <DropdownMenuContent align="end" className="w-48">
                             <DropdownMenuItem onClick={() => setDetailId(row.id)}>
                               <Info className="mr-2 size-3.5" />
@@ -403,6 +442,7 @@ export default function RawMaterialListScreen() {
                               Hapus
                             </DropdownMenuItem>
                           </DropdownMenuContent>
+                          )}
                         </DropdownMenu>
                       </td>
                     </tr>
@@ -443,6 +483,17 @@ export default function RawMaterialListScreen() {
             const id = detailId;
             setDetailId(null);
             setFormState({ id });
+          }}
+        />
+      )}
+      {productionId && (
+        <RacikanProductionModal
+          initialRacikanId={productionId}
+          onClose={() => setProductionId(null)}
+          onSaved={(name) => {
+            setProductionId(null);
+            setFlash(`Produksi "${name}" berhasil dicatat.`);
+            loadData();
           }}
         />
       )}

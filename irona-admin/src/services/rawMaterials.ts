@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import type { RawMaterialListItem } from '../types/rawMaterial';
+import type { RawMaterialListItem, StockListItem } from '../types/rawMaterial';
 import type { RawMaterialDetail, RawMaterialInput } from '../types/rawMaterial';
 import type { HistoryEntry } from '../types/history';
 import { historySince } from '../utils/date';
@@ -24,6 +24,31 @@ export async function fetchRawMaterials(): Promise<RawMaterialListItem[]> {
     materialType: row.material_type,
     unitName: unitNames.get(row.base_unit_id) ?? '-',
     unitPrice: row.unit_price === null ? null : Number(row.unit_price),
+    currentStock: Number(row.current_stock ?? 0),
+    minStockAlert: Number(row.min_stock_alert ?? 0),
+    isActive: row.is_active,
+  }));
+}
+
+/** Racikan Batch (punya stok produksi) dalam bentuk baris Daftar Bahan Baku */
+export async function fetchBatchRacikanStock(): Promise<StockListItem[]> {
+  const [racikanRes, unitRes] = await Promise.all([
+    supabase
+      .from('racikan')
+      .select('id, name, unit_id, price_per_unit, current_stock, min_stock_alert, is_active')
+      .eq('production_mode', 'batch'),
+    supabase.from('units').select('id, name'),
+  ]);
+  if (racikanRes.error) throw racikanRes.error;
+  if (unitRes.error) throw unitRes.error;
+
+  const unitNames = new Map((unitRes.data ?? []).map((u: any) => [u.id, u.name as string]));
+  return (racikanRes.data ?? []).map((row: any) => ({
+    id: row.id,
+    name: row.name,
+    materialType: 'racikan',
+    unitName: unitNames.get(row.unit_id) ?? '-',
+    unitPrice: Number(row.price_per_unit ?? 0),
     currentStock: Number(row.current_stock ?? 0),
     minStockAlert: Number(row.min_stock_alert ?? 0),
     isActive: row.is_active,
