@@ -17,7 +17,7 @@ export function StatCard({
   format = 'rupiah',
   children,
 }: {
-  label: string;
+  label: ReactNode;
   value: number;
   hint?: ReactNode;
   tone?: 'default' | 'dark';

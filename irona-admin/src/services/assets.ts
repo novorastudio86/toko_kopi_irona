@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 import type { Asset, AssetInput, AssetStatus } from '../types/asset';
+import type { HistoryEntry } from '../types/history';
+import { historySince } from '../utils/date';
 
 export async function fetchAssets(): Promise<Asset[]> {
   const { data, error } = await supabase
@@ -51,4 +53,23 @@ export async function updateAssetStatus(assetId: string, status: AssetStatus, no
 export async function deleteAsset(id: string): Promise<void> {
   const { error } = await supabase.from('assets').delete().eq('id', id);
   if (error) throw error;
+}
+
+/** Riwayat perubahan aset 14 hari terakhir (diisi `save_asset`, `update_asset_status`, trigger hapus) */
+export async function fetchAssetHistory(): Promise<HistoryEntry[]> {
+  const { data, error } = await supabase
+    .from('asset_history')
+    .select('id, asset_name, action, changes, note, changed_at')
+    .gte('changed_at', historySince())
+    .order('changed_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((row: any) => ({
+    id: row.id,
+    subject: row.asset_name,
+    // Ganti status tampil sebagai "Diubah" (status lama → baru) dengan catatan sebagai alasan
+    action: row.action === 'ganti_status' ? 'diubah' : row.action,
+    changes: row.changes,
+    changedAt: row.changed_at,
+    reason: row.note,
+  }));
 }

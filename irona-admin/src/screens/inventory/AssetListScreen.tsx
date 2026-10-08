@@ -11,10 +11,12 @@ import { PageHeader } from '../../components/PageHeader';
 import { SearchToolbar } from '../../components/SearchToolbar';
 import { SortableTh, type SortDir } from '../../components/SortableTh';
 import { TablePagination } from '../../components/TablePagination';
-import { deleteAsset, fetchAssets } from '../../services/assets';
+import { HistoryButton, HistoryModal, type HistoryFields } from '../../components/HistoryModal';
+import { deleteAsset, fetchAssetHistory, fetchAssets } from '../../services/assets';
 import { formatRupiah } from '../../utils/format';
 import { todayISO } from '../../utils/date';
 import { fetchOpenMonths, isPeriodLocked } from '../../services/finance';
+import { StatCard } from '../finance/CashFlowPanels';
 import type { Asset, AssetStatus } from '../../types/asset';
 import AssetFormModal from './AssetFormModal';
 import AssetStatusModal from './AssetStatusModal';
@@ -30,6 +32,27 @@ function formatDate(value: string) {
     month: 'short',
     year: 'numeric',
   });
+}
+
+/** Kolom yang dicatat `save_asset` & `update_asset_status` */
+const ASSET_HISTORY_FIELDS: HistoryFields = {
+  name: { label: 'Nama' },
+  purchase_price: { label: 'Harga', format: (v) => formatRupiah(Number(v)) },
+  quantity: { label: 'Jumlah', format: (v) => `${v} unit` },
+  purchase_date: { label: 'Tanggal beli', format: (v) => formatDate(String(v)) },
+  notes: { label: 'Catatan' },
+  status: { label: 'Status', format: (v) => STATUS_LABELS[v as AssetStatus] ?? String(v) },
+};
+
+function CountLabel({ text, count }: { text: string; count: number }) {
+  return (
+    <span className="flex items-center gap-2">
+      {text}
+      <span className="rounded-full border border-[#e2e8f0] bg-[#f1f5f9] px-2.5 py-0.5 font-semibold normal-case leading-4 tracking-normal text-[#475569]">
+        {count} aset
+      </span>
+    </span>
+  );
 }
 
 export default function AssetListScreen() {
@@ -50,6 +73,7 @@ export default function AssetListScreen() {
 
   const [formState, setFormState] = useState<{ asset: Asset | null } | null>(null);
   const [statusTarget, setStatusTarget] = useState<Asset | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
   // Tutup buku: aset di bulan yang sudah ditutup hanya bisa diubah statusnya
   const [today] = useState(todayISO);
   const [openMonths, setOpenMonths] = useState<Set<string>>(new Set());
@@ -80,6 +104,8 @@ export default function AssetListScreen() {
   }, [flash]);
 
   const totalValue = assets.reduce((sum, a) => sum + a.totalValue, 0);
+  const activeAssets = assets.filter((a) => a.status === 'aktif');
+  const activeValue = activeAssets.reduce((sum, a) => sum + a.totalValue, 0);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -135,19 +161,36 @@ export default function AssetListScreen() {
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
-        title="Aset"
+        title="Aset Barang"
         info="Pencatatan inventaris perlengkapan & peralatan toko. Bersifat administratif, tidak memengaruhi stok bahan baku."
-        badge={loading ? undefined : `${assets.length} aset · ${formatRupiah(totalValue)}`}
         action={
-          <button
-            onClick={() => setFormState({ asset: null })}
-            className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-4 py-2.5 text-xs font-semibold leading-4 tracking-[0.3px] text-white drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#1e293b]"
-          >
-            <img src={icPlus} alt="" className="size-4" />
-            Tambah Aset
-          </button>
+          <div className="flex items-center gap-3">
+            <HistoryButton onClick={() => setHistoryOpen(true)} />
+            <button
+              onClick={() => setFormState({ asset: null })}
+              className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-4 py-2.5 text-xs font-semibold leading-4 tracking-[0.3px] text-white drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#1e293b]"
+            >
+              <img src={icPlus} alt="" className="size-4" />
+              Tambah Aset
+            </button>
+          </div>
         }
       />
+
+      {!loading && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <StatCard
+            label={<CountLabel text="Total Aset Aktif" count={activeAssets.length} />}
+            value={activeValue}
+          />
+          <StatCard
+            label={
+              <CountLabel text="Total Aset Non-Aktif" count={assets.length - activeAssets.length} />
+            }
+            value={totalValue - activeValue}
+          />
+        </div>
+      )}
 
       {flash && (
         <div className="flex items-center gap-2 rounded-xl border border-[#e2e8f0] bg-white px-4 py-3 text-xs font-medium text-[#0f172a]">
@@ -387,6 +430,15 @@ export default function AssetListScreen() {
             setFlash(`Status aset "${name}" diubah menjadi ${STATUS_LABELS[status]}.`);
             loadData();
           }}
+        />
+      )}
+
+      {historyOpen && (
+        <HistoryModal
+          title="Riwayat Perubahan Aset"
+          load={fetchAssetHistory}
+          fields={ASSET_HISTORY_FIELDS}
+          onClose={() => setHistoryOpen(false)}
         />
       )}
     </div>
