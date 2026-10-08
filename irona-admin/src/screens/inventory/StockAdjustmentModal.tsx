@@ -14,13 +14,17 @@ const REASONS = [
   { value: 'lainnya', label: 'Lainnya' },
 ];
 
-type Props = { onClose: () => void; onSaved: (name: string) => void };
+type Props = {
+  onClose: () => void;
+  onSaved: (name: string) => void;
+  initialItem?: { type: 'bahan_baku' | 'racikan'; id: string };
+};
 
-export default function StockAdjustmentModal({ onClose, onSaved }: Props) {
+export default function StockAdjustmentModal({ onClose, onSaved, initialItem }: Props) {
   const today = new Date().toISOString().slice(0, 10);
 
-  const [itemType, setItemType] = useState<'bahan_baku' | 'racikan'>('bahan_baku');
-  const [itemId, setItemId] = useState('');
+  const [itemType, setItemType] = useState<'bahan_baku' | 'racikan'>(initialItem?.type ?? 'bahan_baku');
+  const [itemId, setItemId] = useState(initialItem?.id ?? '');
   const [physicalQty, setPhysicalQty] = useState('');
   const [reason, setReason] = useState('opname');
   const [notes, setNotes] = useState('');

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
+import { AlertTriangle, ChevronDown, ChevronRight, FlaskConical, Info, PackagePlus, Plus, SlidersHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +9,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { PageHeader } from '../../components/PageHeader';
 import { SearchToolbar } from '../../components/SearchToolbar';
+import { SortableTh, type SortDir } from '../../components/SortableTh';
+import icMore from '../../assets/ui/more.svg';
 import { TablePagination } from '../../components/TablePagination';
 import { fetchItemMovements, fetchStockCard } from '../../services/stock';
 import { formatQty, formatRupiah } from '../../utils/format';
@@ -20,6 +22,14 @@ import StockInModal from './StockInModal';
 import StockAdjustmentModal from './StockAdjustmentModal';
 import RacikanProductionModal from './RacikanProductionModal';
 
+
+type SortKey = 'itemName' | 'unitName' | 'opening' | 'incoming' | 'sold' | 'adjustment' | 'closing';
+
+/** Stok akhir sudah di bawah/sama dengan batas minimum */
+const isLowStock = (r: StockCardRow) => r.minStock > 0 && r.closing <= r.minStock;
+
+const sortValue = (r: StockCardRow, key: SortKey) =>
+  key === 'adjustment' ? r.adjustment + r.production : r[key];
 
 const PRESETS: DatePreset[] = ['last_7_days', 'last_30_days', 'this_month', 'last_2_months', 'custom'];
 const dateClass =
@@ -53,11 +63,15 @@ export default function StockCardScreen() {
   const [search, setSearch] = useState(() => searchParams.get('q') ?? '');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  // default seperti Daftar Stok: stok akhir paling menipis di atas
+  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'closing', dir: 'asc' });
 
   const [expanded, setExpanded] = useState<string | null>(null);
   const [movementCache, setMovementCache] = useState<Record<string, StockMovementRow[]>>({});
   const [loadingMovements, setLoadingMovements] = useState<string | null>(null);
   const [activeForm, setActiveForm] = useState<'stok-masuk' | 'penyesuaian' | 'produksi' | null>(null);
+  // item yang dipilih dari menu aksi baris; null = dari tombol Tambah (pilih manual)
+  const [formItem, setFormItem] = useState<StockCardRow | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
 
   useEffect(() => {
@@ -89,9 +103,31 @@ export default function StockCardScreen() {
     return q ? rows.filter((r) => r.itemName.toLowerCase().includes(q)) : rows;
   }, [rows, search]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const sorted = useMemo(() => {
+    const arr = [...filtered];
+    arr.sort((a, b) => {
+      const va = sortValue(a, sort.key);
+      const vb = sortValue(b, sort.key);
+      // Urut stok akhir: yang menipis dulu, baru yang aman — masing-masing berdasarkan jumlah stok
+      const lowFirst = sort.key === 'closing' ? Number(isLowStock(b)) - Number(isLowStock(a)) : 0;
+      const cmp =
+        lowFirst || (typeof va === 'string' ? va.localeCompare(vb as string, 'id') : va - (vb as number));
+      return sort.dir === 'asc' ? cmp : -cmp;
+    });
+    return arr;
+  }, [filtered, sort]);
+
+  function handleSort(key: string) {
+    const k = key as SortKey;
+    setSort((prev) =>
+      prev.key === k ? { key: k, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { key: k, dir: 'asc' }
+    );
+    setPage(1);
+  }
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const currentPage = Math.min(page, totalPages);
-  const paged = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paged = sorted.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   async function toggleExpand(row: StockCardRow) {
     if (expanded === row.itemId) {
@@ -112,6 +148,11 @@ export default function StockCardScreen() {
     }
   }
 
+  function openForm(form: NonNullable<typeof activeForm>, item: StockCardRow | null) {
+    setFormItem(item);
+    setActiveForm(form);
+  }
+
   return (
     <div className="flex max-w-[1600px] flex-col gap-6 p-6 xl:p-8">
       <PageHeader
@@ -125,9 +166,9 @@ export default function StockCardScreen() {
               <ChevronDown className="size-3.5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-52">
-              <DropdownMenuItem onClick={() => setActiveForm('stok-masuk')}>Stok Masuk</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setActiveForm('penyesuaian')}>Penyesuaian Stok</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setActiveForm('produksi')}>Produksi Racikan</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openForm('stok-masuk', null)}>Stok Masuk</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openForm('penyesuaian', null)}>Penyesuaian Stok</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openForm('produksi', null)}>Produksi Racikan</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         }
@@ -199,17 +240,17 @@ export default function StockCardScreen() {
 
       <div className="overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[980px] border-collapse">
+          <table className="w-full min-w-[980px] table-fixed border-collapse">
             <thead className="border-b border-[#e2e8f0] bg-[rgba(248,250,252,0.75)]">
               <tr className="text-xs font-bold uppercase leading-4 tracking-[0.55px] text-[#64748b]">
-                <th className="px-4 py-3 text-left">Nama Bahan</th>
-                <th className="px-3 py-3 text-left">Satuan</th>
-                <th className="px-3 py-3 text-right">Stok Awal</th>
-                <th className="px-3 py-3 text-right">Masuk</th>
-                <th className="px-3 py-3 text-right">Terjual</th>
-                <th className="px-3 py-3 text-right">Penyesuaian</th>
-                <th className="px-3 py-3 text-right">Stok Akhir</th>
-                <th className="px-4 py-3 text-center">Aksi</th>
+                <SortableTh label="Nama Bahan" sortKey="itemName" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[300px] px-4" />
+                <SortableTh label="Satuan" sortKey="unitName" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[90px] px-3" />
+                <SortableTh label="Stok Awal" sortKey="opening" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[100px] px-3" />
+                <SortableTh label="Masuk" sortKey="incoming" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[90px] px-3" />
+                <SortableTh label="Terjual" sortKey="sold" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[90px] px-3" />
+                <SortableTh label="Penyesuaian" sortKey="adjustment" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[120px] px-3" />
+                <SortableTh label="Stok Akhir" sortKey="closing" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[120px] px-3" />
+                <th className="w-[70px] px-4 py-3 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -232,7 +273,7 @@ export default function StockCardScreen() {
               {!loading &&
                 paged.map((row) => {
                   const isOpen = expanded === row.itemId;
-                  const isLow = row.minStock > 0 && row.closing <= row.minStock;
+                  const isLow = isLowStock(row);
                   const movements = movementCache[row.itemId];
                   const incoming = movements?.filter((m) => m.movementType === 'stok_masuk') ?? [];
                   const adjustments =
@@ -247,7 +288,9 @@ export default function StockCardScreen() {
                         key={row.itemId}
                         className={`border-t border-[#f1f5f9] first:border-t-0 ${isOpen ? 'bg-[rgba(248,250,252,0.7)]' : ''}`}
                       >
-                        <td className="px-4 py-3.5">
+                        <td
+                          className={`px-4 py-3.5 ${isLow ? 'shadow-[inset_3px_0_0_#e11d48]' : ''}`}
+                        >
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => toggleExpand(row)}
@@ -258,44 +301,60 @@ export default function StockCardScreen() {
                             </button>
                             <span className="text-sm font-semibold text-[#0f172a]">{row.itemName}</span>
                             {row.itemType === 'racikan' && (
-                              <span className="rounded border border-[#cbd5e1] bg-[#f1f5f9] px-1.5 py-0.5 text-xs text-[#475569]">
+                              <span className="rounded border border-[#94a3b8] bg-[#e2e8f0] px-1.5 py-0.5 text-xs font-medium text-[#1e293b]">
                                 Racikan
                               </span>
                             )}
                           </div>
                         </td>
                         <td className="px-3 py-3.5 font-mono text-sm text-[#64748b]">{row.unitName}</td>
-                        <td className="px-3 py-3.5 text-right font-mono text-sm text-[#334155]">
+                        <td className="px-3 py-3.5 font-mono text-sm text-[#334155]">
                           {formatQty(row.opening)}
                         </td>
-                        <td className="px-3 py-3.5 text-right">
+                        <td className="px-3 py-3.5">
                           <Delta value={row.incoming} />
                         </td>
-                        <td className="px-3 py-3.5 text-right font-mono text-sm text-[#334155]">
+                        <td className="px-3 py-3.5 font-mono text-sm text-[#334155]">
                           {row.sold === 0 ? '0' : formatQty(-row.sold)}
                         </td>
-                        <td className="px-3 py-3.5 text-right">
+                        <td className="px-3 py-3.5">
                           <Delta value={row.adjustment + row.production} />
                         </td>
-                        <td className="px-3 py-3.5 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
-                            {isLow && (
-                              <span className="flex size-4 items-center justify-center rounded bg-[#0f172a] font-mono text-xs font-bold text-white">
-                                !
-                              </span>
-                            )}
-                            <span className="font-mono text-sm font-bold text-[#0f172a]">
+                        <td className="px-3 py-3.5">
+                          <div className="flex items-center gap-1.5">
+                            {isLow && <AlertTriangle className="size-3.5 shrink-0 text-[#dc2626]" />}
+                            <span className={`font-mono text-sm font-bold ${isLow ? 'text-[#dc2626]' : 'text-[#0f172a]'}`}>
                               {formatQty(row.closing)} {row.unitName}
                             </span>
                           </div>
                         </td>
                         <td className="px-4 py-3.5 text-center">
-                          <button
-                            onClick={() => toggleExpand(row)}
-                            className="text-sm font-medium text-[#334155] underline hover:text-[#0f172a]"
-                          >
-                            Detail
-                          </button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger className="rounded-lg border border-[#e2e8f0] p-[7px] hover:bg-[#f8fafc]">
+                              <img src={icMore} alt="Aksi" className="size-4" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48">
+                              <DropdownMenuItem onClick={() => toggleExpand(row)}>
+                                <Info className="mr-2 size-3.5" />
+                                {isOpen ? 'Tutup Detail' : 'Detail'}
+                              </DropdownMenuItem>
+                              {row.itemType === 'racikan' ? (
+                                <DropdownMenuItem onClick={() => openForm('produksi', row)}>
+                                  <FlaskConical className="mr-2 size-3.5" />
+                                  Produksi Racikan
+                                </DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem onClick={() => openForm('stok-masuk', row)}>
+                                  <PackagePlus className="mr-2 size-3.5" />
+                                  Stok Masuk
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuItem onClick={() => openForm('penyesuaian', row)}>
+                                <SlidersHorizontal className="mr-2 size-3.5" />
+                                Penyesuaian Stok
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </td>
                       </tr>
 
@@ -435,6 +494,7 @@ export default function StockCardScreen() {
 
               {activeForm === 'stok-masuk' && (
         <StockInModal
+          initialMaterialId={formItem?.itemId}
           onClose={() => setActiveForm(null)}
           onSaved={(name) => {
             setActiveForm(null);
@@ -446,6 +506,7 @@ export default function StockCardScreen() {
 
       {activeForm === 'penyesuaian' && (
         <StockAdjustmentModal
+          initialItem={formItem ? { type: formItem.itemType, id: formItem.itemId } : undefined}
           onClose={() => setActiveForm(null)}
           onSaved={(name) => {
             setActiveForm(null);
@@ -457,6 +518,7 @@ export default function StockCardScreen() {
 
       {activeForm === 'produksi' && (
         <RacikanProductionModal
+          initialRacikanId={formItem?.itemId}
           onClose={() => setActiveForm(null)}
           onSaved={(name) => {
             setActiveForm(null);

@@ -14,13 +14,13 @@ type ComponentNeed = {
   enough: boolean;
 };
 
-type Props = { onClose: () => void; onSaved: (name: string) => void };
+type Props = { onClose: () => void; onSaved: (name: string) => void; initialRacikanId?: string };
 
-export default function RacikanProductionModal({ onClose, onSaved }: Props) {
+export default function RacikanProductionModal({ onClose, onSaved, initialRacikanId = '' }: Props) {
   const today = new Date().toISOString().slice(0, 10);
 
   const [racikanList, setRacikanList] = useState<BatchRacikanOption[]>([]);
-  const [racikanId, setRacikanId] = useState('');
+  const [racikanId, setRacikanId] = useState(initialRacikanId);
   const [batchQty, setBatchQty] = useState('1');
   const [date, setDate] = useState(today);
   const [notes, setNotes] = useState('');

@@ -8,14 +8,14 @@ import type { RawMaterialListItem } from '../../types/rawMaterial';
 import type { UnitOption } from '../../types/recipe';
 import { FieldError, FieldLabel, RupiahInput, inputClass } from '../products/product-form/formUi';
 
-type Props = { onClose: () => void; onSaved: (name: string) => void };
+type Props = { onClose: () => void; onSaved: (name: string) => void; initialMaterialId?: string };
 
-export default function StockInModal({ onClose, onSaved }: Props) {
+export default function StockInModal({ onClose, onSaved, initialMaterialId = '' }: Props) {
   const today = new Date().toISOString().slice(0, 10);
 
   const [materials, setMaterials] = useState<RawMaterialListItem[]>([]);
   const [units, setUnits] = useState<UnitOption[]>([]);
-  const [materialId, setMaterialId] = useState('');
+  const [materialId, setMaterialId] = useState(initialMaterialId);
   const [purchaseUnitId, setPurchaseUnitId] = useState('');
   const [purchaseQty, setPurchaseQty] = useState('1');
   const [qtyPerPackage, setQtyPerPackage] = useState('');
