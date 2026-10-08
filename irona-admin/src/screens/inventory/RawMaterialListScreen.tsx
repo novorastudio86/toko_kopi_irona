@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
 import {
   AlertTriangle,
   Ban,
@@ -71,12 +72,14 @@ export default function RawMaterialListScreen() {
 
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('');
-  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'name', dir: 'asc' });
+  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: 'currentStock', dir: 'asc' });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [formState, setFormState] = useState<{ id: string | null } | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [hideStockBanner, setHideStockBanner] = useState(false);
+  const navigate = useNavigate();
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -194,15 +197,30 @@ export default function RawMaterialListScreen() {
         }
       />
 
-      {!loading && lowStockCount > 0 && (
-        <div className="flex items-center gap-3 rounded-2xl border border-[#e2e8f0] bg-white px-5 py-4 drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)]">
-          <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#e11d48] text-xs font-bold text-white">
-            !
-          </span>
-          <p className="text-sm leading-5 text-[#334155]">
-            <span className="font-bold text-[#0f172a]">{lowStockCount} bahan baku menipis.</span> Stoknya sudah
-            di bawah batas minimum — segera lakukan stok masuk di Kelola Stok.
-          </p>
+      {!loading && lowStockCount > 0 && !hideStockBanner && (
+        <div className="flex items-center justify-between gap-4 rounded-2xl border border-[#e2e8f0] bg-white px-5 py-4 drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)]">
+          <div className="flex items-center gap-3">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#e11d48] text-xs font-bold text-white">
+              !
+            </span>
+            <p className="text-sm leading-5 text-[#334155]">
+              <span className="font-bold text-[#0f172a]">{lowStockCount} bahan baku menipis.</span> Stoknya sudah
+              di bawah batas minimum — segera lakukan stok masuk.{' '}
+              <button
+                onClick={() => navigate('/inventory/manage-stock')}
+                className="font-semibold text-[#0f172a] underline underline-offset-2"
+              >
+                Kelola Stok
+              </button>
+            </p>
+          </div>
+          <button
+            onClick={() => setHideStockBanner(true)}
+            aria-label="Tutup peringatan"
+            className="text-[#94a3b8] hover:text-[#0f172a]"
+          >
+            <X className="size-4" />
+          </button>
         </div>
       )}
 
@@ -249,8 +267,8 @@ export default function RawMaterialListScreen() {
           <table className="w-full min-w-[980px] border-collapse">
             <thead className="border-b border-[#e2e8f0] bg-[rgba(248,250,252,0.75)]">
               <tr>
-                <SortableTh label="Nama Bahan" sortKey="name" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="pl-6" />
-                <SortableTh label="Jenis Bahan" sortKey="materialType" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
+                <SortableTh label="Nama Bahan" sortKey="name" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[320px] pl-6" />
+                <SortableTh label="Jenis Bahan" sortKey="materialType" activeKey={sort.key} dir={sort.dir} onSort={handleSort} className="w-[150px]" />
                 <SortableTh label="Satuan Dasar" sortKey="unitName" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Stok Saat Ini" sortKey="currentStock" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
                 <SortableTh label="Harga per Satuan" sortKey="unitPrice" activeKey={sort.key} dir={sort.dir} onSort={handleSort} />
@@ -298,7 +316,7 @@ export default function RawMaterialListScreen() {
                         inactive ? 'bg-[#f8fafc]' : idx % 2 === 1 ? 'bg-[rgba(248,250,252,0.6)]' : ''
                       }`}
                     >
-                      <td className="py-4 pl-6">
+                      <td className={`py-4 pl-6 ${isLow ? 'shadow-[inset_3px_0_0_#e11d48]' : ''}`}>
                         <div className="flex flex-wrap items-center gap-2">
                           <span
                             className={`text-sm font-bold leading-5 ${inactive ? 'text-[#94a3b8]' : 'text-[#0f172a]'}`}

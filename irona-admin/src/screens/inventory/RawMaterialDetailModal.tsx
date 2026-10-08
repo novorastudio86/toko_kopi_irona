@@ -122,11 +122,11 @@ export default function RawMaterialDetailModal({ materialId, onClose, onEdit }: 
 
                 <Field label="Stok Saat Ini">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className={`text-xs font-bold ${isLow ? 'text-[#dc2626]' : 'text-[#0f172a]'}`}>
+                    <span className="text-xs font-bold text-[#0f172a]">
                       {formatQty(detail.currentStock)} {baseUnit}
                     </span>
                     {isLow && (
-                      <span className="inline-flex items-center gap-1 rounded border border-[rgba(212,212,216,0.6)] bg-[rgba(226,232,240,0.8)] px-2 py-0.5 text-xs font-semibold leading-4 text-[#334155]">
+                      <span className="inline-flex items-center gap-1 rounded border border-dashed border-[#f43f5e] bg-white px-2 py-[3px] text-xs font-medium leading-4 text-[#e11d48]">
                         <AlertTriangle className="size-3" />
                         Di bawah batas min
                       </span>

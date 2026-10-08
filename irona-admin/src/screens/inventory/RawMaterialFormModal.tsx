@@ -376,7 +376,7 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
                           value={qtyPerPackage}
                           onChange={(e) => setQtyPerPackage(e.target.value)}
                           placeholder="1000"
-                          className="w-full bg-white px-3 py-2 text-right text-xs text-[#0f172a] outline-none"
+                          className="w-full bg-white px-3 py-2 text-xs text-[#0f172a] outline-none"
                         />
                         <span className="flex items-center border-l border-[#cbd5e1] bg-[#e2e8f0] px-3 font-mono text-xs text-[#334155]">
                           {baseUnitName || '-'}
@@ -402,7 +402,7 @@ export default function RawMaterialFormModal({ materialId = null, onClose, onSav
                           value={minStock}
                           onChange={(e) => setMinStock(e.target.value)}
                           placeholder="0"
-                          className="w-full bg-white px-3 py-2 text-right text-xs text-[#0f172a] outline-none"
+                          className="w-full bg-white px-3 py-2 text-xs text-[#0f172a] outline-none"
                         />
                         <span className="flex items-center border-l border-[#cbd5e1] bg-[#e2e8f0] px-3 font-mono text-xs text-[#334155]">
                           {baseUnitName || '-'}
