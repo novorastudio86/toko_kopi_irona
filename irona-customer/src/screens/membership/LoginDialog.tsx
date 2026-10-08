@@ -3,9 +3,8 @@ import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import SheetDialog from '@/components/SheetDialog';
 import { cn } from '@/lib/utils';
 import {
-  DEMO_MEMBER_EMAIL,
-  DEMO_MEMBER_PASSWORD,
   MemberAuthError,
+  resendSignUpCode,
   resetPasswordWithCode,
   sendResetCode,
   signInMember,
@@ -123,12 +122,18 @@ export default function LoginDialog({
       else if (step === 'register') {
         await signUpMember(signUpData());
         goToCode('verify');
-      } else if (step === 'verify') finish(await verifySignUpCode(signUpData(), code));
+      } else if (step === 'verify') finish(await verifySignUpCode(email, code));
       else if (step === 'forgot') {
         await sendResetCode(email);
         goToCode('reset');
       } else finish(await resetPasswordWithCode(email, code, password));
     } catch (err) {
+      // Sudah daftar tapi belum isi kode: kode baru sudah dikirim, lanjut ke langkah verifikasi
+      if (err instanceof MemberAuthError && err.code === 'email_not_confirmed') {
+        goToCode('verify');
+        setResent(true);
+        return;
+      }
       if (!(err instanceof MemberAuthError)) console.error('Gagal masuk member', err);
       const message =
         err instanceof MemberAuthError ? err.message : 'Ada gangguan, coba lagi sebentar.';
@@ -152,12 +157,12 @@ export default function LoginDialog({
   async function resend() {
     setError(null);
     try {
-      if (step === 'verify') await signUpMember(signUpData());
+      if (step === 'verify') await resendSignUpCode(email);
       else await sendResetCode(email);
       setResent(true);
     } catch (err) {
-      console.error('Gagal mengirim ulang kode', err);
-      setError('Gagal mengirim ulang kode.');
+      if (!(err instanceof MemberAuthError)) console.error('Gagal mengirim ulang kode', err);
+      setError(err instanceof MemberAuthError ? err.message : 'Gagal mengirim ulang kode.');
     }
   }
 
@@ -197,7 +202,7 @@ export default function LoginDialog({
         className={cn(fieldLg, 'text-center font-mono text-lg tracking-[0.5em] md:text-lg')}
       />
       <span className="text-[13px] font-normal text-muted-foreground">
-        Demo: kode 6 angka apa saja diterima.
+        Berlaku 10 menit. Tidak ada di kotak masuk? Cek folder spam.
       </span>
     </label>
   );
@@ -223,10 +228,6 @@ export default function LoginDialog({
                 </button>
               }
             />
-            <p className={hintClass}>
-              Demo: <span className="font-mono">{DEMO_MEMBER_EMAIL}</span> /{' '}
-              <span className="font-mono">{DEMO_MEMBER_PASSWORD}</span>
-            </p>
           </>
         )}
 

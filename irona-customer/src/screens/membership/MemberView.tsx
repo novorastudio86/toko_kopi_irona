@@ -336,11 +336,7 @@ function HistoryList<T>({
       {(paged.hasMore || paged.items.length > FIRST_PAGE) && (
         <div className="mt-3 flex gap-2">
           {paged.items.length > FIRST_PAGE && (
-            <button
-              type="button"
-              onClick={paged.collapse}
-              className={cn(btnOutline, 'h-9 flex-1')}
-            >
+            <button type="button" onClick={paged.collapse} className={cn(btnOutline, 'h-9 flex-1')}>
               Lihat lebih sedikit
             </button>
           )}
@@ -394,13 +390,16 @@ export default function MemberView({ member }: { member: Member }) {
 
   const onRedeem = useCallback(
     async (reward: Reward) => {
-      const claim = await redeemReward(member.id, reward);
+      const claim = await redeemReward(reward);
       spendPoints(reward.pointsRequired);
       setClaims((prev) => [claim, ...prev]);
-      // TODO(backend): ambil ulang reward_overview supaya available_stock ikut berkurang
       document.getElementById('kode-aktif')?.scrollIntoView({ block: 'center' });
+      // Stok tersedia ikut berkurang karena ada kode yang menunggu ditukar
+      fetchActiveRewards()
+        .then(setRewards)
+        .catch((err) => console.error('Gagal memuat ulang reward', err));
     },
-    [member.id, spendPoints]
+    [spendPoints]
   );
 
   const activeClaims = claims.filter((c) => timeLeftLabel(c.expiresAt, now));

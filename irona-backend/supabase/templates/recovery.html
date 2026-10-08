@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light only" />
+    <title>Kode reset password Toko Kopi Irona</title>
+  </head>
+  <!--
+    Gambar diambil dari folder public/email Web Customer lewat {{ .SiteURL }}
+    (lokal: http://localhost:5174, production: domain Web Customer).
+  -->
+  <body style="margin:0;padding:0;background:#f1ebe1;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#2b2724;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1ebe1;padding:32px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
+            <!-- Header: wordmark -->
+            <tr>
+              <td align="center" style="background:#2b2724;border-radius:24px 24px 0 0;padding:28px 24px 26px;">
+                <img src="{{ .SiteURL }}/email/irona-wordmark-light.png" width="148" alt="Toko Kopi Irona" style="display:block;width:148px;height:auto;border:0;" />
+              </td>
+            </tr>
+
+            <!-- Isi -->
+            <tr>
+              <td style="background:#ffffff;padding:28px 36px 8px;border-left:1px solid #e6dfd3;border-right:1px solid #e6dfd3;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td valign="middle" style="padding-right:12px;">
+                      <p style="margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6e5a3c;">Reset password</p>
+                      <p style="margin:0;font-size:24px;line-height:30px;font-weight:800;letter-spacing:-0.5px;color:#2b2724;">
+                        Halo{{ if .Data.name }}, {{ .Data.name }}{{ end }}!
+                      </p>
+                    </td>
+                    <td valign="bottom" align="right" width="110">
+                      <img src="{{ .SiteURL }}/email/kora-menyapa.png" width="104" alt="Kora, maskot Toko Kopi Irona" style="display:block;width:104px;height:auto;border:0;" />
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin:18px 0 0;font-size:15px;line-height:24px;color:#2b2724;">
+                  Ada permintaan untuk membuat <strong>password baru</strong> akun member kamu. Masukkan kode di bawah
+                  ini di halaman lupa password, lalu buat password barumu.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Kode OTP -->
+            <tr>
+              <td align="center" style="background:#ffffff;padding:22px 36px 8px;border-left:1px solid #e6dfd3;border-right:1px solid #e6dfd3;">
+                <table role="presentation" cellpadding="0" cellspacing="0" style="background:#faf7f2;border:1px solid #e6dfd3;border-radius:18px;">
+                  <tr>
+                    <td align="center" style="padding:16px 28px 18px;">
+                      <p style="margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#736a62;">Kode reset password</p>
+                      <p style="margin:0;padding:12px 22px;background:#2b2724;border-radius:12px;font-family:'SFMono-Regular',Menlo,Consolas,'Courier New',monospace;font-size:34px;line-height:40px;font-weight:800;letter-spacing:12px;color:#faf7f2;">
+                        {{ .Token }}
+                      </p>
+                      <p style="margin:12px 0 0;font-size:12px;color:#6e5a3c;">⏱ Berlaku <strong>10 menit</strong></p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Keamanan -->
+            <tr>
+              <td style="background:#ffffff;padding:24px 36px 28px;border-left:1px solid #e6dfd3;border-right:1px solid #e6dfd3;">
+                <p style="margin:0 0 6px;padding-top:18px;border-top:1px dashed #cbc2b5;font-size:12px;line-height:19px;color:#736a62;">
+                  🔒 Jangan berikan kode ini kepada siapa pun, termasuk yang mengaku dari Toko Kopi Irona.
+                </p>
+                <p style="margin:0;font-size:12px;line-height:19px;color:#a39a90;">
+                  Tidak meminta reset password? Abaikan saja email ini, password kamu tidak akan berubah.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td align="center" style="background:#e6dfd3;border-radius:0 0 24px 24px;padding:16px 24px;">
+                <p style="margin:0;font-size:11px;line-height:17px;color:#736a62;">
+                  Toko Kopi Irona · Email otomatis, mohon tidak dibalas.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

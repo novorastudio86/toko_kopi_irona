@@ -6,8 +6,9 @@ Sistem manajemen untuk Toko Kopi Irona. Repo ini berisi:
 |---|---|
 | `irona-admin/` | **Web Admin**: React 19 + Vite + TypeScript + Tailwind, dipakai Owner/Admin |
 | `irona-backend/` | **Backend Supabase**: migrasi database PostgreSQL, seed data, edge functions, script data dummy |
+| `irona-customer/` | **Web Customer**: pesan online & member Kora Club (http://localhost:5174, lihat `irona-customer/README.md`) |
 
-Web Customer (pesan online & member) dan aplikasi Kasir + Driver (React Native) akan dibuat terpisah, tapi memakai backend Supabase yang sama.
+Aplikasi Kasir + Driver (React Native) memakai backend Supabase yang sama.
 
 ---
 
@@ -21,10 +22,11 @@ Web Customer (pesan online & member) dan aplikasi Kasir + Driver (React Native) 
 6. [Login pertama kali](#6-login-pertama-kali)
 7. [Isi data contoh (opsional)](#7-isi-data-contoh-opsional)
 8. [Perintah sehari-hari](#8-perintah-sehari-hari)
-9. [Mengubah database (migrasi)](#9-mengubah-database-migrasi)
-10. [Git: menyimpan & mengirim perubahan](#10-git-menyimpan--mengirim-perubahan)
-11. [Masalah yang sering muncul](#11-masalah-yang-sering-muncul)
-12. [Struktur folder](#12-struktur-folder)
+9. [Email kode OTP member (Resend)](#9-email-kode-otp-member-resend)
+10. [Mengubah database (migrasi)](#10-mengubah-database-migrasi)
+11. [Git: menyimpan & mengirim perubahan](#11-git-menyimpan--mengirim-perubahan)
+12. [Masalah yang sering muncul](#12-masalah-yang-sering-muncul)
+13. [Struktur folder](#13-struktur-folder)
 
 ---
 
@@ -58,8 +60,10 @@ Pastikan **Docker Desktop sudah jalan**, lalu:
 ```bash
 cd irona-backend
 npm install
-npx supabase start
+doppler run --project toko-kopi-irona --config dev -- npx supabase start
 ```
+
+> Supabase dinyalakan **lewat Doppler** supaya `RESEND_API_KEY` ikut terbaca untuk mengirim email kode OTP member (lihat [bagian 9](#9-email-kode-otp-member-resend)). Belum punya akses Doppler? Lihat bagian 9 untuk cara memakai Mailpit saja.
 
 Pertama kali, perintah ini mengunduh image Docker Supabase (bisa beberapa menit), lalu otomatis:
 
@@ -72,7 +76,7 @@ Setelah selesai, akan muncul daftar alamat lokal:
 |---|---|
 | API Supabase | http://127.0.0.1:54321 |
 | **Studio** (lihat/edit tabel lewat browser) | http://127.0.0.1:54323 |
-| Mailpit (email lokal) | http://127.0.0.1:54324 |
+| Mailpit (email lokal, hanya terpakai kalau SMTP Resend dimatikan) | http://127.0.0.1:54324 |
 | Database Postgres | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
 
 Untuk melihat kunci API lokal (dipakai di langkah 4):
@@ -100,13 +104,13 @@ Proyek ini menyimpan env di **Doppler** (tidak ada file `.env` di repo).
 
 ### Pilihan A: pakai Doppler (disarankan untuk tim)
 
-1. Minta pemilik proyek mengundang kamu ke workplace Doppler (project **`toko-kopi-itons`**, config **`dev`**).
+1. Minta pemilik proyek mengundang kamu ke workplace Doppler (project **`toko-kopi-irona`**, config **`dev`**).
 2. Login dan hubungkan folder:
 
    ```bash
    doppler login
    cd irona-admin
-   doppler setup      # pilih project toko-kopi-itons → config dev
+   doppler setup      # pilih project toko-kopi-irona → config dev
    cd ../irona-backend
    doppler setup      # pilih project & config yang sama
    ```
@@ -232,7 +236,7 @@ Jalankan dari folder `irona-backend`:
 
 | Tujuan | Perintah |
 |---|---|
-| Menyalakan Supabase | `npx supabase start` |
+| Menyalakan Supabase | `doppler run --project toko-kopi-irona --config dev -- npx supabase start` |
 | Mematikan Supabase (data tetap tersimpan) | `npx supabase stop` |
 | Melihat alamat & kunci lokal | `npx supabase status` |
 | Menjalankan SQL | `docker exec supabase_db_irona-backend psql -U postgres -c "select count(*) from transactions"` |
@@ -252,7 +256,66 @@ Dari folder `irona-admin`:
 
 ---
 
-## 9. Mengubah database (migrasi)
+## 9. Email kode OTP member (Resend)
+
+Member Web Customer wajib memverifikasi email dengan **kode 6 angka** (berlaku 10 menit). Kode lupa password juga dikirim lewat email. Emailnya dikirim Supabase Auth lewat **SMTP Resend** atas nama **Toko Kopi Irona `<noreply@tokokopiirona.com>`**.
+
+```
+Web Customer → Supabase Auth → (SMTP) → Resend → kotak masuk member
+```
+
+### Di mana pengaturannya
+
+| Yang diatur | Lokasi |
+|---|---|
+| SMTP Resend, alamat pengirim, batas 30 email/jam | `irona-backend/supabase/config.toml` → `[auth.email.smtp]`, `[auth.rate_limit]` |
+| Masa berlaku kode, wajib verifikasi email | `config.toml` → `[auth.email]` (`enable_confirmations`, `otp_expiry`) |
+| Tampilan email (Bahasa Indonesia) | `irona-backend/supabase/templates/confirmation.html` & `recovery.html` |
+| Logo & maskot di email | `irona-customer/public/email/` (diambil lewat `{{ .SiteURL }}`) |
+| API key Resend | **Doppler** → `RESEND_API_KEY` (project `toko-kopi-irona`, config `dev`) |
+
+`config.toml` hanya berisi `pass = "env(RESEND_API_KEY)"`. **Key asli tidak boleh ditulis di file mana pun yang ikut ter-commit.**
+
+### Wajib: nyalakan Supabase lewat Doppler
+
+```bash
+cd irona-backend
+npx supabase stop
+doppler run --project toko-kopi-irona --config dev -- npx supabase start
+```
+
+Kalau dinyalakan dengan `npx supabase start` biasa, `RESEND_API_KEY` kosong dan daftar member gagal dengan pesan *"Email kode gagal dikirim"*. Setiap kali mengubah `config.toml` atau template email, Supabase perlu di-restart dengan cara di atas.
+
+### Tidak punya akses Doppler? Pakai Mailpit
+
+Untuk uji lokal tanpa Resend, ubah sementara di `config.toml`:
+
+```toml
+[auth.email.smtp]
+enabled = false
+```
+
+lalu `npx supabase stop` dan `npx supabase start`. Semua email kode akan tertangkap di **Mailpit** (http://127.0.0.1:54324), bukan dikirim ke email sungguhan. **Jangan commit** perubahan `enabled = false` ini.
+
+### Domain pengirim
+
+- Domain **tokokopiirona.com** (dibeli & DNS-nya dikelola di Rumahweb) sudah diverifikasi di Resend (region Tokyo), jadi email bisa dikirim ke **alamat siapa pun**.
+- Record DNS yang dipasang di Rumahweb untuk Resend: TXT `resend._domainkey` (DKIM), CNAME `rsend` & `send` (SPF), TXT `_dmarc` (DMARC). **Jangan dihapus**, nanti email ditolak.
+- Kalau domain belum terverifikasi dan pengirim masih `onboarding@resend.dev`, Resend hanya mau mengirim ke email pemilik akun Resend (error *"You can only send testing emails to your own email address"*).
+
+### Catatan
+
+- **Logo belum tampil di Gmail selama lokal.** Gambar email diambil dari `localhost:5174`, yang tidak bisa diakses server Gmail. Gambar akan muncul setelah Web Customer di-deploy dan `site_url` diganti ke domain asli.
+- **Email awal bisa masuk Spam/Promosi** karena domain masih baru. Tandai "Bukan spam".
+- **Rotasi key.** Kalau API key Resend sempat terlihat (screenshot, chat, riwayat terminal): hapus key itu di resend.com/api-keys, buat yang baru (*Sending access*), lalu simpan ke Doppler tanpa menampilkannya di layar:
+  ```bash
+  pbpaste | doppler secrets set RESEND_API_KEY --project toko-kopi-irona --config dev
+  ```
+- **Alur pendaftaran.** Akun member (`customers`) baru dibuat setelah kode benar. Kalau nomor HP sudah terdaftar lewat kasir dan belum punya akun, akunnya otomatis disambungkan dan poinnya ikut. Akun karyawan tidak bisa masuk ke Web Customer.
+
+---
+
+## 10. Mengubah database (migrasi)
 
 Semua perubahan struktur database **wajib lewat file migrasi**, jangan edit tabel langsung di Studio.
 
@@ -283,7 +346,7 @@ Aturan penting saat menulis SQL (lihat juga `docs/ATURAN-BISNIS.md`):
 
 ---
 
-## 10. Git: menyimpan & mengirim perubahan
+## 11. Git: menyimpan & mengirim perubahan
 
 ```bash
 git pull                          # ambil perubahan terbaru dulu
@@ -296,7 +359,7 @@ Kalau push ditolak dengan **403 / Permission denied**: akun GitHub di komputermu
 
 ---
 
-## 11. Masalah yang sering muncul
+## 12. Masalah yang sering muncul
 
 | Gejala | Penyebab & solusi |
 |---|---|
@@ -305,13 +368,15 @@ Kalau push ditolak dengan **403 / Permission denied**: akun GitHub di komputermu
 | Halaman Web Admin putih / error `supabaseUrl is required` | Env belum terbaca. Jalankan dengan `doppler run -- npm run dev`, atau buat `irona-admin/.env.local` (bagian 4). |
 | `Doppler Error: Could not find requested project` | Akun Doppler kamu belum punya akses ke project tim. Minta diundang, atau pakai project sendiri / `.env.local`. |
 | Login gagal "Invalid login credentials" | Seed belum jalan. Pastikan `npx supabase start` sukses, atau `npx supabase db reset` (⚠️ menghapus data) untuk mengulang migrasi + seed. |
-| `UPDATE requires a WHERE clause` | Ada `UPDATE`/`DELETE` tanpa `WHERE` di fungsi SQL (lihat bagian 9). |
-| `Bulan … sudah tutup buku (hanya bisa dilihat)` | Data bulan lalu memang terkunci. Buka kembali lewat **Keuangan › Cash Flow › Buka Kembali**, atau untuk script dev pakai `irona.bypass_period_lock` (bagian 9). |
+| `UPDATE requires a WHERE clause` | Ada `UPDATE`/`DELETE` tanpa `WHERE` di fungsi SQL (lihat bagian 10). |
+| `Bulan … sudah tutup buku (hanya bisa dilihat)` | Data bulan lalu memang terkunci. Buka kembali lewat **Keuangan › Cash Flow › Buka Kembali**, atau untuk script dev pakai `irona.bypass_period_lock` (bagian 10). |
+| Daftar member: *"Email kode gagal dikirim"* | Supabase dinyalakan tanpa Doppler (`RESEND_API_KEY` kosong), atau key Resend sudah dihapus. Restart lewat `doppler run ... -- npx supabase start` (bagian 9). Detail error: `docker logs supabase_auth_irona-backend --since 10m`. |
+| Daftar member: *"Terlalu sering meminta kode"* | Batas kirim email per jam (`email_sent` di `config.toml`) atau jeda 60 detik antar kirim ulang. Tunggu sebentar. |
 | Tambah karyawan gagal | Edge function `create-employee` butuh Supabase jalan penuh (`npx supabase status` → semua service *running*). Kalau baru restart Docker, jalankan `npx supabase stop` lalu `npx supabase start`. |
 
 ---
 
-## 12. Struktur folder
+## 13. Struktur folder
 
 ```
 toko_kopi_irona/

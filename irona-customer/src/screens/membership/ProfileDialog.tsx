@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import SheetDialog from '@/components/SheetDialog';
 import { useMember } from '@/hooks/useMember';
 import { cn } from '@/lib/utils';
+import { MemberAuthError } from '@/services/membership';
 import type { Member } from '@/types/membership';
 import { cleanPhone, PHONE_PATTERN } from '@/utils/format';
 import { btnOutline, btnSolid, fieldClass, labelClass } from './styles';
@@ -33,8 +34,8 @@ export default function ProfileDialog({
       await updateProfile({ name: name.trim(), phoneNumber });
       onClose();
     } catch (err) {
-      console.error('Gagal menyimpan profil', err);
-      setError('Gagal menyimpan, coba lagi.');
+      if (!(err instanceof MemberAuthError)) console.error('Gagal menyimpan profil', err);
+      setError(err instanceof MemberAuthError ? err.message : 'Gagal menyimpan, coba lagi.');
       setBusy(false);
     }
   }
