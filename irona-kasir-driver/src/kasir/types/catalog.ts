@@ -27,3 +27,29 @@ export interface CartItem {
   quantity: number;
   notes: string;
 }
+/** Diskon Offline (potong harga produk) dari Promosi › Diskon di Web Admin */
+export interface Promotion {
+  id: string;
+  name: string;
+  /** otomatis = langsung terpasang saat syarat terpenuhi; manual = dipilih kasir */
+  promoType: 'otomatis' | 'manual';
+  discountKind: 'nominal' | 'persen';
+  /** Rp untuk nominal, % untuk persen */
+  discountValue: number;
+  appliesToAllProducts: boolean;
+  productIds: string[];
+  memberOnly: boolean;
+  minPurchaseType: 'none' | 'qty' | 'nominal';
+  minPurchaseValue: number;
+  /** Berlaku Kelipatan */
+  isRepeatable: boolean;
+  appliesToTakeAway: boolean;
+  /** "YYYY-MM-DD" */
+  startDate: string;
+  endDate: string;
+  /** 0=Minggu..6=Sabtu, kosong = setiap hari */
+  validDays: number[];
+  /** "HH:MM:SS", null = sepanjang jam buka */
+  validStartTime: string | null;
+  validEndTime: string | null;
+}

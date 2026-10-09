@@ -9,6 +9,8 @@ import QuantityStepper from './QuantityStepper';
 interface OrderItemRowProps {
   item: CartItem;
   takeAway: boolean;
+  /** Potongan diskon yang terpasang di produk ini */
+  discount?: { name: string; amount: number };
   onChangeQuantity: (quantity: number) => void;
   onChangeNotes: (notes: string) => void;
   onRemove: () => void;
@@ -21,6 +23,7 @@ interface OrderItemRowProps {
 export default function OrderItemRow({
   item,
   takeAway,
+  discount,
   onChangeQuantity,
   onChangeNotes,
   onRemove,
@@ -43,12 +46,17 @@ export default function OrderItemRow({
           <Text style={styles.name} numberOfLines={1}>
             {product.name}
           </Text>
-          <Text style={styles.price}>{formatRupiah(product.price * quantity)}</Text>
+          <Text style={styles.price}>{formatRupiah(product.price * quantity - (discount?.amount ?? 0))}</Text>
           <Pressable onPress={onRemove} hitSlop={8} accessibilityLabel={`Hapus ${product.name}`}>
             <X size={18} color={colors.textSubtle} />
           </Pressable>
         </View>
         {takeAway ? <Text style={styles.takeAway}>+ Take Away ({quantity}x)</Text> : null}
+        {discount ? (
+          <Text style={styles.discount}>
+            {discount.name} (-{formatRupiah(discount.amount)})
+          </Text>
+        ) : null}
         {notes && !expanded ? <Text style={styles.notes}>Catatan: {notes}</Text> : null}
       </Pressable>
 
@@ -126,6 +134,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '400',
     color: colors.text,
+  },
+  discount: {
+    marginLeft: 28,
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.success,
   },
   notes: {
     marginLeft: 28,

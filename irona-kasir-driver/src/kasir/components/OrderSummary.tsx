@@ -30,6 +30,12 @@ export default function OrderSummary({
         <Text style={styles.label}>Subtotal ({totalQuantity} item)</Text>
         <Text style={styles.value}>{formatRupiah(subtotal)}</Text>
       </View>
+      {subtotal > total ? (
+        <View style={styles.line}>
+          <Text style={styles.label}>Diskon</Text>
+          <Text style={styles.value}>-{formatRupiah(subtotal - total)}</Text>
+        </View>
+      ) : null}
       {isCash ? (
         <View style={styles.line}>
           <Text style={styles.label}>Uang diterima (tunai)</Text>

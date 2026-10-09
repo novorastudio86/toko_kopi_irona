@@ -11,9 +11,9 @@ import OrderSuccessModal from '@/kasir/components/OrderSuccessModal';
 import ProductCard from '@/kasir/components/ProductCard';
 import { useOrderDraft } from '@/kasir/hooks/useOrderDraft';
 import PaymentScreen from '@/kasir/screens/PaymentScreen';
-import { fetchMenuCatalog } from '@/kasir/services/catalog';
+import { fetchMenuCatalog, fetchOfflinePromotions } from '@/kasir/services/catalog';
 import { createKasirOrder } from '@/kasir/services/orders';
-import type { MenuCategory, MenuProduct } from '@/kasir/types/catalog';
+import type { MenuCategory, MenuProduct, Promotion } from '@/kasir/types/catalog';
 import type { OrderReceipt } from '@/kasir/types/order';
 
 const GRID_GAP = 10;
@@ -33,12 +33,13 @@ interface MenuScreenProps {
 export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps) {
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [products, setProducts] = useState<MenuProduct[]>([]);
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [search, setSearch] = useState('');
   const [categoryId, setCategoryId] = useState('all');
-  const order = useOrderDraft();
+  const order = useOrderDraft(promotions);
   const [processing, setProcessing] = useState(false);
   // Halaman Pembayaran menggantikan grid + keranjang; pesanan tetap di useOrderDraft
   const [paying, setPaying] = useState(false);
@@ -49,8 +50,11 @@ export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps
   const columns = Math.max(1, Math.floor((cardsWidth + GRID_GAP) / (MIN_CARD_WIDTH + GRID_GAP)));
   const cardWidth = (cardsWidth - GRID_GAP * (columns - 1)) / columns;
   // Shell tidak memberi jarak bawah untuk Menu: grid digulir sampai tepi layar,
-  // panel pesanan tetap diberi jarak (gutter + area aman bawah)
-  const bottomSpace = useResponsive().gutter + useSafeAreaInsets().bottom;
+  // panel pesanan cukup diberi jarak terbesar dari gutter / area aman (dijumlah → ruang kosong)
+  const { gutter } = useResponsive();
+  const insetBottom = useSafeAreaInsets().bottom;
+  const bottomSpace = gutter + insetBottom;
+  const panelBottomSpace = Math.max(gutter, insetBottom);
 
   async function loadCatalog() {
     setLoading(true);
@@ -59,6 +63,8 @@ export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps
       const data = await fetchMenuCatalog();
       setCategories(data.categories);
       setProducts(data.products);
+      // Diskon gagal dimuat tidak menghalangi jualan; pesanan jalan tanpa diskon
+      setPromotions(await fetchOfflinePromotions().catch(() => []));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Gagal memuat menu.');
     } finally {
@@ -198,7 +204,7 @@ export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps
         )}
       </View>
 
-      <View style={{ paddingBottom: bottomSpace }}>
+      <View style={{ paddingBottom: panelBottomSpace }}>
         <OrderPanel
           order={order}
           onCancel={handleCancel}

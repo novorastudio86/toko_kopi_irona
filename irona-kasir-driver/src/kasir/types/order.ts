@@ -23,6 +23,8 @@ export interface OrderDraft {
   paymentMethod: PaymentMethod;
   /** Uang tunai yang diterima (0 kalau belum diisi / QRIS) */
   cashReceived: number;
+  /** Diskon manual pilihan kasir; null = pakai diskon otomatis terbesar */
+  promotionId: string | null;
 }
 
 export interface ReceiptItem {

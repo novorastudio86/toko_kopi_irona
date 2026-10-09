@@ -1,5 +1,6 @@
 import { supabase } from '@/services/supabase';
-import type { MenuCategory, MenuProduct } from '@/kasir/types/catalog';
+import type { MenuCategory, MenuProduct, Promotion } from '@/kasir/types/catalog';
+import { localDate } from '@/kasir/utils/promotions';
 
 interface CategoryRow {
   id: string;
@@ -66,4 +67,59 @@ export async function fetchMenuCatalog(): Promise<{
     .map((c) => ({ id: c.id, name: c.name, icon: c.icon }));
 
   return { categories, products };
+}
+
+interface PromotionRow {
+  id: string;
+  name: string;
+  promo_type: Promotion['promoType'];
+  discount_kind: Promotion['discountKind'];
+  discount_value: number | string | null;
+  applies_to_all_products: boolean;
+  target_customer: 'semua' | 'member';
+  min_purchase_type: Promotion['minPurchaseType'];
+  min_purchase_value: number | string | null;
+  is_repeatable: boolean;
+  applies_to_take_away: boolean;
+  start_date: string;
+  end_date: string;
+  valid_days: number[] | null;
+  valid_start_time: string | null;
+  valid_end_time: string | null;
+  promotion_products: { product_id: string }[];
+}
+
+/** Diskon Offline potong harga produk yang aktif & belum berakhir (syarat lain dicek di tablet) */
+export async function fetchOfflinePromotions(): Promise<Promotion[]> {
+  const { data, error } = await supabase
+    .from('promotions')
+    .select(
+      'id, name, promo_type, discount_kind, discount_value, applies_to_all_products, target_customer, min_purchase_type, min_purchase_value, is_repeatable, applies_to_take_away, start_date, end_date, valid_days, valid_start_time, valid_end_time, promotion_products(product_id)'
+    )
+    .eq('channel', 'offline')
+    .eq('discount_target', 'produk')
+    .eq('is_active', true)
+    .gte('end_date', localDate(new Date()))
+    .order('name');
+  if (error) throw new Error(error.message);
+
+  return ((data ?? []) as unknown as PromotionRow[]).map((row) => ({
+    id: row.id,
+    name: row.name,
+    promoType: row.promo_type,
+    discountKind: row.discount_kind,
+    discountValue: Number(row.discount_value ?? 0),
+    appliesToAllProducts: row.applies_to_all_products,
+    productIds: row.promotion_products.map((p) => p.product_id),
+    memberOnly: row.target_customer === 'member',
+    minPurchaseType: row.min_purchase_type,
+    minPurchaseValue: Number(row.min_purchase_value ?? 0),
+    isRepeatable: row.is_repeatable,
+    appliesToTakeAway: row.applies_to_take_away,
+    startDate: row.start_date,
+    endDate: row.end_date,
+    validDays: row.valid_days ?? [],
+    validStartTime: row.valid_start_time,
+    validEndTime: row.valid_end_time,
+  }));
 }
