@@ -20,7 +20,7 @@ import { StatCard } from '../finance/CashFlowPanels';
 import type { Asset, AssetStatus } from '../../types/asset';
 import AssetFormModal from './AssetFormModal';
 import AssetStatusModal from './AssetStatusModal';
-import { AssetStatusBadge, AssetStatusLegend, STATUS_LABELS } from './AssetStatusBadge';
+import { AssetStatusBadge, STATUS_LABELS } from './AssetStatusBadge';
 import icPlus from '../../assets/ui/plus.svg';
 import icMore from '../../assets/ui/more.svg';
 
@@ -400,8 +400,6 @@ export default function AssetListScreen() {
           }}
         />
       </div>
-
-      <AssetStatusLegend />
 
       <p className="text-xs leading-4 text-[#94a3b8]">
         Ubah & Hapus hanya tersedia selama bulan Tanggal Beli belum tutup buku (otomatis saat ganti
