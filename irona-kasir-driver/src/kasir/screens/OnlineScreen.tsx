@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Bike, Search } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { useResponsive } from '@/hooks/useResponsive';
 import OnlineOrderDetailPanel from '@/kasir/components/OnlineOrderDetailPanel';
 import OnlineOrderRow from '@/kasir/components/OnlineOrderRow';
 import type { OnlineOrdersApi } from '@/kasir/hooks/useOnlineOrders';
@@ -34,6 +35,7 @@ export default function OnlineScreen({ online, sessionId }: OnlineScreenProps) {
   const [tab, setTab] = useState<TabKey>('baru');
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { sidePanelWidth } = useResponsive();
 
   const countOf = (key: TabKey) =>
     orders.filter((o) => TABS.find((t) => t.key === key)!.statuses.includes(o.onlineStatus)).length;
@@ -114,7 +116,7 @@ export default function OnlineScreen({ online, sessionId }: OnlineScreenProps) {
         />
       </View>
 
-      <View style={styles.detailColumn}>
+      <View style={{ width: sidePanelWidth }}>
         {selected ? (
           <OnlineOrderDetailPanel order={selected} sessionId={sessionId} onChanged={reload} />
         ) : (
@@ -140,6 +142,7 @@ const styles = StyleSheet.create({
   },
   tabs: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
   },
   tab: {
@@ -217,9 +220,6 @@ const styles = StyleSheet.create({
   error: {
     fontSize: 13,
     color: colors.danger,
-  },
-  detailColumn: {
-    width: 440,
   },
   placeholder: {
     flex: 1,

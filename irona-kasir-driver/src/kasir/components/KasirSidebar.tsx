@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BookOpen, Bike, History, LogOut, Printer, QrCode, type LucideIcon } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
@@ -34,44 +34,47 @@ export default function KasirSidebar({
 
   return (
     <SafeAreaView edges={['top', 'bottom', 'left']} style={styles.sidebar}>
-      <View style={styles.logoBox}>
-        <Image
-          source={require('../../../assets/images/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </View>
-
-      <View style={styles.menu}>
-        {SECTIONS.map((s) => (
-          <SidebarItem
-            key={s.key}
-            icon={s.icon}
-            label={s.label}
-            active={active === s.key}
-            badge={s.key === 'online' ? onlineBadge : undefined}
-            onPress={() => onChange(s.key)}
+      {/* Layar pendek (HP mendatar): sidebar bisa digeser; layar tinggi: footer tetap di bawah */}
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <View style={styles.logoBox}>
+          <Image
+            source={require('../../../assets/images/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
           />
-        ))}
-      </View>
-
-      <View style={styles.footer}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{firstName.charAt(0).toUpperCase()}</Text>
         </View>
-        <Text style={styles.employeeName} numberOfLines={1}>
-          {firstName}
-        </Text>
-        <Pressable
-          onPress={onSwitchEmployee}
-          accessibilityRole="button"
-          accessibilityLabel="Ganti karyawan"
-          style={({ pressed }) => [styles.switchButton, pressed && styles.pressed]}
-        >
-          <LogOut size={20} color={colors.sidebarText} />
-          <Text style={styles.switchLabel}>Ganti</Text>
-        </Pressable>
-      </View>
+
+        <View style={styles.menu}>
+          {SECTIONS.map((s) => (
+            <SidebarItem
+              key={s.key}
+              icon={s.icon}
+              label={s.label}
+              active={active === s.key}
+              badge={s.key === 'online' ? onlineBadge : undefined}
+              onPress={() => onChange(s.key)}
+            />
+          ))}
+        </View>
+
+        <View style={styles.footer}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{firstName.charAt(0).toUpperCase()}</Text>
+          </View>
+          <Text style={styles.employeeName} numberOfLines={1}>
+            {firstName}
+          </Text>
+          <Pressable
+            onPress={onSwitchEmployee}
+            accessibilityRole="button"
+            accessibilityLabel="Ganti karyawan"
+            style={({ pressed }) => [styles.switchButton, pressed && styles.pressed]}
+          >
+            <LogOut size={20} color={colors.sidebarText} />
+            <Text style={styles.switchLabel}>Ganti</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -82,6 +85,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.sidebar,
     borderRightWidth: 1,
     borderRightColor: colors.sidebarBorder,
+  },
+  scroll: {
+    flexGrow: 1,
     alignItems: 'center',
   },
   logoBox: {

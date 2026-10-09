@@ -41,6 +41,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(10, 10, 10, 0.7)', // gelapkan foto agar teks terbaca
   },
   content: {
+    width: '100%',
+    maxWidth: 560,
+    alignSelf: 'center',
     paddingHorizontal: 24,
     paddingBottom: 32,
   },

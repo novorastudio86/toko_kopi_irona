@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: 460,
+    maxWidth: '100%',
     gap: 12,
     padding: 20,
     borderRadius: 20,

@@ -6,10 +6,13 @@ interface QuantityStepperProps {
   value: number;
   onChange: (value: number) => void;
   min?: number;
+  /** Versi kecil untuk kartu produk */
+  compact?: boolean;
 }
 
 /** Tombol − jumlah + (dipakai di kartu produk dan keranjang) */
-export default function QuantityStepper({ value, onChange, min = 1 }: QuantityStepperProps) {
+export default function QuantityStepper({ value, onChange, min = 1, compact = false }: QuantityStepperProps) {
+  const iconSize = compact ? 14 : 16;
   return (
     <View style={styles.box}>
       <Pressable
@@ -17,18 +20,23 @@ export default function QuantityStepper({ value, onChange, min = 1 }: QuantitySt
         disabled={value <= min}
         hitSlop={6}
         accessibilityLabel="Kurangi"
-        style={({ pressed }) => [styles.button, pressed && styles.pressed, value <= min && styles.disabled]}
+        style={({ pressed }) => [
+          styles.button,
+          compact && styles.buttonCompact,
+          pressed && styles.pressed,
+          value <= min && styles.disabled,
+        ]}
       >
-        <Minus size={16} color={colors.textSecondary} />
+        <Minus size={iconSize} color={colors.textSecondary} />
       </Pressable>
-      <Text style={styles.value}>{value}</Text>
+      <Text style={[styles.value, compact && styles.valueCompact]}>{value}</Text>
       <Pressable
         onPress={() => onChange(value + 1)}
         hitSlop={6}
         accessibilityLabel="Tambah"
-        style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+        style={({ pressed }) => [styles.button, compact && styles.buttonCompact, pressed && styles.pressed]}
       >
-        <Plus size={16} color={colors.textSecondary} />
+        <Plus size={iconSize} color={colors.textSecondary} />
       </Pressable>
     </View>
   );
@@ -50,6 +58,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 9,
   },
+  buttonCompact: {
+    width: 28,
+    height: 28,
+    borderRadius: 7,
+  },
   pressed: {
     backgroundColor: colors.surfaceMuted,
   },
@@ -62,5 +75,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: colors.text,
+  },
+  valueCompact: {
+    minWidth: 18,
+    fontSize: 13,
   },
 });

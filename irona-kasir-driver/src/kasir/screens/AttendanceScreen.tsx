@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { CameraView, useCameraPermissions, type BarcodeScanningResult } from 'expo-camera';
 import { RefreshCw, ScanLine } from 'lucide-react-native';
 import PrimaryButton from '@/components/PrimaryButton';
 import { colors } from '@/constants/colors';
+import { useResponsive } from '@/hooks/useResponsive';
 import ScanFeedback, { type ScanFeedbackState } from '@/kasir/components/ScanFeedback';
 import { recordAttendanceScan } from '@/kasir/services/attendance';
 
@@ -28,6 +29,9 @@ export default function AttendanceScreen() {
   const [now, setNow] = useState(() => new Date());
   const [feedback, setFeedback] = useState<ScanFeedbackState | null>(null);
   const [recent, setRecent] = useState<RecentScan[]>([]);
+  const { width, height } = useResponsive();
+  // Kamera persegi 420 di tablet A8; mengecil di layar pendek (220 ≈ judul + jarak + tombol balik kamera)
+  const cameraSize = Math.round(Math.max(160, Math.min(420, height - 220, width * 0.4)));
 
   // useRef: nilai yang diingat tanpa membuat layar digambar ulang
   const processingRef = useRef(false);
@@ -81,7 +85,7 @@ export default function AttendanceScreen() {
     <View style={styles.container}>
       {/* Kiri: kamera */}
       <View style={styles.cameraColumn}>
-        <View style={styles.cameraBox}>
+        <View style={[styles.cameraBox, { width: cameraSize, height: cameraSize }]}>
           {!permission ? null : !permission.granted ? (
             <View style={styles.permission}>
               <Text style={styles.permissionText}>
@@ -115,7 +119,7 @@ export default function AttendanceScreen() {
       </View>
 
       {/* Kanan: jam, petunjuk, absen terakhir */}
-      <View style={styles.infoColumn}>
+      <ScrollView style={styles.infoColumn}>
         <Text style={styles.clock}>
           {now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
         </Text>
@@ -149,7 +153,7 @@ export default function AttendanceScreen() {
             </View>
           ))
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -165,8 +169,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   cameraBox: {
-    width: 420,
-    height: 420,
     borderRadius: 24,
     overflow: 'hidden', // kamera ikut sudut membulat
     backgroundColor: colors.primary,
@@ -175,10 +177,10 @@ const styles = StyleSheet.create({
   },
   frame: {
     position: 'absolute',
-    top: 60,
-    left: 60,
-    right: 60,
-    bottom: 60,
+    top: '15%',
+    left: '15%',
+    right: '15%',
+    bottom: '15%',
     borderRadius: 20,
     borderWidth: 2,
     borderStyle: 'dashed',

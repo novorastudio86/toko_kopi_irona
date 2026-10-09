@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Printer, ShoppingBag, Trash2, X } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { useResponsive } from '@/hooks/useResponsive';
 import type { OrderDraftApi } from '@/kasir/hooks/useOrderDraft';
 import { formatRupiah } from '@/utils/formatCurrency';
 import CustomerSection from './CustomerSection';
@@ -24,9 +25,10 @@ interface OrderPanelProps {
 export default function OrderPanel({ order, onCancel, onProcess, processing }: OrderPanelProps) {
   const { draft } = order;
   const hasItems = draft.items.length > 0;
+  const { sidePanelWidth } = useResponsive();
 
   return (
-    <View style={styles.panel}>
+    <View style={[styles.panel, { width: sidePanelWidth }]}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerText}>
@@ -120,7 +122,9 @@ export default function OrderPanel({ order, onCancel, onProcess, processing }: O
           ) : (
             <>
               <Printer size={18} color={colors.textOnDark} />
-              <Text style={styles.processText}>Proses Order ({formatRupiah(order.total)})</Text>
+              <Text style={styles.processText} numberOfLines={1} adjustsFontSizeToFit>
+                Proses Order ({formatRupiah(order.total)})
+              </Text>
             </>
           )}
         </Pressable>
@@ -132,7 +136,6 @@ export default function OrderPanel({ order, onCancel, onProcess, processing }: O
 
 const styles = StyleSheet.create({
   panel: {
-    width: 400,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
@@ -248,6 +251,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryHover,
   },
   processText: {
+    flexShrink: 1,
     fontSize: 15,
     fontWeight: '700',
     color: colors.textOnDark,

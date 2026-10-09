@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ChevronLeft, ChevronRight, ReceiptText, Search } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { useResponsive } from '@/hooks/useResponsive';
 import HistoryDetailPanel from '@/kasir/components/HistoryDetailPanel';
 import HistoryRow from '@/kasir/components/HistoryRow';
 import { fetchTransactionHistory } from '@/kasir/services/history';
@@ -29,6 +30,7 @@ export default function HistoryScreen() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { sidePanelWidth } = useResponsive();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -141,7 +143,7 @@ export default function HistoryScreen() {
         />
       </View>
 
-      <View style={styles.detailColumn}>
+      <View style={{ width: sidePanelWidth }}>
         {selected ? (
           <HistoryDetailPanel transaction={selected} onPrinted={load} />
         ) : (
@@ -167,6 +169,7 @@ const styles = StyleSheet.create({
   },
   toolbar: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     gap: 12,
   },
@@ -191,6 +194,7 @@ const styles = StyleSheet.create({
   },
   searchBox: {
     flex: 1,
+    minWidth: 200,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
@@ -208,10 +212,12 @@ const styles = StyleSheet.create({
   },
   summary: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 10,
   },
   summaryCard: {
     flex: 1,
+    minWidth: 140, // layar sempit → 2×2
     gap: 2,
     padding: 12,
     borderRadius: 12,
@@ -243,9 +249,6 @@ const styles = StyleSheet.create({
   error: {
     fontSize: 13,
     color: colors.danger,
-  },
-  detailColumn: {
-    width: 400,
   },
   placeholder: {
     flex: 1,

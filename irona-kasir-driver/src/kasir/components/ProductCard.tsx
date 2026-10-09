@@ -26,7 +26,7 @@ export default function ProductCard({ product, onAdd }: ProductCardProps) {
         {product.photoUrl ? (
           <Image source={{ uri: product.photoUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" />
         ) : (
-          <ImageIcon size={28} color={colors.borderStrong} />
+          <ImageIcon size={22} color={colors.borderStrong} />
         )}
         <View style={styles.categoryBadge}>
           <Text style={styles.categoryText} numberOfLines={1}>
@@ -40,7 +40,7 @@ export default function ProductCard({ product, onAdd }: ProductCardProps) {
           {product.name}
         </Text>
         {product.description ? (
-          <Text style={styles.description} numberOfLines={2}>
+          <Text style={styles.description} numberOfLines={1}>
             {product.description}
           </Text>
         ) : null}
@@ -48,14 +48,14 @@ export default function ProductCard({ product, onAdd }: ProductCardProps) {
       </View>
 
       <View style={styles.actions}>
-        <QuantityStepper value={quantity} onChange={setQuantity} />
+        <QuantityStepper value={quantity} onChange={setQuantity} compact />
         <Pressable
           onPress={handleAdd}
           accessibilityRole="button"
           accessibilityLabel={`Tambah ${product.name} ke tas`}
           style={({ pressed }) => [styles.addButton, pressed && styles.addPressed]}
         >
-          <ShoppingBag size={16} color={colors.textOnDark} />
+          <ShoppingBag size={14} color={colors.textOnDark} />
           <Text style={styles.addText}>Tas</Text>
         </Pressable>
       </View>
@@ -66,16 +66,16 @@ export default function ProductCard({ product, onAdd }: ProductCardProps) {
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    padding: 12,
-    gap: 10,
-    borderRadius: 16,
+    padding: 8,
+    gap: 6,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
   },
   photo: {
-    height: 110,
-    borderRadius: 12,
+    height: 72,
+    borderRadius: 8,
     overflow: 'hidden',
     backgroundColor: colors.surfaceMuted,
     alignItems: 'center',
@@ -83,16 +83,16 @@ const styles = StyleSheet.create({
   },
   categoryBadge: {
     position: 'absolute',
-    top: 8,
-    left: 8,
+    top: 6,
+    left: 6,
     maxWidth: '85%',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
     backgroundColor: colors.surface,
   },
   categoryText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '700',
     color: colors.textSecondary,
   },
@@ -101,18 +101,18 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   name: {
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '700',
     color: colors.text,
   },
   description: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 11,
+    lineHeight: 14,
     color: colors.textMuted,
   },
   price: {
-    marginTop: 6,
-    fontSize: 16,
+    marginTop: 2,
+    fontSize: 14,
     fontWeight: '700',
     color: colors.text,
   },
@@ -120,22 +120,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 8,
+    gap: 6,
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    height: 36,
-    borderRadius: 10,
+    gap: 4,
+    paddingHorizontal: 10,
+    height: 30,
+    borderRadius: 8,
     backgroundColor: colors.primary,
   },
   addPressed: {
     backgroundColor: colors.primaryHover,
   },
   addText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
     color: colors.textOnDark,
   },

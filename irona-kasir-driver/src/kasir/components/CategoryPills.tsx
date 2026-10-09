@@ -40,7 +40,7 @@ export default function CategoryPills({ categories, counts, selectedId, onSelect
             accessibilityState={{ selected: active }}
             style={[styles.pill, active && styles.pillActive]}
           >
-            <Icon size={16} color={active ? colors.textOnDark : colors.textMuted} />
+            <Icon size={14} color={active ? colors.textOnDark : colors.textMuted} />
             <Text style={[styles.name, active && styles.nameActive]}>{name}</Text>
             <View style={[styles.count, active && styles.countActive]}>
               <Text style={[styles.countText, active && styles.countTextActive]}>
@@ -57,19 +57,20 @@ export default function CategoryPills({ categories, counts, selectedId, onSelect
 const styles = StyleSheet.create({
   scroll: {
     flexGrow: 0, // jangan ikut memanjang ke bawah, cukup setinggi pil
+    flexShrink: 0, // jangan ditekan grid di bawahnya (dulu teks pil terpotong)
   },
   row: {
-    gap: 10,
+    gap: 8,
     paddingVertical: 2,
   },
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingLeft: 14,
-    paddingRight: 8,
-    paddingVertical: 8,
-    borderRadius: 12,
+    gap: 6,
+    paddingLeft: 12,
+    paddingRight: 6,
+    paddingVertical: 6,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   name: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: colors.textSecondary,
   },
@@ -87,8 +88,8 @@ const styles = StyleSheet.create({
     color: colors.textOnDark,
   },
   count: {
-    minWidth: 24,
-    paddingHorizontal: 6,
+    minWidth: 22,
+    paddingHorizontal: 5,
     paddingVertical: 2,
     borderRadius: 6,
     backgroundColor: colors.surfaceMuted,
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
   },
   countText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
     color: colors.textMuted,
   },

@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: 440,
+    maxWidth: '100%',
     maxHeight: '80%',
     gap: 8,
     padding: 20,

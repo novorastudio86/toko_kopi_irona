@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Bluetooth, CheckCircle2, Info, Printer } from 'lucide-react-native';
 import PrimaryButton from '@/components/PrimaryButton';
 import { colors } from '@/constants/colors';
@@ -70,7 +70,7 @@ export default function PrinterSettingsScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.current}>
         <Printer size={22} color={colors.textSecondary} />
         <View style={styles.currentText}>
@@ -118,7 +118,7 @@ export default function PrinterSettingsScreen() {
       {message ? (
         <Text style={message.type === 'error' ? styles.error : styles.success}>{message.text}</Text>
       ) : null}
-    </View>
+    </ScrollView>
   );
 }
 

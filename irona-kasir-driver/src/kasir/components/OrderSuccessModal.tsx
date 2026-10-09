@@ -1,4 +1,4 @@
-import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { CheckCircle2, Plus, Printer } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
 import { usePrintReceipt } from '@/kasir/hooks/usePrintReceipt';
@@ -25,7 +25,7 @@ export default function OrderSuccessModal({ receipt, onNewOrder }: OrderSuccessM
       <View style={styles.backdrop}>
         {receipt ? (
           <View style={styles.card}>
-            <View style={styles.summary}>
+            <ScrollView style={styles.summaryScroll} contentContainerStyle={styles.summary}>
               <CheckCircle2 size={48} color={colors.success} />
               <Text style={styles.title}>Pembayaran berhasil</Text>
               <Text style={styles.meta}>
@@ -100,7 +100,7 @@ export default function OrderSuccessModal({ receipt, onNewOrder }: OrderSuccessM
                   <Text style={styles.primaryText}>Pesanan Baru</Text>
                 </Pressable>
               </View>
-            </View>
+            </ScrollView>
 
             {/* Kanan: preview struk sesuai Custom Struk di Web Admin */}
             <View style={styles.previewColumn}>
@@ -131,15 +131,19 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: colors.surface,
   },
-  summary: {
+  summaryScroll: {
     flex: 1,
+  },
+  summary: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
     padding: 28,
   },
   previewColumn: {
-    width: 390,
+    width: '45%',
+    maxWidth: 390,
     padding: 16,
     gap: 10,
     backgroundColor: colors.surfaceMuted,

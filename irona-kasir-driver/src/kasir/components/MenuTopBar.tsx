@@ -1,16 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Clock, Search, X } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
+import { useResponsive } from '@/hooks/useResponsive';
 
 interface MenuTopBarProps {
   search: string;
   onSearchChange: (text: string) => void;
+  /** Elemen di paling kiri, mis. tombol ☰ sidebar */
+  leading?: ReactNode;
 }
 
 /** Bar atas halaman Menu: kolom cari + tanggal & jam */
-export default function MenuTopBar({ search, onSearchChange }: MenuTopBarProps) {
+export default function MenuTopBar({ search, onSearchChange, leading }: MenuTopBarProps) {
   const [now, setNow] = useState(() => new Date());
+  const { compact } = useResponsive();
 
   // Jam cukup diperbarui tiap 30 detik (tampilan hanya jam:menit)
   useEffect(() => {
@@ -28,6 +32,7 @@ export default function MenuTopBar({ search, onSearchChange }: MenuTopBarProps) 
 
   return (
     <View style={styles.bar}>
+      {leading}
       <View style={styles.searchBox}>
         <Search size={18} color={colors.textSubtle} />
         <TextInput
@@ -49,7 +54,7 @@ export default function MenuTopBar({ search, onSearchChange }: MenuTopBarProps) 
       <View style={styles.clock}>
         <Clock size={14} color={colors.textMuted} />
         <Text style={styles.clockText}>
-          {dateText} · {timeText} WIB
+          {compact ? timeText : `${dateText} · ${timeText}`} WIB
         </Text>
       </View>
     </View>
@@ -60,8 +65,7 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 16,
+    gap: 12,
   },
   searchBox: {
     flex: 1,
@@ -77,11 +81,12 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 11,
+    paddingVertical: 9,
     fontSize: 15,
     color: colors.text,
   },
   clock: {
+    marginLeft: 'auto', // jam tetap di kanan
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, View } from 'react-native';
 import PrimaryButton from '@/components/PrimaryButton';
 import { colors } from '@/constants/colors';
@@ -13,16 +13,19 @@ import { createKasirOrder } from '@/kasir/services/orders';
 import type { MenuCategory, MenuProduct } from '@/kasir/types/catalog';
 import type { OrderReceipt } from '@/kasir/types/order';
 
-const GRID_COLUMNS = 3;
-const GRID_GAP = 14;
+const GRID_GAP = 10;
+/** Kartu tersempit yang masih muat stepper jumlah + tombol Tas (iPad & Tab A8 = 4 kolom) */
+const MIN_CARD_WIDTH = 160;
 
 interface MenuScreenProps {
   /** Sesi kasir yang sedang berjalan (null = masih dibuka) */
   sessionId: string | null;
+  /** Tombol ☰ pembuka sidebar, ditaruh di kiri kolom cari */
+  sidebarToggle: ReactNode;
 }
 
 /** Menu kasir: cari & filter menu di kiri, pesanan aktif di kanan */
-export default function MenuScreen({ sessionId }: MenuScreenProps) {
+export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps) {
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [products, setProducts] = useState<MenuProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,9 +36,10 @@ export default function MenuScreen({ sessionId }: MenuScreenProps) {
   const order = useOrderDraft();
   const [processing, setProcessing] = useState(false);
   const [receipt, setReceipt] = useState<OrderReceipt | null>(null);
-  // Lebar area grid diukur saat tampil, lalu dibagi rata untuk 3 kolom
+  // Lebar area grid diukur saat tampil; jumlah kolom menyesuaikan lebar layar
   const [gridWidth, setGridWidth] = useState(0);
-  const cardWidth = (gridWidth - GRID_GAP * (GRID_COLUMNS - 1)) / GRID_COLUMNS;
+  const columns = Math.max(1, Math.floor((gridWidth + GRID_GAP) / (MIN_CARD_WIDTH + GRID_GAP)));
+  const cardWidth = (gridWidth - GRID_GAP * (columns - 1)) / columns;
 
   async function loadCatalog() {
     setLoading(true);
@@ -110,7 +114,7 @@ export default function MenuScreen({ sessionId }: MenuScreenProps) {
   return (
     <View style={styles.container}>
       <View style={styles.catalog}>
-        <MenuTopBar search={search} onSearchChange={setSearch} />
+        <MenuTopBar search={search} onSearchChange={setSearch} leading={sidebarToggle} />
 
         {!query ? (
           <CategoryPills
@@ -130,10 +134,11 @@ export default function MenuScreen({ sessionId }: MenuScreenProps) {
           </View>
         ) : (
           <FlatList
+            key={columns} // FlatList wajib dipasang ulang saat jumlah kolom berubah
             data={visible}
             keyExtractor={(item) => item.id}
-            numColumns={GRID_COLUMNS}
-            columnWrapperStyle={styles.gridRow}
+            numColumns={columns}
+            columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
             contentContainerStyle={styles.grid}
             onLayout={(e) => setGridWidth(e.nativeEvent.layout.width)}
             ListEmptyComponent={
@@ -166,11 +171,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    gap: 20,
+    gap: 12,
   },
   catalog: {
     flex: 1,
-    gap: 16,
+    gap: 12,
   },
   loading: {
     marginTop: 60,
@@ -186,7 +191,7 @@ const styles = StyleSheet.create({
   },
   grid: {
     gap: GRID_GAP,
-    paddingBottom: 24,
+    paddingBottom: 16,
   },
   gridRow: {
     gap: GRID_GAP,
