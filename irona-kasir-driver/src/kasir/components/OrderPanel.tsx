@@ -77,8 +77,11 @@ export default function OrderPanel({ order, onCancel, onCheckout }: OrderPanelPr
           })
         ) : (
           <View style={styles.empty}>
-            <ShoppingBag size={28} color={colors.borderStrong} />
-            <Text style={styles.emptyText}>Belum ada menu. Tekan "Tas" pada kartu menu.</Text>
+            <View style={styles.emptyIcon}>
+              <ShoppingBag size={28} color={colors.textSubtle} />
+            </View>
+            <Text style={styles.emptyTitle}>Belum ada pesanan</Text>
+            <Text style={styles.emptyText}>Tambah produk dulu dari daftar menu.</Text>
           </View>
         )}
       </ScrollView>
@@ -191,6 +194,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    flexGrow: 1, // supaya tampilan kosong bisa berada di tengah
     padding: 12,
     gap: 12,
   },
@@ -217,17 +221,31 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.textSecondary,
   },
+  // Kosong: di tengah sisa tinggi daftar, tanpa kotak putus-putus
   empty: {
+    flex: 1,
     alignItems: 'center',
-    gap: 8,
-    paddingVertical: 20,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: colors.borderStrong,
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 24,
+  },
+  emptyIcon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 64,
+    height: 64,
+    marginBottom: 6,
+    borderRadius: 32,
+    backgroundColor: colors.surfaceMuted,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
   },
   emptyText: {
-    fontSize: 12,
+    fontSize: 14,
+    textAlign: 'center',
     color: colors.textSubtle,
   },
   footer: {

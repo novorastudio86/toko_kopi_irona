@@ -50,11 +50,13 @@ export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps
   const columns = Math.max(1, Math.floor((cardsWidth + GRID_GAP) / (MIN_CARD_WIDTH + GRID_GAP)));
   const cardWidth = (cardsWidth - GRID_GAP * (columns - 1)) / columns;
   // Shell tidak memberi jarak bawah untuk Menu: grid digulir sampai tepi layar,
-  // panel pesanan cukup diberi jarak terbesar dari gutter / area aman (dijumlah → ruang kosong)
+  // panel pesanan berjarak bawah = gutter, sama seperti tepi atas/kanan
   const { gutter } = useResponsive();
   const insetBottom = useSafeAreaInsets().bottom;
   const bottomSpace = gutter + insetBottom;
-  const panelBottomSpace = Math.max(gutter, insetBottom);
+  // ponytail: area gesture Android (tipis & transparan) boleh menimpa jarak panel;
+  // tombol navigasi 3-tombol (tebal) tetap dihindari. Ganti ke insetBottom saja bila ada perangkat yang tertutup.
+  const panelBottomSpace = insetBottom > 32 ? insetBottom : gutter;
 
   async function loadCatalog() {
     setLoading(true);
@@ -205,11 +207,7 @@ export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps
       </View>
 
       <View style={{ paddingBottom: panelBottomSpace }}>
-        <OrderPanel
-          order={order}
-          onCancel={handleCancel}
-          onCheckout={() => setPaying(true)}
-        />
+        <OrderPanel order={order} onCancel={handleCancel} onCheckout={() => setPaying(true)} />
       </View>
 
     </View>
