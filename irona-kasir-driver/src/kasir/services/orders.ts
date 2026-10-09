@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabase';
+import { isPhoneQuery } from '@/kasir/services/members';
 import type { OrderDraft, OrderReceipt, OrderType, PaymentMethod } from '@/kasir/types/order';
 
 interface ReceiptRow {
@@ -42,7 +43,8 @@ export async function createKasirOrder(sessionId: string, draft: OrderDraft): Pr
     })),
     p_order_type: draft.orderType,
     p_payment_method: draft.paymentMethod,
-    p_customer_name: draft.customerName.trim(),
+    // Non-member tanpa nama (kosong / No HP yang tidak ketemu) → "Pelanggan"
+    p_customer_name: draft.member || !isPhoneQuery(draft.customerName) ? draft.customerName.trim() : 'Pelanggan',
     p_customer_id: draft.member?.id ?? null,
     p_cash_received: draft.paymentMethod === 'tunai' ? draft.cashReceived : null,
   });

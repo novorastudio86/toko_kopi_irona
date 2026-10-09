@@ -25,7 +25,6 @@ export function useOrderDraft() {
   const change = draft.paymentMethod === 'tunai' ? draft.cashReceived - total : 0;
   const isReady =
     draft.items.length > 0 &&
-    draft.customerName.trim().length > 0 &&
     (draft.paymentMethod === 'qris' || draft.cashReceived >= total);
 
   function update(patch: Partial<OrderDraft>) {
@@ -76,6 +75,7 @@ export function useOrderDraft() {
     setItemQuantity,
     setItemNotes,
     removeItem,
+    clearItems: () => update({ items: [] }),
     setMember: (member: Member | null) =>
       update({ member, customerName: member ? member.name : '' }),
     setCustomerName: (customerName: string) => update({ customerName }),

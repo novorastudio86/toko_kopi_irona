@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Printer, ShoppingBag, Trash2, X } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
 import { useResponsive } from '@/hooks/useResponsive';
@@ -19,7 +19,7 @@ interface OrderPanelProps {
 }
 
 /**
- * Kolom kanan (susunan sesuai Figma): Pesanan Aktif → Pelanggan + Dine In/Take Away →
+ * Kolom kanan: No. order → Pelanggan + Dine In/Take Away →
  * Daftar Menu → Metode Pembayaran → Rincian tagihan → Batal / Proses Order
  */
 export default function OrderPanel({ order, onCancel, onProcess, processing }: OrderPanelProps) {
@@ -27,19 +27,18 @@ export default function OrderPanel({ order, onCancel, onProcess, processing }: O
   const hasItems = draft.items.length > 0;
   const { sidePanelWidth } = useResponsive();
 
+  function confirmClearItems() {
+    Alert.alert('Hapus semua menu?', 'Daftar menu pesanan akan dikosongkan.', [
+      { text: 'Batal', style: 'cancel' },
+      { text: 'Hapus', style: 'destructive', onPress: order.clearItems },
+    ]);
+  }
+
   return (
     <View style={[styles.panel, { width: sidePanelWidth }]}>
-      {/* Header */}
+      {/* Header: No. order (format backend; nomor urut baru diisi server saat diproses) */}
       <View style={styles.header}>
-        <View style={styles.headerText}>
-          <Text style={styles.title}>Pesanan Aktif</Text>
-          <Text style={styles.subtitle}>No. order & antrean dibuat saat diproses</Text>
-        </View>
-        {hasItems ? (
-          <Pressable onPress={onCancel} hitSlop={8} accessibilityLabel="Kosongkan pesanan">
-            <Trash2 size={18} color={colors.textMuted} />
-          </Pressable>
-        ) : null}
+        <Text style={styles.title}>{orderNumberPreview()}</Text>
       </View>
 
       <ScrollView
@@ -61,12 +60,18 @@ export default function OrderPanel({ order, onCancel, onProcess, processing }: O
           <View style={styles.countBadge}>
             <Text style={styles.countText}>{order.totalQuantity} item</Text>
           </View>
+          {hasItems ? (
+            <Pressable onPress={confirmClearItems} hitSlop={8} style={styles.clear} accessibilityLabel="Hapus semua menu">
+              <Trash2 size={20} color={colors.danger} />
+            </Pressable>
+          ) : null}
         </View>
         {hasItems ? (
           draft.items.map((item) => (
             <OrderItemRow
               key={item.product.id}
               item={item}
+              takeAway={draft.orderType === 'take_away'}
               onChangeQuantity={(q) => order.setItemQuantity(item.product.id, q)}
               onChangeNotes={(notes) => order.setItemNotes(item.product.id, notes)}
               onRemove={() => order.removeItem(item.product.id)}
@@ -132,7 +137,12 @@ export default function OrderPanel({ order, onCancel, onProcess, processing }: O
     </View>
   );
 }
-
+/** "INV-YYMMDD-····" — format No. order dari create_kasir_order */
+function orderNumberPreview(): string {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `INV-${String(d.getFullYear()).slice(2)}${pad(d.getMonth() + 1)}${pad(d.getDate())}-····`;
+}
 
 const styles = StyleSheet.create({
   panel: {
@@ -153,18 +163,11 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
     backgroundColor: colors.surface,
   },
-  headerText: {
-    flex: 1,
-    gap: 2,
-  },
   title: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '700',
+    letterSpacing: 0.3,
     color: colors.text,
-  },
-  subtitle: {
-    fontSize: 12,
-    color: colors.textMuted,
   },
   scroll: {
     flex: 1,
@@ -180,20 +183,21 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   listTitle: {
-    fontSize: 11,
+    fontSize: 16,
     fontWeight: '700',
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-    color: colors.textMuted,
+    color: colors.text,
   },
   countBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 8,
     backgroundColor: colors.surfaceMuted,
   },
+  clear: {
+    marginLeft: 'auto',
+  },
   countText: {
-    fontSize: 11,
+    fontSize: 14,
     fontWeight: '700',
     color: colors.textSecondary,
   },

@@ -14,20 +14,26 @@ function normalizePhone(input: string): string {
   return digits.startsWith('62') ? `0${digits.slice(2)}` : digits;
 }
 
-/** Cari member aktif berdasarkan No HP; null kalau tidak ditemukan */
-export async function findMemberByPhone(phone: string): Promise<Member | null> {
+/** Isian pelanggan berupa angka (No HP) → cari member; huruf/kosong → non-member */
+export function isPhoneQuery(input: string): boolean {
+  return /^[\d+\s-]*$/.test(input.trim());
+}
+
+/** Member aktif yang No HP-nya diawali `phone` (maks 8), untuk daftar saran */
+export async function searchMembersByPhone(phone: string): Promise<Member[]> {
   const { data, error } = await supabase
     .from('customers')
     .select('id, name, phone_number, points_balance')
-    .eq('phone_number', normalizePhone(phone))
+    .like('phone_number', `${normalizePhone(phone)}%`)
     .eq('is_active', true)
-    .maybeSingle<MemberRow>();
+    .order('name')
+    .limit(8)
+    .returns<MemberRow[]>();
   if (error) throw new Error(error.message);
-  if (!data) return null;
-  return {
-    id: data.id,
-    name: data.name,
-    phoneNumber: data.phone_number,
-    pointsBalance: data.points_balance,
-  };
+  return data.map((row) => ({
+    id: row.id,
+    name: row.name,
+    phoneNumber: row.phone_number,
+    pointsBalance: row.points_balance,
+  }));
 }
