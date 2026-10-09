@@ -125,7 +125,7 @@ export function HistoryModal({ title, load, fields, onClose }: Props) {
                     {Object.entries(h.changes).map(([k, c]) => {
                       const label = <span className="font-semibold">{fields[k]?.label ?? k}:</span>;
                       // Daftar (mis. komponen resep): tampilkan yang ditambah & dihapus saja
-                      if (Array.isArray(c.from) || Array.isArray(c.to)) {
+                      if (!fields[k]?.format && (Array.isArray(c.from) || Array.isArray(c.to))) {
                         const from = (c.from as string[] | null) ?? [];
                         const to = (c.to as string[] | null) ?? [];
                         return (

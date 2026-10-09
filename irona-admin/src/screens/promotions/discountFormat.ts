@@ -1,3 +1,4 @@
+import type { HistoryFields } from '../../components/HistoryModal';
 import { formatRupiah } from '../../utils/format';
 import { parseLocalDate } from '../../utils/date';
 import type { Channel, PromoType, PromotionInput } from '../../types/promotion';
@@ -58,3 +59,37 @@ export function formatDays(days: number[]): string {
 export function formatHours(start: string | null, end: string | null): string {
   return start && end ? `${start.slice(0, 5)}–${end.slice(0, 5)}` : 'Sepanjang jam buka';
 }
+
+const yesNo = (v: unknown) => (v ? 'Ya' : 'Tidak');
+const num = (v: unknown) => String(Number(v));
+
+/** Kolom snapshot `promotion_snapshot()` yang ditampilkan di Riwayat Perubahan */
+export const PROMOTION_HISTORY_FIELDS: HistoryFields = {
+  name: { label: 'Nama' },
+  description: { label: 'Deskripsi' },
+  channel: { label: 'Channel', format: (v) => (v === 'online' ? 'Online' : 'Offline') },
+  discount_target: { label: 'Sasaran', format: (v) => (v === 'ongkir' ? 'Ongkir' : 'Harga Produk') },
+  discount_kind: { label: 'Jenis Nilai', format: (v) => (v === 'persen' ? 'Persentase' : 'Nominal') },
+  discount_value: { label: 'Nilai', format: num },
+  max_distance_km: {
+    label: 'Jarak Maksimal',
+    format: (v) => (v == null ? 'Semua jarak' : `${Number(v)} km`),
+  },
+  applies_to_all_products: { label: 'Semua Produk', format: yesNo },
+  product_names: { label: 'Produk' },
+  promo_type: { label: 'Tipe', format: (v) => (v === 'manual' ? 'Manual' : 'Otomatis') },
+  target_customer: { label: 'Target', format: (v) => (v === 'member' ? 'Member' : 'Semua') },
+  min_purchase_type: {
+    label: 'Jenis Minimal',
+    format: (v) => (v === 'qty' ? 'Jumlah produk' : 'Nominal'),
+  },
+  min_purchase_value: { label: 'Minimal Pembelian', format: num },
+  is_repeatable: { label: 'Berlaku Kelipatan', format: yesNo },
+  max_one_claim_per_customer: { label: 'Maks 1× Klaim', format: yesNo },
+  applies_to_take_away: { label: 'Berlaku Take Away', format: yesNo },
+  start_date: { label: 'Tanggal Mulai' },
+  end_date: { label: 'Tanggal Selesai' },
+  valid_days: { label: 'Hari', format: (v) => formatDays((v as number[]) ?? []) },
+  valid_start_time: { label: 'Jam Mulai', format: (v) => (v ? String(v).slice(0, 5) : '—') },
+  valid_end_time: { label: 'Jam Selesai', format: (v) => (v ? String(v).slice(0, 5) : '—') },
+};

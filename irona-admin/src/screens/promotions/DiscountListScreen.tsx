@@ -11,13 +11,20 @@ import { PageHeader } from '../../components/PageHeader';
 import { SearchToolbar } from '../../components/SearchToolbar';
 import { SortableTh, type SortDir } from '../../components/SortableTh';
 import { TablePagination } from '../../components/TablePagination';
-import { deletePromotion, fetchPromotions, setPromotionActive } from '../../services/promotions';
+import { HistoryButton, HistoryModal } from '../../components/HistoryModal';
+import {
+  deletePromotion,
+  fetchAllPromotionHistory,
+  fetchPromotions,
+  setPromotionActive,
+} from '../../services/promotions';
 import type { Channel, Promotion, PromotionStatus } from '../../types/promotion';
 import DiscountDetailModal from './DiscountDetailModal';
 import DiscountFormModal from './DiscountFormModal';
 import { PromotionStatusBadge } from './PromotionStatusBadge';
 import {
   CHANNEL_LABELS,
+  PROMOTION_HISTORY_FIELDS,
   TYPE_LABELS,
   formatCriteria,
   formatDate,
@@ -47,6 +54,7 @@ export default function DiscountListScreen() {
 
   const [formState, setFormState] = useState<{ promotion: Promotion | null } | null>(null);
   const [detail, setDetail] = useState<Promotion | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -139,19 +147,17 @@ export default function DiscountListScreen() {
       <PageHeader
         title="Diskon"
         info="Atur potongan harga produk (offline/online) dan potongan ongkir (online). Kalau beberapa diskon memenuhi syarat, hanya potongan terbesar yang dipakai."
-        badge={
-          loading
-            ? undefined
-            : `${count((p) => p.status === 'aktif')} aktif · ${count((p) => p.status === 'nonaktif')} nonaktif · ${count((p) => p.status === 'kedaluwarsa')} kedaluwarsa`
-        }
         action={
-          <button
-            onClick={() => setFormState({ promotion: null })}
-            className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-4 py-2.5 text-xs font-semibold leading-4 tracking-[0.3px] text-white drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#1e293b]"
-          >
-            <img src={icPlus} alt="" className="size-4" />
-            Tambah Diskon
-          </button>
+          <div className="flex items-center gap-3">
+            <HistoryButton onClick={() => setHistoryOpen(true)} />
+            <button
+              onClick={() => setFormState({ promotion: null })}
+              className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-4 py-2.5 text-xs font-semibold leading-4 tracking-[0.3px] text-white drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#1e293b]"
+            >
+              <img src={icPlus} alt="" className="size-4" />
+              Tambah Diskon
+            </button>
+          </div>
         }
       />
 
@@ -414,6 +420,15 @@ export default function DiscountListScreen() {
       )}
 
       {detail && <DiscountDetailModal promotion={detail} onClose={() => setDetail(null)} />}
+
+      {historyOpen && (
+        <HistoryModal
+          title="Riwayat Perubahan Diskon"
+          load={fetchAllPromotionHistory}
+          fields={PROMOTION_HISTORY_FIELDS}
+          onClose={() => setHistoryOpen(false)}
+        />
+      )}
     </div>
   );
 }

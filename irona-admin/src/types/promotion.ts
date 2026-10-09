@@ -52,7 +52,7 @@ export interface Promotion extends PromotionInput {
 
 export interface PromotionHistoryEntry {
   id: string;
-  action: 'dibuat' | 'diubah' | 'diaktifkan' | 'dinonaktifkan';
+  action: 'dibuat' | 'diubah' | 'diaktifkan' | 'dinonaktifkan' | 'dihapus';
   before: Record<string, any> | null;
   after: Record<string, any> | null;
   changedByName: string | null;

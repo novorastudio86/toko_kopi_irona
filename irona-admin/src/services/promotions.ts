@@ -1,4 +1,6 @@
 import { supabase } from './supabase';
+import { historySince } from '../utils/date';
+import type { HistoryEntry } from '../types/history';
 import type {
   ProductOption,
   Promotion,
@@ -130,6 +132,36 @@ export async function fetchPromotionHistory(id: string): Promise<PromotionHistor
     changedByName: row.employees?.full_name ?? null,
     createdAt: row.created_at,
   }));
+}
+
+/** Riwayat semua diskon 14 hari terakhir (tombol riwayat di header halaman Diskon) */
+export async function fetchAllPromotionHistory(): Promise<HistoryEntry[]> {
+  const { data, error } = await supabase
+    .from('promotion_history')
+    .select('id, promotion_name, action, before_data, after_data, created_at')
+    .gte('created_at', historySince())
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+
+  return (data ?? []).map((row: any) => {
+    const before = row.before_data ?? {};
+    const after = row.after_data ?? {};
+    const changes: NonNullable<HistoryEntry['changes']> = {};
+    if (row.action === 'diubah') {
+      for (const k of Object.keys(after)) {
+        if (JSON.stringify(before[k]) !== JSON.stringify(after[k])) {
+          changes[k] = { from: before[k], to: after[k] };
+        }
+      }
+    }
+    return {
+      id: row.id,
+      subject: row.promotion_name,
+      action: row.action,
+      changes: Object.keys(changes).length ? changes : null,
+      changedAt: row.created_at,
+    };
+  });
 }
 
 export async function fetchPromotionClaims(id: string): Promise<PromotionClaim[]> {

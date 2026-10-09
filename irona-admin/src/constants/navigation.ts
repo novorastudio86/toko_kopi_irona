@@ -85,7 +85,7 @@ export const allItems: NavItem[] = [
     title: 'Promosi',
     icon: Tag,
     children: [
-      { id: '/promotion/discount', title: 'Diskon', countTable: 'promotions' },
+      { id: '/promotion/discount', title: 'Diskon', countTable: 'promotion_active' },
       { id: '/promotion/reward', title: 'Point Reward', countTable: 'rewards' },
     ],
   },

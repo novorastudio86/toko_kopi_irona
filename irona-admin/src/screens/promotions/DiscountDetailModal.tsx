@@ -5,8 +5,7 @@ import type { Promotion, PromotionClaim, PromotionHistoryEntry } from '../../typ
 import { PromotionStatusBadge } from './PromotionStatusBadge';
 import {
   CHANNEL_LABELS,
-  DAY_LABELS,
-  DAY_ORDER,
+  PROMOTION_HISTORY_FIELDS,
   TYPE_LABELS,
   formatCriteria,
   formatDate,
@@ -21,77 +20,21 @@ const ACTION_LABELS: Record<PromotionHistoryEntry['action'], string> = {
   diubah: 'Diubah',
   diaktifkan: 'Diaktifkan',
   dinonaktifkan: 'Dinonaktifkan',
+  dihapus: 'Dihapus',
 };
 
 const yesNo = (v: any) => (v ? 'Ya' : 'Tidak');
 
-/** Kolom snapshot yang ditampilkan di Riwayat Perubahan */
-const FIELDS: { key: string; label: string; format: (v: any) => string }[] = [
-  { key: 'name', label: 'Nama', format: (v) => v ?? '—' },
-  { key: 'description', label: 'Deskripsi', format: (v) => v || '—' },
-  { key: 'channel', label: 'Channel', format: (v) => (v === 'online' ? 'Online' : 'Offline') },
-  {
-    key: 'discount_target',
-    label: 'Sasaran',
-    format: (v) => (v === 'ongkir' ? 'Ongkir' : 'Harga Produk'),
-  },
-  {
-    key: 'discount_kind',
-    label: 'Jenis Nilai',
-    format: (v) => (v === 'persen' ? 'Persentase' : 'Nominal'),
-  },
-  { key: 'discount_value', label: 'Nilai', format: (v) => (v === null ? '—' : String(Number(v))) },
-  {
-    key: 'max_distance_km',
-    label: 'Jarak Maksimal',
-    format: (v) => (v === null ? 'Semua jarak' : `${Number(v)} km`),
-  },
-  { key: 'applies_to_all_products', label: 'Semua Produk', format: yesNo },
-  {
-    key: 'product_names',
-    label: 'Produk',
-    format: (v) => (Array.isArray(v) && v.length ? v.join(', ') : '—'),
-  },
-  { key: 'promo_type', label: 'Tipe', format: (v) => (v === 'manual' ? 'Manual' : 'Otomatis') },
-  { key: 'target_customer', label: 'Target', format: (v) => (v === 'member' ? 'Member' : 'Semua') },
-  {
-    key: 'min_purchase_type',
-    label: 'Jenis Minimal',
-    format: (v) => (v === 'qty' ? 'Jumlah produk' : 'Nominal'),
-  },
-  {
-    key: 'min_purchase_value',
-    label: 'Minimal Pembelian',
-    format: (v) => (v === null ? '—' : String(Number(v))),
-  },
-  { key: 'is_repeatable', label: 'Berlaku Kelipatan', format: yesNo },
-  { key: 'max_one_claim_per_customer', label: 'Maks 1× Klaim', format: yesNo },
-  { key: 'applies_to_take_away', label: 'Berlaku Take Away', format: yesNo },
-  { key: 'start_date', label: 'Tanggal Mulai', format: (v) => v ?? '—' },
-  { key: 'end_date', label: 'Tanggal Selesai', format: (v) => v ?? '—' },
-  {
-    key: 'valid_days',
-    label: 'Hari',
-    format: (v) =>
-      Array.isArray(v) && v.length
-        ? DAY_ORDER.filter((d) => v.includes(d))
-            .map((d) => DAY_LABELS[d])
-            .join(', ')
-        : 'Setiap hari',
-  },
-  { key: 'valid_start_time', label: 'Jam Mulai', format: (v) => (v ? String(v).slice(0, 5) : '—') },
-  { key: 'valid_end_time', label: 'Jam Selesai', format: (v) => (v ? String(v).slice(0, 5) : '—') },
-];
-
 function diff(before: Record<string, any> | null, after: Record<string, any> | null) {
   if (!before || !after) return [];
-  return FIELDS.filter((f) => JSON.stringify(before[f.key]) !== JSON.stringify(after[f.key])).map(
-    (f) => ({
+  const fmt = (v: unknown) => (Array.isArray(v) ? v.join(', ') || '—' : v == null ? '—' : String(v));
+  return Object.entries(PROMOTION_HISTORY_FIELDS)
+    .filter(([k]) => JSON.stringify(before[k]) !== JSON.stringify(after[k]))
+    .map(([k, f]) => ({
       label: f.label,
-      from: f.format(before[f.key]),
-      to: f.format(after[f.key]),
-    })
-  );
+      from: (f.format ?? fmt)(before[k]),
+      to: (f.format ?? fmt)(after[k]),
+    }));
 }
 
 function formatDateTime(iso: string) {
