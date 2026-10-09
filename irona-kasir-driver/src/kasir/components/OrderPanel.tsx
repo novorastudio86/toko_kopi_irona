@@ -136,6 +136,7 @@ export default function OrderPanel({ order, onCancel, onProcess, processing }: O
 
 const styles = StyleSheet.create({
   panel: {
+    flex: 1, // isi penuh tinggi pembungkusnya di MenuScreen
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,

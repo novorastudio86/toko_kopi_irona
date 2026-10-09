@@ -12,7 +12,10 @@ interface CategoryPillsProps {
   onSelect: (id: string) => void;
 }
 
-/** Filter kategori berbentuk pil yang bisa digeser ke samping */
+/**
+ * Filter kategori berbentuk pil. Pil terpilih dikunci di kiri (tidak ikut digeser),
+ * sisanya bisa digeser ke samping dengan urutan asli.
+ */
 export default function CategoryPills({ categories, counts, selectedId, onSelect }: CategoryPillsProps) {
   const pills = [
     { id: 'all', name: 'Semua', Icon: LayoutGrid },
@@ -22,41 +25,42 @@ export default function CategoryPills({ categories, counts, selectedId, onSelect
       Icon: (c.icon && CATEGORY_ICONS[c.icon]) || Tag,
     })),
   ];
+  const active = pills.find((p) => p.id === selectedId) ?? pills[0];
+
+  function renderPill({ id, name, Icon }: (typeof pills)[number]) {
+    const isActive = id === active.id;
+    return (
+      <Pressable
+        key={id}
+        onPress={() => onSelect(id)}
+        accessibilityRole="button"
+        accessibilityState={{ selected: isActive }}
+        style={[styles.pill, isActive && styles.pillActive]}
+      >
+        <Icon size={14} color={isActive ? colors.textOnDark : colors.textMuted} />
+        <Text style={[styles.name, isActive && styles.nameActive]}>{name}</Text>
+        <View style={[styles.count, isActive && styles.countActive]}>
+          <Text style={[styles.countText, isActive && styles.countTextActive]}>{counts[id] ?? 0}</Text>
+        </View>
+      </Pressable>
+    );
+  }
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.scroll}
-      contentContainerStyle={styles.row}
-    >
-      {pills.map(({ id, name, Icon }) => {
-        const active = id === selectedId;
-        return (
-          <Pressable
-            key={id}
-            onPress={() => onSelect(id)}
-            accessibilityRole="button"
-            accessibilityState={{ selected: active }}
-            style={[styles.pill, active && styles.pillActive]}
-          >
-            <Icon size={14} color={active ? colors.textOnDark : colors.textMuted} />
-            <Text style={[styles.name, active && styles.nameActive]}>{name}</Text>
-            <View style={[styles.count, active && styles.countActive]}>
-              <Text style={[styles.countText, active && styles.countTextActive]}>
-                {counts[id] ?? 0}
-              </Text>
-            </View>
-          </Pressable>
-        );
-      })}
-    </ScrollView>
+    <View style={styles.bar}>
+      {renderPill(active)}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
+        {pills.filter((p) => p.id !== active.id).map(renderPill)}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: {
-    flexGrow: 0, // jangan ikut memanjang ke bawah, cukup setinggi pil
+  bar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     flexShrink: 0, // jangan ditekan grid di bawahnya (dulu teks pil terpotong)
   },
   row: {

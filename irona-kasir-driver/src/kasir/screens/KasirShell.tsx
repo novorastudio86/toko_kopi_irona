@@ -63,7 +63,11 @@ export default function KasirShell({ employee, onSwitchEmployee }: KasirShellPro
       {/* Layar penuh seperti mesin POS: status bar disembunyikan */}
       <StatusBar hidden />
 
-      <SafeAreaView edges={['top', 'bottom', 'left', 'right']} style={[styles.content, { padding: gutter }]}>
+      {/* Menu mengatur jarak bawahnya sendiri supaya grid bisa digulir sampai tepi layar */}
+      <SafeAreaView
+        edges={section === 'menu' ? ['top', 'left', 'right'] : ['top', 'bottom', 'left', 'right']}
+        style={[styles.content, { padding: gutter }, section === 'menu' && { paddingBottom: 0 }]}
+      >
         {/* Menu punya bar atas sendiri (☰ + cari + jam), jadi tidak perlu judul */}
         {section !== 'menu' ? (
           <View style={styles.titleRow}>

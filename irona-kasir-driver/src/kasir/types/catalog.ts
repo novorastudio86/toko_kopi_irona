@@ -15,6 +15,10 @@ export interface MenuProduct {
   categoryId: string;
   categoryName: string;
   price: number;
+  /** Porsi yang masih bisa dibuat dari stok bahan baku (backend menyusul) */
+  stockAvailable?: number;
+  /** Bahan baku menipis → badge stok merah (backend menyusul) */
+  stockLow?: boolean;
 }
 
 /** Isi keranjang: produk + jumlahnya */

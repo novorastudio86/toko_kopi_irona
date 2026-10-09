@@ -1,7 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/PrimaryButton';
 import { colors } from '@/constants/colors';
+import { useResponsive } from '@/hooks/useResponsive';
 import CategoryPills from '@/kasir/components/CategoryPills';
 import MenuTopBar from '@/kasir/components/MenuTopBar';
 import OrderPanel from '@/kasir/components/OrderPanel';
@@ -14,8 +16,10 @@ import type { MenuCategory, MenuProduct } from '@/kasir/types/catalog';
 import type { OrderReceipt } from '@/kasir/types/order';
 
 const GRID_GAP = 10;
-/** Kartu tersempit yang masih muat stepper jumlah + tombol Tas (iPad & Tab A8 = 4 kolom) */
-const MIN_CARD_WIDTH = 160;
+/** Kartu tersempit yang masih nyaman dibaca (tanpa stepper, kartu bisa lebih rapat) */
+const MIN_CARD_WIDTH = 140;
+/** Jarak kanan grid supaya garis scroll tidak menimpa kartu kolom terakhir */
+const SCROLLBAR_GAP = 8;
 
 interface MenuScreenProps {
   /** Sesi kasir yang sedang berjalan (null = masih dibuka) */
@@ -38,8 +42,12 @@ export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps
   const [receipt, setReceipt] = useState<OrderReceipt | null>(null);
   // Lebar area grid diukur saat tampil; jumlah kolom menyesuaikan lebar layar
   const [gridWidth, setGridWidth] = useState(0);
-  const columns = Math.max(1, Math.floor((gridWidth + GRID_GAP) / (MIN_CARD_WIDTH + GRID_GAP)));
-  const cardWidth = (gridWidth - GRID_GAP * (columns - 1)) / columns;
+  const cardsWidth = gridWidth - SCROLLBAR_GAP;
+  const columns = Math.max(1, Math.floor((cardsWidth + GRID_GAP) / (MIN_CARD_WIDTH + GRID_GAP)));
+  const cardWidth = (cardsWidth - GRID_GAP * (columns - 1)) / columns;
+  // Shell tidak memberi jarak bawah untuk Menu: grid digulir sampai tepi layar,
+  // panel pesanan tetap diberi jarak (gutter + area aman bawah)
+  const bottomSpace = useResponsive().gutter + useSafeAreaInsets().bottom;
 
   async function loadCatalog() {
     setLoading(true);
@@ -133,34 +141,53 @@ export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps
             <PrimaryButton title="Coba lagi" onPress={loadCatalog} />
           </View>
         ) : (
-          <FlatList
-            key={columns} // FlatList wajib dipasang ulang saat jumlah kolom berubah
-            data={visible}
-            keyExtractor={(item) => item.id}
-            numColumns={columns}
-            columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
-            contentContainerStyle={styles.grid}
-            onLayout={(e) => setGridWidth(e.nativeEvent.layout.width)}
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>
-                {query ? `Tidak ada menu "${search}".` : 'Belum ada menu di kategori ini.'}
-              </Text>
-            }
-            renderItem={({ item }) => (
-              <View style={{ width: cardWidth }}>
-                <ProductCard product={item} onAdd={order.addItem} />
-              </View>
-            )}
-          />
+          <View style={styles.gridArea}>
+            {/* Kepala Kora samar di belakang grid supaya area kosong tidak terlihat hampa */}
+            <View style={styles.watermark} pointerEvents="none">
+              <Image
+                source={require('../../../assets/images/kora-head.webp')}
+                style={styles.watermarkImage}
+                resizeMode="contain"
+              />
+            </View>
+            <FlatList
+              key={columns} // FlatList wajib dipasang ulang saat jumlah kolom berubah
+              data={visible}
+              extraData={order.draft.items} // render ulang jumlah di kartu saat isi pesanan berubah
+              keyExtractor={(item) => item.id}
+              numColumns={columns}
+              columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
+              contentContainerStyle={[styles.grid, { paddingBottom: bottomSpace }]}
+              onLayout={(e) => setGridWidth(e.nativeEvent.layout.width)}
+              ListEmptyComponent={
+                <Text style={styles.emptyText}>
+                  {query ? `Tidak ada menu "${search}".` : 'Belum ada menu di kategori ini.'}
+                </Text>
+              }
+              renderItem={({ item }) => (
+                <View style={{ width: cardWidth }}>
+                  <ProductCard
+                    product={item}
+                    quantity={order.draft.items.find((i) => i.product.id === item.id)?.quantity ?? 0}
+                    // Di tab per kategori, badge kategori sudah terwakili oleh tab terpilih
+                    showCategory={!!query || categoryId === 'all'}
+                    onAdd={order.addItem}
+                  />
+                </View>
+              )}
+            />
+          </View>
         )}
       </View>
 
-      <OrderPanel
-        order={order}
-        onCancel={handleCancel}
-        onProcess={handleProcess}
-        processing={processing}
-      />
+      <View style={{ paddingBottom: bottomSpace }}>
+        <OrderPanel
+          order={order}
+          onCancel={handleCancel}
+          onProcess={handleProcess}
+          processing={processing}
+        />
+      </View>
 
       <OrderSuccessModal receipt={receipt} onNewOrder={handleNewOrder} />
     </View>
@@ -189,9 +216,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.danger,
   },
+  gridArea: {
+    flex: 1,
+  },
+  watermark: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  watermarkImage: {
+    width: 260,
+    height: 160,
+    opacity: 0.06,
+  },
   grid: {
     gap: GRID_GAP,
-    paddingBottom: 16,
+    paddingRight: SCROLLBAR_GAP,
   },
   gridRow: {
     gap: GRID_GAP,

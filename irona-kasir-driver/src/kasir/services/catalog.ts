@@ -53,6 +53,10 @@ export async function fetchMenuCatalog(): Promise<{
     categoryId: row.category_id,
     categoryName: row.categories?.name ?? '',
     price: Number(row.selling_price),
+    // ponytail: contoh tampilan badge stok (aman 15 / menipis 5 / habis = nonaktif),
+    // ganti dengan hitungan bahan baku saat backend stok siap
+    stockAvailable: /rum/i.test(row.name) ? 0 : /hazelnut/i.test(row.name) ? 5 : 15,
+    stockLow: /hazelnut/i.test(row.name),
   }));
 
   // Kategori tanpa produk yang bisa dijual tidak perlu tampil
