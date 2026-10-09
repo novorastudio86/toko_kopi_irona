@@ -1,28 +1,25 @@
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Printer, ShoppingBag, Trash2, X } from 'lucide-react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ArrowRight, ShoppingBag, Trash2, X } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
 import { useResponsive } from '@/hooks/useResponsive';
 import type { OrderDraftApi } from '@/kasir/hooks/useOrderDraft';
 import { formatRupiah } from '@/utils/formatCurrency';
 import CustomerSection from './CustomerSection';
 import OrderItemRow from './OrderItemRow';
-import OrderSummary from './OrderSummary';
 import OrderTypeToggle from './OrderTypeToggle';
-import PaymentSection from './PaymentSection';
 
 interface OrderPanelProps {
   order: OrderDraftApi;
   onCancel: () => void;
-  onProcess: () => void;
-  /** Sedang menyimpan order ke server */
-  processing: boolean;
+  /** Buka halaman Pembayaran */
+  onCheckout: () => void;
 }
 
 /**
  * Kolom kanan: No. order → Pelanggan + Dine In/Take Away →
- * Daftar Menu → Metode Pembayaran → Rincian tagihan → Batal / Proses Order
+ * Daftar Menu → Batal / Lanjut ke Pembayaran (metode bayar & tagihan di PaymentScreen)
  */
-export default function OrderPanel({ order, onCancel, onProcess, processing }: OrderPanelProps) {
+export default function OrderPanel({ order, onCancel, onCheckout }: OrderPanelProps) {
   const { draft } = order;
   const hasItems = draft.items.length > 0;
   const { sidePanelWidth } = useResponsive();
@@ -83,24 +80,6 @@ export default function OrderPanel({ order, onCancel, onProcess, processing }: O
             <Text style={styles.emptyText}>Belum ada menu. Tekan "Tas" pada kartu menu.</Text>
           </View>
         )}
-
-        <PaymentSection
-          method={draft.paymentMethod}
-          onMethodChange={order.setPaymentMethod}
-          total={order.total}
-          cashReceived={draft.cashReceived}
-          onCashChange={order.setCashReceived}
-          isReady={order.isReady}
-        />
-
-        <OrderSummary
-          totalQuantity={order.totalQuantity}
-          subtotal={order.subtotal}
-          total={order.total}
-          paymentMethod={draft.paymentMethod}
-          cashReceived={draft.cashReceived}
-          change={order.change}
-        />
       </ScrollView>
 
       {/* Tombol bawah selalu terlihat */}
@@ -114,24 +93,14 @@ export default function OrderPanel({ order, onCancel, onProcess, processing }: O
           <Text style={styles.cancelText}>Batal</Text>
         </Pressable>
         <Pressable
-          onPress={onProcess}
-          disabled={!order.isReady || processing}
-          style={({ pressed }) => [
-            styles.process,
-            pressed && styles.processPressed,
-            (!order.isReady || processing) && styles.disabled,
-          ]}
+          onPress={onCheckout}
+          disabled={!hasItems}
+          style={({ pressed }) => [styles.process, pressed && styles.processPressed, !hasItems && styles.disabled]}
         >
-          {processing ? (
-            <ActivityIndicator color={colors.textOnDark} />
-          ) : (
-            <>
-              <Printer size={18} color={colors.textOnDark} />
-              <Text style={styles.processText} numberOfLines={1} adjustsFontSizeToFit>
-                Proses Order ({formatRupiah(order.total)})
-              </Text>
-            </>
-          )}
+          <Text style={styles.processText} numberOfLines={1} adjustsFontSizeToFit>
+            Bayar ({formatRupiah(order.total)})
+          </Text>
+          <ArrowRight size={18} color={colors.textOnDark} />
         </Pressable>
       </View>
     </View>

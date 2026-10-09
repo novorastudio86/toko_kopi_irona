@@ -10,6 +10,7 @@ import OrderPanel from '@/kasir/components/OrderPanel';
 import OrderSuccessModal from '@/kasir/components/OrderSuccessModal';
 import ProductCard from '@/kasir/components/ProductCard';
 import { useOrderDraft } from '@/kasir/hooks/useOrderDraft';
+import PaymentScreen from '@/kasir/screens/PaymentScreen';
 import { fetchMenuCatalog } from '@/kasir/services/catalog';
 import { createKasirOrder } from '@/kasir/services/orders';
 import type { MenuCategory, MenuProduct } from '@/kasir/types/catalog';
@@ -39,6 +40,8 @@ export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps
   const [categoryId, setCategoryId] = useState('all');
   const order = useOrderDraft();
   const [processing, setProcessing] = useState(false);
+  // Halaman Pembayaran menggantikan grid + keranjang; pesanan tetap di useOrderDraft
+  const [paying, setPaying] = useState(false);
   const [receipt, setReceipt] = useState<OrderReceipt | null>(null);
   // Lebar area grid diukur saat tampil; jumlah kolom menyesuaikan lebar layar
   const [gridWidth, setGridWidth] = useState(0);
@@ -116,7 +119,22 @@ export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps
 
   function handleNewOrder() {
     setReceipt(null);
+    setPaying(false);
     order.reset();
+  }
+
+  if (paying) {
+    return (
+      <View style={[styles.payment, { paddingBottom: bottomSpace }]}>
+        <PaymentScreen
+          order={order}
+          onBack={() => setPaying(false)}
+          onProcess={handleProcess}
+          processing={processing}
+        />
+        <OrderSuccessModal receipt={receipt} onNewOrder={handleNewOrder} />
+      </View>
+    );
   }
 
   return (
@@ -184,12 +202,10 @@ export default function MenuScreen({ sessionId, sidebarToggle }: MenuScreenProps
         <OrderPanel
           order={order}
           onCancel={handleCancel}
-          onProcess={handleProcess}
-          processing={processing}
+          onCheckout={() => setPaying(true)}
         />
       </View>
 
-      <OrderSuccessModal receipt={receipt} onNewOrder={handleNewOrder} />
     </View>
   );
 }
@@ -199,6 +215,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     gap: 12,
+  },
+  payment: {
+    flex: 1,
   },
   catalog: {
     flex: 1,
