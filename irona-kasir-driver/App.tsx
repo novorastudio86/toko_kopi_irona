@@ -10,6 +10,7 @@ import EmployeeLoginScreen from '@/screens/EmployeeLoginScreen';
 import OwnerLoginScreen from '@/screens/OwnerLoginScreen';
 import RoleSelectScreen from '@/screens/RoleSelectScreen';
 import { getSignedInOwner, signOutDevice } from '@/services/auth';
+import { supabase } from '@/services/supabase';
 import type { OwnerProfile } from '@/types/auth';
 import type { ActiveEmployee } from '@/types/employee';
 import type { AppRole } from '@/types/role';
@@ -49,6 +50,15 @@ export default function App() {
 
   useEffect(() => {
     checkDevice();
+  }, []);
+
+  // Sesi Owner bisa hilang saat aplikasi terbuka (refresh token ditolak, mis. setelah
+  // `supabase db reset`). Tanpa sesi, RPC jalan sebagai anon → "permission denied", jadi kembali ke login Owner.
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') setStage({ name: 'ownerLogin' });
+    });
+    return () => data.subscription.unsubscribe();
   }, []);
 
   function handleSignOutDevice() {
